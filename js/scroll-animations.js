@@ -199,24 +199,17 @@ window.ScrollAnimations = (function () {
     const closing = qs('.message-closing', card);
     const words = splitWords(verse);
 
-    gsap.set(card, { opacity: 0, y: 32 });
-    gsap.set(quote, { opacity: 0, scale: 0, transformOrigin: '50% 80%' });
-    gsap.set(words, { opacity: 0, y: 10, filter: 'blur(4px)' });
-    gsap.set(body, { opacity: 0, y: 16, filter: 'blur(4px)' });
-    gsap.set(closing, { opacity: 0, y: 16 });
-    const innerBorder = card;
     const signature = qs('.message-sig', card);
-    const cardFrame = qs('::before', card);
+    /* Never hide message content before ScrollTrigger fires. */
     gsap.set(card, { '--card-draw': 0 });
-    if (signature) gsap.set(signature, { clipPath: 'inset(0 100% 0 0)' });
 
-    gsap.timeline({ scrollTrigger: { trigger: section, start: 'top 72%', once: true } })
-      .to(card, { opacity: 1, y: 0, duration: .6, ease: 'power3.out' })
-      .to(quote, { opacity: .2, scale: 1, duration: .65, ease: 'back.out(1.8)' }, '-=.2')
-      .to(words, { opacity: 1, y: 0, filter: 'blur(0)', duration: .32, stagger: .065 }, '-=.25')
-      .to(body, { opacity: 1, y: 0, filter: 'blur(0)', duration: .75 }, '-=.12')
-      .to(closing, { opacity: 1, y: 0, duration: .5 }, '-=.18')
-      .to(signature, { clipPath: 'inset(0 0% 0 0)', duration: .75, ease: 'power2.inOut' }, '-=.25')
+    const messageTl = gsap.timeline({ scrollTrigger: { trigger: section, start: 'top 72%', once: true } });
+    messageTl.fromTo(card, { opacity: 0, y: 32 }, { opacity: 1, y: 0, duration: .6, ease: 'power3.out', immediateRender: false })
+      .fromTo(quote, { opacity: 0, scale: 0, transformOrigin: '50% 80%' }, { opacity: .2, scale: 1, duration: .65, ease: 'back.out(1.8)', immediateRender: false }, '-=.2')
+      .fromTo(words, { opacity: 0, y: 10, filter: 'blur(4px)' }, { opacity: 1, y: 0, filter: 'blur(0)', duration: .32, stagger: .065, immediateRender: false }, '-=.25')
+      .fromTo(body, { opacity: 0, y: 16, filter: 'blur(4px)' }, { opacity: 1, y: 0, filter: 'blur(0)', duration: .75, immediateRender: false }, '-=.12')
+      .fromTo(closing, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: .5, immediateRender: false }, '-=.18')
+      .fromTo(signature, { clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0% 0 0)', duration: .75, ease: 'power2.inOut', immediateRender: false }, '-=.25')
       .to(card, { '--card-draw': 1, boxShadow: '0 0 34px rgba(201,168,76,.14)', duration: .35 }, '-=.1');
   }
 
