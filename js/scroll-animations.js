@@ -220,44 +220,62 @@ window.ScrollAnimations = (function () {
     const items = qsa('.event-item', section);
     if (!section || !track || !fill || !items.length || !canAnimate()) return;
 
-    /* The timeline line is the only element intentionally held at zero;
-       event cards themselves must remain readable if ScrollTrigger is late. */
-    gsap.set(fill, { height: 0 });
+    /* Keep the cards readable at all times; only the timeline progression
+       itself is scrubbed from the user's scroll position. */
+    gsap.set(fill, { height: '100%', scaleY: 0, transformOrigin: 'top center' });
 
     items.forEach((item, i) => {
       const card = qs('.event-card', item);
       const dot = qs('.event-dot', item);
       const photo = qs('.event-card-photo', item);
       const dress = qs('.event-card-dresscode', item);
-      const x = i % 2 === 0 ? -70 : 70;
+      const x = i % 2 === 0 ? -90 : 90;
 
-      const tl = gsap.timeline({ scrollTrigger: { trigger: item, start: 'top 78%', once: true } });
-      tl.fromTo(dot, { opacity: 0, scale: .2 }, { opacity: 1, scale: 1, duration: .5, ease: 'back.out(2)', immediateRender: false })
-        .fromTo(card, { opacity: 0, x, y: 18 }, { opacity: 1, x: 0, y: 0, duration: .7, ease: 'power3.out', immediateRender: false }, '-=.22');
+      const tl = gsap.timeline({ scrollTrigger: { trigger: item, start: 'top 82%', once: true } });
+      tl.fromTo(dot,
+          { opacity: .35, scale: .65 },
+          { opacity: 1, scale: 1.08, duration: .55, ease: 'back.out(2)', immediateRender: false })
+        .to(dot, { scale: 1, duration: .2 }, '-=.08')
+        .fromTo(card,
+          { opacity: 0, x, y: 24 },
+          { opacity: 1, x: 0, y: 0, duration: .8, ease: 'power3.out', immediateRender: false },
+          '-=.3');
       if (dress) {
-        tl.fromTo(dress, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: .35, immediateRender: false }, '-=.18');
+        tl.fromTo(dress,
+          { opacity: 0, y: 10, scale: .92 },
+          { opacity: 1, y: 0, scale: 1, duration: .4, ease: 'back.out(1.5)', immediateRender: false },
+          '-=.18');
       }
 
       if (photo) gsap.to(photo, {
-        scale: 1, xPercent: 2, ease: 'none',
-        scrollTrigger: { trigger: item, start: 'top bottom', end: 'bottom top', scrub: 1.4 }
+        scale: 1.08, xPercent: 2.5, ease: 'none',
+        scrollTrigger: { trigger: item, start: 'top bottom', end: 'bottom top', scrub: 1.2 }
       });
     });
 
-    const timelineTrigger = gsap.to(fill, {
-      height: '100%', ease: 'none',
-      scrollTrigger: {
-        trigger: track, start: 'top 70%', end: 'bottom 78%', scrub: true,
-        onUpdate: (self) => {
-          const progress = self.progress;
-          items.forEach((item, i) => {
-            const threshold = (i + 0.5) / items.length;
-            const dot = qs('.event-dot', item);
-            if (!dot) return;
-            gsap.to(dot, { scale: progress >= threshold ? 1.12 : 1, duration: .16, overwrite: true });
-            dot.classList.toggle('timeline-reached', progress >= threshold);
+    ScrollTrigger.create({
+      trigger: track,
+      start: 'top 78%',
+      end: 'bottom 72%',
+      scrub: 0.35,
+      onUpdate: (self) => {
+        const progress = self.progress;
+        gsap.set(fill, { scaleY: progress });
+        items.forEach((item, i) => {
+          const threshold = items.length === 1 ? 0 : i / (items.length - 1);
+          const dot = qs('.event-dot', item);
+          if (!dot) return;
+          const reached = progress >= Math.max(.08, threshold);
+          gsap.to(dot, {
+            scale: reached ? 1.18 : 1,
+            boxShadow: reached
+              ? '0 0 20px rgba(201,168,76,.65)'
+              : '0 0 12px rgba(201,168,76,.5)',
+            duration: .18,
+            overwrite: true
           });
-        }
+          dot.classList.toggle('timeline-reached', reached);
+        });
       }
     });
   }
