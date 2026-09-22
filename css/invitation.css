@@ -1,0 +1,521 @@
+/* ============================================================
+   INVITATION CSS — Hero, photo, message sections
+   ============================================================ */
+
+/* ── Main invite wrapper ─────────────────────────────────── */
+#main-invite {
+  position: relative;
+  opacity: 0;
+  pointer-events: none;
+  background: var(--color-bg-deep);
+}
+
+#main-invite.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ── Shared section base ─────────────────────────────────── */
+.section {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.section-inner {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: var(--space-2xl) var(--space-lg);
+}
+
+/* Section header (title + dividers) */
+.section-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+  text-align: center;
+}
+
+.section-header img {
+  width: 100%;
+  max-width: 280px;
+  opacity: 0.8;
+}
+
+.section-title {
+  font-family: var(--font-heading);
+  font-size: var(--text-xl);
+  font-weight: 400;
+  color: var(--color-gold-light);
+  letter-spacing: 0.06em;
+  text-align: center;
+}
+
+.section-subtitle {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: 300;
+  color: var(--color-muted-dark);
+  letter-spacing: 0.12em;
+  text-align: center;
+}
+
+/* ── Utility ─────────────────────────────────────────────── */
+.hidden { display: none !important; }
+
+/* ── HERO SECTION ────────────────────────────────────────── */
+.section-hero {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  position: relative;
+}
+
+/* Hero background image */
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+  transform: scale(1.05); /* slight scale for parallax room */
+  transition: transform 0.1s linear;
+}
+
+/* Dark overlay for text legibility */
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(12,3,3,0.55) 0%,
+    rgba(18,5,5,0.65) 40%,
+    rgba(10,3,3,0.8) 100%
+  );
+}
+
+/* Corner ornaments */
+.corner-ornament {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.corner-ornament::before,
+.corner-ornament::after {
+  content: '';
+  position: absolute;
+  background: var(--color-gold);
+  opacity: 0.5;
+}
+
+/* Horizontal bar */
+.corner-ornament::before { width: 36px; height: 1px; }
+/* Vertical bar */
+.corner-ornament::after  { width: 1px; height: 36px; }
+
+.corner-tl { top: 16px; left: 16px; }
+.corner-tl::before { top: 0; left: 0; }
+.corner-tl::after  { top: 0; left: 0; }
+
+.corner-tr { top: 16px; right: 16px; }
+.corner-tr::before { top: 0; right: 0; }
+.corner-tr::after  { top: 0; right: 0; }
+
+.corner-bl { bottom: 16px; left: 16px; }
+.corner-bl::before { bottom: 0; left: 0; }
+.corner-bl::after  { bottom: 0; left: 0; }
+
+.corner-br { bottom: 16px; right: 16px; }
+.corner-br::before { bottom: 0; right: 0; }
+.corner-br::after  { bottom: 0; right: 0; }
+
+/* Mughal arch frame */
+.hero-arch-frame {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.hero-arch-svg {
+  width: min(92vw, 400px);
+  height: auto;
+  opacity: 0.85;
+}
+
+/* Hero content */
+.hero-content {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+  padding: var(--space-xl) var(--space-lg);
+  text-align: center;
+  width: 100%;
+  min-height: 100svh;
+}
+
+/* A&G monogram above names */
+.hero-monogram {
+  font-family: var(--font-script);
+  font-size: var(--text-monogram);
+  color: var(--color-gold);
+  line-height: 1;
+  text-shadow:
+    0 0 30px rgba(201,168,76,0.4),
+    0 2px 8px rgba(0,0,0,0.5);
+  margin-bottom: var(--space-sm);
+  letter-spacing: 0.02em;
+}
+
+/* Bride & Groom names */
+.hero-names {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+  margin: 0;
+}
+
+.hero-name {
+  display: block;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 300;
+  font-size: var(--text-3xl);
+  color: var(--color-text-on-dark);
+  letter-spacing: 0.1em;
+  line-height: 1.1;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.5);
+}
+
+.hero-and {
+  display: block;
+  font-family: var(--font-script);
+  font-size: var(--text-2xl);
+  color: var(--color-gold);
+  line-height: 1.2;
+  opacity: 0.9;
+}
+
+/* Invitation line */
+.hero-invite-line {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 300;
+  font-size: var(--text-sm);
+  color: var(--color-muted-dark);
+  letter-spacing: 0.08em;
+  line-height: 1.8;
+  text-align: center;
+}
+
+/* Wedding date */
+.hero-date {
+  margin-top: var(--space-sm);
+  padding: var(--space-sm) var(--space-xl);
+  border: 1px solid rgba(201,168,76,0.35);
+  position: relative;
+}
+
+.hero-date::before,
+.hero-date::after {
+  content: '✦';
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-gold);
+  font-size: 0.5rem;
+  opacity: 0.7;
+}
+.hero-date::before { left: 8px; }
+.hero-date::after  { right: 8px; }
+
+.hero-date-text {
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: var(--text-sm);
+  letter-spacing: 0.2em;
+  color: var(--color-gold-light);
+}
+
+/* Hero divider */
+.hero-divider {
+  width: min(80vw, 260px);
+  opacity: 0.7;
+}
+.hero-divider img { width: 100%; }
+
+/* Scroll indicator */
+.scroll-indicator {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  animation: scrollBob 2s ease-in-out infinite;
+}
+
+.scroll-line {
+  display: block;
+  width: 1px;
+  height: 36px;
+  background: linear-gradient(180deg, transparent, var(--color-gold));
+  opacity: 0.6;
+}
+
+.scroll-label {
+  font-family: var(--font-body);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(201,168,76,0.5);
+}
+
+@keyframes scrollBob {
+  0%, 100% { opacity: 0.6; transform: translateX(-50%) translateY(0); }
+  50%       { opacity: 1;   transform: translateX(-50%) translateY(6px); }
+}
+
+/* ── COUPLE PHOTO SECTION ────────────────────────────────── */
+.section-photo {
+  background: var(--color-bg-section);
+  padding: var(--space-xl) 0;
+}
+
+.photo-frame-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-lg);
+}
+
+/* Mughal arch photo frame */
+.photo-mughal-frame {
+  position: relative;
+  width: min(75vw, 300px);
+  aspect-ratio: 3/4;
+
+  /* Arch clip shape */
+  clip-path: polygon(
+    0% 35%, /* left side mid */
+    0% 100%,
+    100% 100%,
+    100% 35%,
+    85% 20%,
+    73% 10%,
+    58% 3%,
+    50% 0%,
+    42% 3%,
+    27% 10%,
+    15% 20%
+  );
+
+  background: var(--color-paper-dark);
+  overflow: hidden;
+
+  /* Gold border via box shadow (inside clip-path) */
+  box-shadow:
+    inset 0 0 0 3px rgba(201,168,76,0.4),
+    0 20px 60px rgba(0,0,0,0.5),
+    0 8px 24px rgba(0,0,0,0.3);
+}
+
+.couple-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
+/* Placeholder if photo not loaded */
+.photo-placeholder .photo-mughal-frame {
+  background: linear-gradient(135deg, var(--color-primary-deep), var(--color-bg-section));
+}
+
+.photo-placeholder .photo-mughal-frame::after {
+  content: 'A & G';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-script);
+  font-size: 3rem;
+  color: var(--color-gold);
+  opacity: 0.4;
+}
+
+/* Vignette overlay on photo */
+.photo-frame-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 50%, rgba(10,3,3,0.4) 100%);
+  pointer-events: none;
+}
+
+/* Photo caption */
+.photo-caption {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.caption-divider {
+  width: min(60vw, 200px);
+  opacity: 0.6;
+}
+
+.photo-names {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 300;
+  font-size: var(--text-lg);
+  color: var(--color-gold-light);
+  letter-spacing: 0.08em;
+}
+
+/* ── MESSAGE SECTION ─────────────────────────────────────── */
+.section-message {
+  background: var(--color-bg-deep);
+  padding: var(--space-xl) 0;
+}
+
+.message-card {
+  background: rgba(248,242,230,0.04);
+  border: 1px solid rgba(201,168,76,0.2);
+  border-radius: var(--radius-md);
+  padding: var(--space-xl) var(--space-lg);
+  position: relative;
+  text-align: center;
+}
+
+.message-card::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border: 1px solid rgba(201,168,76,0.08);
+  border-radius: calc(var(--radius-md) - 2px);
+  pointer-events: none;
+}
+
+.message-quote-mark {
+  font-family: var(--font-display);
+  font-size: 6rem;
+  color: var(--color-gold);
+  opacity: 0.2;
+  line-height: 0.5;
+  margin-bottom: var(--space-md);
+  display: block;
+}
+
+.message-verse {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 300;
+  font-size: var(--text-xl);
+  color: var(--color-gold-light);
+  letter-spacing: 0.06em;
+  margin-bottom: var(--space-lg);
+  line-height: 1.4;
+}
+
+.message-body {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 300;
+  font-size: var(--text-md);
+  color: var(--color-muted-dark);
+  line-height: 1.9;
+  letter-spacing: 0.02em;
+  margin-bottom: var(--space-lg);
+}
+
+.message-closing {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.message-closing-text {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  color: var(--color-muted-dark);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.message-sig {
+  font-family: var(--font-script);
+  font-size: var(--text-2xl);
+  color: var(--color-gold);
+  line-height: 1.2;
+}
+
+/* ── FOOTER ──────────────────────────────────────────────── */
+.site-footer {
+  background: var(--color-bg-deep);
+  padding: var(--space-xl) var(--space-lg) var(--space-2xl);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+  border-top: 1px solid rgba(201,168,76,0.1);
+}
+
+.site-footer img { width: min(60vw, 200px); opacity: 0.5; }
+
+.footer-monogram {
+  font-family: var(--font-script);
+  font-size: var(--text-2xl);
+  color: var(--color-gold);
+  opacity: 0.7;
+}
+
+.footer-date {
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: var(--text-xs);
+  letter-spacing: 0.2em;
+  color: var(--color-muted-dark);
+}
+
+.footer-text {
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  color: rgba(248,242,230,0.2);
+  text-transform: uppercase;
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (min-width: 480px) {
+  .message-card { padding: var(--space-2xl); }
+  .photo-mughal-frame { width: min(65vw, 280px); }
+}
+
+@media (min-width: 768px) {
+  .hero-name { font-size: clamp(3rem, 8vw, 5rem); }
+  .section-inner { padding: var(--space-2xl) var(--space-xl); }
+}

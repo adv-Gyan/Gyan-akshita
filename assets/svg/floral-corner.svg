@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" fill="none">
+  <!-- Gold botanical floral corner ornament - top-left style -->
+  <!-- Main stem -->
+  <path d="M 10 10 Q 30 15 50 35 Q 65 50 75 75" 
+        stroke="#C9A84C" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  
+  <!-- Branch 1 -->
+  <path d="M 30 22 Q 45 18 55 28" 
+        stroke="#C9A84C" stroke-width="1" fill="none" stroke-linecap="round"/>
+  <!-- Branch 2 -->
+  <path d="M 48 40 Q 62 32 70 42" 
+        stroke="#C9A84C" stroke-width="1" fill="none" stroke-linecap="round"/>
+  <!-- Branch 3 -->
+  <path d="M 60 58 Q 75 50 80 62" 
+        stroke="#C9A84C" stroke-width="1" fill="none" stroke-linecap="round"/>
+
+  <!-- Main flower (large, top) -->
+  <g transform="translate(18, 12)">
+    <ellipse cx="0" cy="-8" rx="4" ry="7" fill="#C9A84C" opacity="0.85" transform="rotate(0)"/>
+    <ellipse cx="0" cy="-8" rx="4" ry="7" fill="#C9A84C" opacity="0.85" transform="rotate(45)"/>
+    <ellipse cx="0" cy="-8" rx="4" ry="7" fill="#C9A84C" opacity="0.85" transform="rotate(90)"/>
+    <ellipse cx="0" cy="-8" rx="4" ry="7" fill="#C9A84C" opacity="0.85" transform="rotate(135)"/>
+    <circle cx="0" cy="0" r="4" fill="#E8C97A"/>
+    <!-- Inner darker center -->
+    <circle cx="0" cy="0" r="2" fill="#9A7A2A"/>
+  </g>
+
+  <!-- Bud 1 -->
+  <g transform="translate(55, 28) rotate(-20)">
+    <ellipse cx="0" cy="-5" rx="2.5" ry="5" fill="#C9A84C" opacity="0.9"/>
+    <ellipse cx="0" cy="-5" rx="2.5" ry="5" fill="#C9A84C" opacity="0.9" transform="rotate(60)"/>
+    <ellipse cx="0" cy="-5" rx="2.5" ry="5" fill="#C9A84C" opacity="0.9" transform="rotate(-60)"/>
+    <circle cx="0" cy="0" r="2.5" fill="#E8C97A"/>
+  </g>
+
+  <!-- Bud 2 -->
+  <g transform="translate(70, 44) rotate(15)">
+    <ellipse cx="0" cy="-4" rx="2" ry="4" fill="#C9A84C" opacity="0.8"/>
+    <ellipse cx="0" cy="-4" rx="2" ry="4" fill="#C9A84C" opacity="0.8" transform="rotate(72)"/>
+    <ellipse cx="0" cy="-4" rx="2" ry="4" fill="#C9A84C" opacity="0.8" transform="rotate(144)"/>
+    <ellipse cx="0" cy="-4" rx="2" ry="4" fill="#C9A84C" opacity="0.8" transform="rotate(216)"/>
+    <circle cx="0" cy="0" r="2" fill="#E8C97A"/>
+  </g>
+
+  <!-- Small bud (closed) -->
+  <g transform="translate(80, 64)">
+    <ellipse cx="0" cy="-6" rx="3" ry="6" fill="#C9A84C" opacity="0.7"/>
+    <ellipse cx="0" cy="-6" rx="3" ry="6" fill="#B8962E" opacity="0.5" transform="rotate(30)"/>
+    <circle cx="0" cy="0" r="2" fill="#9A7A2A"/>
+  </g>
+
+  <!-- Leaves on main stem -->
+  <ellipse cx="35" cy="28" rx="6" ry="10" fill="#C9A84C" opacity="0.5" transform="rotate(-40, 35, 28)"/>
+  <ellipse cx="52" cy="44" rx="5" ry="9" fill="#C9A84C" opacity="0.45" transform="rotate(-20, 52, 44)"/>
+  <ellipse cx="66" cy="60" rx="4" ry="8" fill="#C9A84C" opacity="0.4" transform="rotate(10, 66, 60)"/>
+  
+  <!-- Tiny accent dots -->
+  <circle cx="42" cy="20" r="1.5" fill="#E8C97A" opacity="0.7"/>
+  <circle cx="62" cy="36" r="1.5" fill="#E8C97A" opacity="0.7"/>
+  <circle cx="74" cy="52" r="1" fill="#E8C97A" opacity="0.6"/>
+</svg>

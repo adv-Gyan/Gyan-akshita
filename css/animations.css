@@ -1,0 +1,105 @@
+/* ============================================================
+   ANIMATIONS CSS — Scroll reveals, hero entrance, timeline
+   ============================================================ */
+
+/* ── Reveal on scroll base state ─────────────────────────── */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(30px);
+  transition:
+    opacity 0.7s var(--ease-smooth),
+    transform 0.7s var(--ease-smooth);
+}
+
+.reveal-on-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger delay helpers */
+.reveal-on-scroll.delay-1 { transition-delay: 0.1s; }
+.reveal-on-scroll.delay-2 { transition-delay: 0.2s; }
+.reveal-on-scroll.delay-3 { transition-delay: 0.3s; }
+.reveal-on-scroll.delay-4 { transition-delay: 0.4s; }
+
+/* ── Hero entrance animations ────────────────────────────── */
+.animate-hero {
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 0.8s var(--ease-smooth),
+    transform 0.8s var(--ease-smooth);
+}
+
+.animate-hero.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger each hero element */
+.hero-monogram.animate-hero   { transition-delay: 0.1s; }
+.hero-names.animate-hero      { transition-delay: 0.3s; }
+.hero-and.animate-hero        { transition-delay: 0.2s; }
+.hero-divider.animate-hero    { transition-delay: 0.45s; }
+.hero-invite-line.animate-hero { transition-delay: 0.55s; }
+.hero-date.animate-hero       { transition-delay: 0.7s; }
+.scroll-indicator.animate-hero { transition-delay: 1s; }
+
+/* ── Event card slide-in ─────────────────────────────────── */
+.event-item {
+  opacity: 0;
+  transform: translateY(40px);
+  transition:
+    opacity 0.7s var(--ease-smooth),
+    transform 0.7s var(--ease-smooth);
+}
+
+.event-item.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger by index (set via JS style) */
+.event-item:nth-child(1) { transition-delay: 0s; }
+.event-item:nth-child(2) { transition-delay: 0.15s; }
+.event-item:nth-child(3) { transition-delay: 0.3s; }
+
+/* ── Countdown flip effect on number change ──────────────── */
+@keyframes cdFlip {
+  0%   { transform: translateY(-6px); opacity: 0.5; }
+  100% { transform: translateY(0);    opacity: 1; }
+}
+
+.countdown-number.ticking {
+  animation: cdFlip 0.25s var(--ease-smooth);
+}
+
+/* ── Pulse animations ────────────────────────────────────── */
+@keyframes goldPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(201,168,76,0.3); }
+  50%       { box-shadow: 0 0 0 8px rgba(201,168,76,0); }
+}
+
+.event-dot { animation: goldPulse 2.5s ease-in-out infinite; }
+
+/* ── Section fade in from below ──────────────────────────── */
+@keyframes fadeUpIn {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Reduced motion overrides ────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .reveal-on-scroll,
+  .animate-hero,
+  .event-item {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .countdown-number.ticking { animation: none; }
+  .event-dot { animation: none; }
+  .scroll-indicator { animation: none; }
+  .tap-hint { animation: none; }
+}

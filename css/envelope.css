@@ -1,0 +1,241 @@
+/* ============================================================
+   ENVELOPE CSS — Photorealistic image-based envelope
+   AI-generated envelope photos + GSAP animation
+   ============================================================ */
+
+/* ── Global reset ─────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+  background: #0A0303;
+}
+
+body.invite-open {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* ── Envelope Scene (full screen container) ──────────────── */
+#envelope-scene {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-overlay);
+  overflow: hidden;
+  touch-action: none;
+
+  /* Dark moody background that matches the envelope photo bg */
+  background: #0D0404;
+}
+
+/* ── ENVELOPE WRAPPER ─────────────────────────────────────── */
+#envelope {
+  position: relative;
+  /* Fill most of the viewport — like holding a real envelope */
+  width: min(88vw, 420px);
+  aspect-ratio: 3/4;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+
+  /* Realistic shadow as if sitting on a surface */
+  filter:
+    drop-shadow(0 4px 8px rgba(0,0,0,0.3))
+    drop-shadow(0 16px 40px rgba(0,0,0,0.5))
+    drop-shadow(0 32px 80px rgba(0,0,0,0.4));
+
+  /* Smooth hover lift */
+  transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@media (hover: hover) {
+  #envelope:hover {
+    transform: translateY(-4px);
+  }
+}
+
+#envelope:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 10px;
+  border-radius: 6px;
+}
+
+/* ── Envelope photos (the visual) ────────────────────────── */
+.env-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+/* Closed envelope — visible by default */
+.env-photo-closed {
+  z-index: 2;
+  opacity: 1;
+}
+
+/* Open envelope — hidden initially, fades in during animation */
+.env-photo-open {
+  z-index: 1;
+  opacity: 0;
+}
+
+/* ── Invitation card (slides up from envelope) ───────────── */
+.env-card {
+  position: absolute;
+  z-index: 3;
+  /* Positioned inside the envelope, centered */
+  left: 12%;
+  right: 12%;
+  bottom: 15%;
+  height: 50%;
+  border-radius: 4px;
+
+  /* Ivory/cream card with gold accents */
+  background: linear-gradient(
+    180deg,
+    #FBF7EE 0%,
+    #F4EDD8 50%,
+    #EDE4C8 100%
+  );
+  border: 1px solid rgba(201,168,76,0.35);
+
+  /* Subtle paper shadow */
+  box-shadow:
+    0 4px 20px rgba(0,0,0,0.3),
+    0 1px 4px rgba(0,0,0,0.2),
+    inset 0 0 30px rgba(201,168,76,0.04);
+
+  /* Initially hidden inside envelope */
+  opacity: 0;
+  transform: translateY(40px);
+  pointer-events: none;
+}
+
+.env-card-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 12px;
+  padding: 20px 16px;
+  text-align: center;
+
+  /* Inner gold border frame */
+  border: 1px solid rgba(201,168,76,0.2);
+  border-radius: 3px;
+  margin: 6px;
+  height: calc(100% - 12px);
+}
+
+.env-card-label {
+  font-family: var(--font-body);
+  font-size: 0.6rem;
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #7B6B4A;
+}
+
+.env-card-names {
+  font-family: var(--font-script);
+  font-size: clamp(1.4rem, 5vw, 2rem);
+  color: #3D1A08;
+  line-height: 1.2;
+}
+
+.env-card-date {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 300;
+  letter-spacing: 0.25em;
+  color: #9A7A2A;
+  text-transform: uppercase;
+}
+
+/* ── TAP HINT ─────────────────────────────────────────────── */
+.tap-hint {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 28px;
+  animation: hintPulse 2.8s ease-in-out infinite;
+}
+
+.tap-hint-line {
+  display: block;
+  width: 32px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(201,168,76,0.45));
+}
+
+.tap-hint-line:last-child {
+  background: linear-gradient(90deg, rgba(201,168,76,0.45), transparent);
+}
+
+.tap-hint-text {
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  font-weight: 300;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(201,168,76,0.6);
+}
+
+@keyframes hintPulse {
+  0%, 100% { opacity: 0.5; transform: translateY(0); }
+  50%       { opacity: 1;   transform: translateY(5px); }
+}
+
+/* ── SOUND TOGGLE ─────────────────────────────────────────── */
+.sound-toggle {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: var(--z-ui);
+  background: rgba(139,26,26,0.15);
+  border: 1px solid rgba(201,168,76,0.3);
+  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--color-gold);
+  font-size: 1rem;
+  transition: background 0.2s, border-color 0.2s;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.sound-toggle:hover {
+  background: rgba(139,26,26,0.3);
+  border-color: var(--color-gold);
+}
+
+.sound-toggle.hidden { display: none; }
+.sound-icon.hidden   { display: none; }
+
+/* ── Reduced motion ───────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .tap-hint { animation: none; opacity: 0.7; }
+}

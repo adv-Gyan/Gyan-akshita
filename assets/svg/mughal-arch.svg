@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" fill="none">
+  <!-- Mughal pointed arch frame for hero section -->
+  
+  <!-- Outer decorative border -->
+  <rect x="4" y="4" width="392" height="552" rx="2" 
+        stroke="#C9A84C" stroke-width="1.5" stroke-dasharray="6 3" fill="none" opacity="0.6"/>
+  
+  <!-- Corner ornaments -->
+  <!-- Top-left -->
+  <g opacity="0.9">
+    <circle cx="18" cy="18" r="5" fill="#C9A84C" opacity="0.8"/>
+    <line x1="18" y1="24" x2="18" y2="40" stroke="#C9A84C" stroke-width="1"/>
+    <line x1="24" y1="18" x2="40" y2="18" stroke="#C9A84C" stroke-width="1"/>
+    <path d="M24 24 Q32 24 32 32" stroke="#C9A84C" stroke-width="0.8" fill="none"/>
+  </g>
+  <!-- Top-right -->
+  <g opacity="0.9">
+    <circle cx="382" cy="18" r="5" fill="#C9A84C" opacity="0.8"/>
+    <line x1="382" y1="24" x2="382" y2="40" stroke="#C9A84C" stroke-width="1"/>
+    <line x1="376" y1="18" x2="360" y2="18" stroke="#C9A84C" stroke-width="1"/>
+    <path d="M376 24 Q368 24 368 32" stroke="#C9A84C" stroke-width="0.8" fill="none"/>
+  </g>
+  <!-- Bottom-left -->
+  <g opacity="0.9">
+    <circle cx="18" cy="542" r="5" fill="#C9A84C" opacity="0.8"/>
+    <line x1="18" y1="536" x2="18" y2="520" stroke="#C9A84C" stroke-width="1"/>
+    <line x1="24" y1="542" x2="40" y2="542" stroke="#C9A84C" stroke-width="1"/>
+    <path d="M24 536 Q32 536 32 528" stroke="#C9A84C" stroke-width="0.8" fill="none"/>
+  </g>
+  <!-- Bottom-right -->
+  <g opacity="0.9">
+    <circle cx="382" cy="542" r="5" fill="#C9A84C" opacity="0.8"/>
+    <line x1="382" y1="536" x2="382" y2="520" stroke="#C9A84C" stroke-width="1"/>
+    <line x1="376" y1="542" x2="360" y2="542" stroke="#C9A84C" stroke-width="1"/>
+    <path d="M376 536 Q368 536 368 528" stroke="#C9A84C" stroke-width="0.8" fill="none"/>
+  </g>
+
+  <!-- Main Mughal arch path -->
+  <!-- Arch shape: rectangular bottom, pointed arch top -->
+  <path d="
+    M 60 480
+    L 60 220
+    Q 60 100 200 60
+    Q 340 100 340 220
+    L 340 480
+    Z
+  " 
+  stroke="#C9A84C" stroke-width="2" fill="none" opacity="0.9"/>
+  
+  <!-- Inner arch (parallel) -->
+  <path d="
+    M 74 475
+    L 74 224
+    Q 74 116 200 78
+    Q 326 116 326 224
+    L 326 475
+    Z
+  " 
+  stroke="#C9A84C" stroke-width="0.8" fill="none" opacity="0.5"/>
+  
+  <!-- Arch keystone ornament at top -->
+  <ellipse cx="200" cy="62" rx="12" ry="8" fill="#C9A84C" opacity="0.9"/>
+  <ellipse cx="200" cy="62" rx="8" ry="5" fill="#1A0808"/>
+  <circle cx="200" cy="62" r="3" fill="#C9A84C" opacity="0.9"/>
+  
+  <!-- Jali lattice pattern in arch spandrels (left) -->
+  <g opacity="0.35" stroke="#C9A84C" stroke-width="0.6">
+    <!-- left spandrel dots -->
+    <circle cx="90" cy="140" r="2" fill="#C9A84C"/>
+    <circle cx="105" cy="130" r="2" fill="#C9A84C"/>
+    <circle cx="120" cy="125" r="2" fill="#C9A84C"/>
+    <circle cx="90" cy="155" r="1.5" fill="#C9A84C"/>
+    <circle cx="107" cy="148" r="1.5" fill="#C9A84C"/>
+    <line x1="90" y1="140" x2="105" y2="130"/>
+    <line x1="105" y1="130" x2="120" y2="125"/>
+    <line x1="90" y1="155" x2="107" y2="148"/>
+    <line x1="107" y1="148" x2="120" y2="125"/>
+    <line x1="90" y1="140" x2="90" y2="155"/>
+    <line x1="105" y1="130" x2="107" y2="148"/>
+  </g>
+  <!-- right spandrel -->
+  <g opacity="0.35" stroke="#C9A84C" stroke-width="0.6">
+    <circle cx="310" cy="140" r="2" fill="#C9A84C"/>
+    <circle cx="295" cy="130" r="2" fill="#C9A84C"/>
+    <circle cx="280" cy="125" r="2" fill="#C9A84C"/>
+    <circle cx="310" cy="155" r="1.5" fill="#C9A84C"/>
+    <circle cx="293" cy="148" r="1.5" fill="#C9A84C"/>
+    <line x1="310" y1="140" x2="295" y2="130"/>
+    <line x1="295" y1="130" x2="280" y2="125"/>
+    <line x1="310" y1="155" x2="293" y2="148"/>
+    <line x1="293" y1="148" x2="280" y2="125"/>
+    <line x1="310" y1="140" x2="310" y2="155"/>
+    <line x1="295" y1="130" x2="293" y2="148"/>
+  </g>
+
+  <!-- Bottom arch pillars detail -->
+  <line x1="60" y1="460" x2="340" y2="460" stroke="#C9A84C" stroke-width="0.8" opacity="0.4"/>
+  
+  <!-- Small floral motifs on arch sides -->
+  <!-- Left side mid -->
+  <g transform="translate(52, 310)" opacity="0.7">
+    <circle cx="0" cy="0" r="4" fill="none" stroke="#C9A84C" stroke-width="1"/>
+    <circle cx="0" cy="0" r="1.5" fill="#C9A84C"/>
+    <line x1="-6" y1="0" x2="6" y2="0" stroke="#C9A84C" stroke-width="0.6"/>
+    <line x1="0" y1="-6" x2="0" y2="6" stroke="#C9A84C" stroke-width="0.6"/>
+  </g>
+  <!-- Right side mid -->
+  <g transform="translate(348, 310)" opacity="0.7">
+    <circle cx="0" cy="0" r="4" fill="none" stroke="#C9A84C" stroke-width="1"/>
+    <circle cx="0" cy="0" r="1.5" fill="#C9A84C"/>
+    <line x1="-6" y1="0" x2="6" y2="0" stroke="#C9A84C" stroke-width="0.6"/>
+    <line x1="0" y1="-6" x2="0" y2="6" stroke="#C9A84C" stroke-width="0.6"/>
+  </g>
+</svg>

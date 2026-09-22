@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#120505" />
+  <meta name="description" content="You are cordially invited to the wedding of Akshita & Gyanendra — 21 November 2026" />
+  <title>Akshita & Gyanendra · Wedding Invitation</title>
+
+  <!-- Preconnect for fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/envelope.css" />
+  <link rel="stylesheet" href="css/invitation.css" />
+  <link rel="stylesheet" href="css/sections.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+</head>
+
+<body>
+
+  <!-- ════════════════════════════════════════════════════════
+       SCREEN 1 — ENVELOPE (Full-screen lock)
+  ════════════════════════════════════════════════════════ -->
+  <div id="envelope-scene" role="main" aria-label="Wedding invitation envelope">
+
+    <!-- THE ENVELOPE — Image based -->
+    <div id="envelope"
+         tabindex="0"
+         role="button"
+         aria-label="Tap to open your wedding invitation"
+         aria-pressed="false">
+
+      <!-- Closed envelope photo (visible initially) -->
+      <img id="env-img-closed"
+           src="assets/images/envelope-closed.jpg"
+           alt="Closed wedding invitation envelope"
+           class="env-photo env-photo-closed"
+           draggable="false" />
+
+      <!-- Open envelope photo (fades in on tap) -->
+      <img id="env-img-open"
+           src="assets/images/envelope-open.jpg"
+           alt="Open wedding invitation envelope"
+           class="env-photo env-photo-open"
+           draggable="false" />
+
+      <!-- Invitation card (slides up from inside) -->
+      <div id="env-card" class="env-card" aria-hidden="true">
+        <div class="env-card-inner">
+          <p class="env-card-label">You are cordially invited</p>
+          <p class="env-card-names">Akshita & Gyanendra</p>
+          <p class="env-card-date">21 · November · 2026</p>
+        </div>
+      </div>
+
+    </div><!-- /#envelope -->
+
+    <!-- Tap hint -->
+    <div class="tap-hint" aria-hidden="true">
+      <span class="tap-hint-line"></span>
+      <span class="tap-hint-text">Tap to reveal</span>
+      <span class="tap-hint-line"></span>
+    </div>
+
+    <!-- Sound toggle (visible after interaction) -->
+    <button id="sound-toggle"
+            class="sound-toggle hidden"
+            aria-label="Toggle background music"
+            title="Toggle music">
+      <span class="sound-icon sound-on">♪</span>
+      <span class="sound-icon sound-off hidden">♪̶</span>
+    </button>
+
+  </div><!-- /#envelope-scene -->
+
+
+  <!-- ════════════════════════════════════════════════════════
+       SCREEN 2 — MAIN WEDDING INVITATION
+  ════════════════════════════════════════════════════════ -->
+  <div id="main-invite" aria-hidden="true">
+
+    <!-- ── SECTION: HERO ─────────────────────────────────── -->
+    <section id="section-hero" class="section section-hero" aria-labelledby="hero-names">
+
+      <!-- Background image -->
+      <div class="hero-bg" style="background-image: url('assets/images/hero-bg.jpg');" aria-hidden="true"></div>
+      <div class="hero-overlay" aria-hidden="true"></div>
+
+      <!-- Corner ornaments -->
+      <div class="corner-ornament corner-tl" aria-hidden="true"></div>
+      <div class="corner-ornament corner-tr" aria-hidden="true"></div>
+      <div class="corner-ornament corner-bl" aria-hidden="true"></div>
+      <div class="corner-ornament corner-br" aria-hidden="true"></div>
+
+      <!-- Mughal arch frame container -->
+      <div class="hero-arch-frame" aria-hidden="true">
+        <img src="assets/svg/mughal-arch.svg" alt="" class="hero-arch-svg" />
+      </div>
+
+      <!-- Hero content (inside arch) -->
+      <div class="hero-content">
+        <div class="hero-monogram animate-hero" aria-hidden="true">A &amp; G</div>
+
+        <h1 class="hero-names animate-hero" id="hero-names">
+          <span class="hero-name hero-bride">Akshita</span>
+          <span class="hero-and animate-hero">&amp;</span>
+          <span class="hero-name hero-groom">Gyanendra</span>
+        </h1>
+
+        <div class="hero-divider animate-hero" aria-hidden="true">
+          <img src="assets/svg/section-divider.svg" alt="" />
+        </div>
+
+        <p class="hero-invite-line animate-hero">
+          Together with their families<br/>
+          <em>invite you to celebrate their union</em>
+        </p>
+
+        <div class="hero-date animate-hero" aria-label="Wedding date: 21 November 2026">
+          <span class="hero-date-text">21 · November · 2026</span>
+        </div>
+      </div>
+
+      <!-- Scroll indicator -->
+      <div class="scroll-indicator animate-hero" aria-hidden="true">
+        <span class="scroll-line"></span>
+        <span class="scroll-label">Scroll to explore</span>
+      </div>
+
+    </section>
+
+
+    <!-- ── SECTION: COUPLE PHOTO ──────────────────────────── -->
+    <section id="section-photo" class="section section-photo" aria-label="Couple photograph">
+      <div class="section-inner">
+        <div class="photo-frame-wrapper reveal-on-scroll">
+          <!-- Mughal arch photo frame border -->
+          <div class="photo-mughal-frame">
+            <img src="assets/images/couple.jpg"
+                 alt="Akshita and Gyanendra"
+                 class="couple-photo"
+                 loading="lazy"
+                 onerror="this.parentElement.parentElement.classList.add('photo-placeholder')" />
+            <div class="photo-frame-overlay" aria-hidden="true"></div>
+          </div>
+          <!-- Photo caption -->
+          <div class="photo-caption reveal-on-scroll">
+            <img src="assets/svg/section-divider.svg" alt="" class="caption-divider" />
+            <p class="photo-names">Akshita &amp; Gyanendra</p>
+            <img src="assets/svg/section-divider.svg" alt="" class="caption-divider" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ── SECTION: MESSAGE ───────────────────────────────── -->
+    <section id="section-message" class="section section-message" aria-labelledby="message-heading">
+      <div class="section-inner">
+        <div class="message-card reveal-on-scroll">
+          <div class="message-quote-mark" aria-hidden="true">"</div>
+          <p class="message-verse" id="message-heading">Two souls, one destiny.</p>
+          <p class="message-body">
+            With hearts full of joy and gratitude, we invite you to be a cherished
+            part of our celebration. Your presence will make our special day truly
+            unforgettable. We look forward to sharing this beautiful journey with you.
+          </p>
+          <div class="message-closing">
+            <img src="assets/svg/section-divider.svg" alt="" class="caption-divider" />
+            <span class="message-closing-text">With love,</span>
+            <span class="message-sig">Akshita &amp; Gyanendra</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ── SECTION: MARK YOUR CALENDAR (EVENTS) ──────────── -->
+    <section id="section-events" class="section section-events" aria-labelledby="events-heading">
+      <div class="section-inner">
+
+        <div class="section-header reveal-on-scroll">
+          <img src="assets/svg/section-divider.svg" alt="" />
+          <h2 class="section-title" id="events-heading">Mark Your Calendar</h2>
+          <img src="assets/svg/section-divider.svg" alt="" />
+        </div>
+
+        <!-- Timeline track -->
+        <div class="timeline-track" aria-label="Wedding events timeline">
+          <div class="timeline-line" aria-hidden="true">
+            <div class="timeline-line-fill" id="timeline-fill"></div>
+          </div>
+
+          <!-- Events are injected here by JS from config.js -->
+          <div id="events-container" class="events-container"></div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ── SECTION: COUNTDOWN ────────────────────────────── -->
+    <section id="section-countdown" class="section section-countdown" aria-labelledby="countdown-heading">
+      <div class="section-inner">
+        <div class="section-header reveal-on-scroll">
+          <img src="assets/svg/section-divider.svg" alt="" />
+          <h2 class="section-title" id="countdown-heading">The Wedding Begins In</h2>
+          <img src="assets/svg/section-divider.svg" alt="" />
+        </div>
+        <div class="countdown-grid reveal-on-scroll" id="countdown-grid" aria-live="polite" aria-label="Countdown to wedding">
+          <div class="countdown-unit">
+            <div class="countdown-number" id="cd-days">00</div>
+            <div class="countdown-label">Days</div>
+          </div>
+          <div class="countdown-sep" aria-hidden="true">·</div>
+          <div class="countdown-unit">
+            <div class="countdown-number" id="cd-hours">00</div>
+            <div class="countdown-label">Hours</div>
+          </div>
+          <div class="countdown-sep" aria-hidden="true">·</div>
+          <div class="countdown-unit">
+            <div class="countdown-number" id="cd-minutes">00</div>
+            <div class="countdown-label">Minutes</div>
+          </div>
+          <div class="countdown-sep" aria-hidden="true">·</div>
+          <div class="countdown-unit">
+            <div class="countdown-number" id="cd-seconds">00</div>
+            <div class="countdown-label">Seconds</div>
+          </div>
+        </div>
+        <p class="countdown-date-label reveal-on-scroll">21 · November · 2026</p>
+      </div>
+    </section>
+
+
+    <!-- ── SECTION: VENUE ────────────────────────────────── -->
+    <section id="section-venue" class="section section-venue" aria-labelledby="venue-heading">
+      <div class="section-inner">
+        <div class="section-header reveal-on-scroll">
+          <img src="assets/svg/section-divider.svg" alt="" />
+          <h2 class="section-title" id="venue-heading">Find Us</h2>
+          <img src="assets/svg/section-divider.svg" alt="" />
+        </div>
+        <div class="venue-card reveal-on-scroll">
+          <div class="venue-info">
+            <p class="venue-name" id="venue-name-display">Venue TBD</p>
+            <p class="venue-address" id="venue-address-display">Address will be updated soon</p>
+          </div>
+          <div class="venue-map-wrap" id="venue-map-wrap">
+            <!-- Map iframe injected by JS if embedUrl is set -->
+            <div class="venue-map-placeholder">
+              <span>📍</span>
+              <p>Map loading...</p>
+            </div>
+          </div>
+          <a href="#" id="venue-directions-btn"
+             class="btn btn-gold"
+             target="_blank"
+             rel="noopener noreferrer"
+             aria-label="Get directions to the venue">
+            Get Directions ↗
+          </a>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ── SECTION: RSVP ─────────────────────────────────── -->
+    <section id="section-rsvp" class="section section-rsvp" aria-labelledby="rsvp-heading">
+      <div class="section-inner">
+        <div class="section-header reveal-on-scroll">
+          <img src="assets/svg/section-divider.svg" alt="" />
+          <h2 class="section-title" id="rsvp-heading">Will You Join Us?</h2>
+          <p class="section-subtitle">Kindly respond by 10 November 2026</p>
+          <img src="assets/svg/section-divider.svg" alt="" />
+        </div>
+
+        <form id="rsvp-form" class="rsvp-form reveal-on-scroll" novalidate aria-label="RSVP form">
+          <div class="form-group">
+            <label for="rsvp-name" class="form-label">Your Name</label>
+            <input type="text" id="rsvp-name" name="name"
+                   class="form-input" placeholder="Full name" required
+                   autocomplete="name" />
+          </div>
+
+          <div class="form-group">
+            <label for="rsvp-guests" class="form-label">Number of Guests</label>
+            <input type="number" id="rsvp-guests" name="guests"
+                   class="form-input" placeholder="Including yourself"
+                   min="1" max="10" value="1" />
+          </div>
+
+          <fieldset class="form-group form-fieldset">
+            <legend class="form-label">Will you be attending?</legend>
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="attending" value="yes" checked />
+                <span class="radio-custom"></span>
+                <span class="radio-text">Joyfully accept 🎉</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="attending" value="no" />
+                <span class="radio-custom"></span>
+                <span class="radio-text">Regretfully decline</span>
+              </label>
+            </div>
+          </fieldset>
+
+          <div class="form-group" id="meal-group">
+            <label for="rsvp-meal" class="form-label">Meal Preference</label>
+            <select id="rsvp-meal" name="meal" class="form-input form-select">
+              <option value="veg">🌿 Vegetarian</option>
+              <option value="nonveg">🍗 Non-Vegetarian</option>
+              <option value="jain">🙏 Jain</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="rsvp-message" class="form-label">Your Wishes (optional)</label>
+            <textarea id="rsvp-message" name="message"
+                      class="form-input form-textarea"
+                      rows="3"
+                      placeholder="Share your blessings for the couple…"></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-gold btn-full" id="rsvp-submit">
+            Send RSVP ✦
+          </button>
+        </form>
+
+        <!-- Success message -->
+        <div id="rsvp-success" class="rsvp-success hidden" role="alert" aria-live="assertive">
+          <div class="success-icon">✦</div>
+          <h3 class="success-heading">Thank You!</h3>
+          <p class="success-text">Your RSVP has been received. We look forward to celebrating with you!</p>
+          <p class="success-sig">— Akshita &amp; Gyanendra</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── FOOTER ─────────────────────────────────────────── -->
+    <footer class="site-footer" aria-label="Site footer">
+      <img src="assets/svg/section-divider.svg" alt="" />
+      <p class="footer-monogram">A &amp; G</p>
+      <p class="footer-date">21 · November · 2026</p>
+      <p class="footer-text">Made with love · See you there</p>
+    </footer>
+
+  </div><!-- /#main-invite -->
+
+
+  <!-- ── SCRIPTS ─────────────────────────────────────────── -->
+  <!-- GSAP CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+  <!-- Wedding scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/envelope.js" defer></script>
+  <script src="js/scroll-animations.js" defer></script>
+  <script src="js/countdown.js" defer></script>
+  <script src="js/rsvp.js" defer></script>
+  <script src="js/sound.js" defer></script>
+
+</body>
+</html>
