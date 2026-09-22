@@ -110,11 +110,26 @@ window.ScrollAnimations = (function () {
     const invite = qs('.hero-invite-line', hero);
     const date = qs('.hero-date', hero);
     const cue = qs('.scroll-indicator', hero);
+    const dateText = qs('.hero-date-text', hero);
+
+    if (dateText && !dateText.dataset.splitLetters) {
+      const text = dateText.textContent;
+      dateText.textContent = '';
+      Array.from(text).forEach((char) => {
+        const span = document.createElement('span');
+        span.className = char === ' ' ? 'date-letter date-space' : 'date-letter';
+        span.textContent = char;
+        dateText.appendChild(span);
+      });
+      dateText.dataset.splitLetters = 'true';
+    }
+    const dateLetters = dateText ? qsa('.date-letter', dateText) : [];
 
     gsap.set([monogram, bride, groom, amp, divider, invite, date, cue], { opacity: 0, y: 18, filter: 'blur(7px)' });
     gsap.set(bride, { x: -90 });
     gsap.set(groom, { x: 90 });
     gsap.set(amp, { y: 0, scale: .35 });
+    gsap.set(dateLetters, { opacity: 0, y: 8, filter: 'blur(3px)' });
     gsap.set(arch, { scale: .82, opacity: 0 });
 
     gsap.timeline({ defaults: { ease: 'power3.out' } })
@@ -123,9 +138,11 @@ window.ScrollAnimations = (function () {
       .to(bride, { opacity: 1, x: 0, filter: 'blur(0)', duration: .8 }, '-=.3')
       .to(groom, { opacity: 1, x: 0, filter: 'blur(0)', duration: .8 }, '<')
       .to(amp, { opacity: 1, scale: 1, filter: 'blur(0)', duration: .55, ease: 'back.out(1.7)' }, '-=.35')
+      .to(amp, { textShadow: '0 0 8px rgba(255,245,201,.9), 0 0 24px rgba(201,168,76,.55)', duration: .28, yoyo: true, repeat: 1 }, '-=.15')
       .to(divider, { opacity: 1, y: 0, filter: 'blur(0)', duration: .5 }, '-=.2')
       .to(invite, { opacity: 1, y: 0, filter: 'blur(0)', duration: .55 }, '-=.18')
-      .to(date, { opacity: 1, y: 0, filter: 'blur(0)', duration: .6 }, '-=.12')
+      .to(date, { opacity: 1, y: 0, filter: 'blur(0)', duration: .3 }, '-=.12')
+      .to(dateLetters, { opacity: 1, y: 0, filter: 'blur(0)', duration: .08, stagger: .055, ease: 'power2.out' }, '-=.05')
       .to(cue, { opacity: 1, y: 0, filter: 'blur(0)', duration: .45 }, '-=.1');
 
     if (bg) gsap.to(bg, {
@@ -146,6 +163,10 @@ window.ScrollAnimations = (function () {
     if (!section || !frame || !canAnimate()) return;
 
     gsap.set(frame, { clipPath: 'circle(0% at 50% 55%)', opacity: 0, scale: .96 });
+    const frameBorder = frame;
+    const vignette = qs('.photo-frame-overlay', frame);
+    if (frameBorder) gsap.set(frameBorder, { '--frame-draw': 0 });
+    if (vignette) gsap.set(vignette, { opacity: .15 });
     gsap.set(caption, { y: 28, opacity: 0, letterSpacing: '.22em' });
     if (photo) gsap.set(photo, { scale: 1.08 });
 
@@ -176,6 +197,11 @@ window.ScrollAnimations = (function () {
     gsap.set(words, { opacity: 0, y: 10, filter: 'blur(4px)' });
     gsap.set(body, { opacity: 0, y: 16, filter: 'blur(4px)' });
     gsap.set(closing, { opacity: 0, y: 16 });
+    const innerBorder = card;
+    const signature = qs('.message-sig', card);
+    const cardFrame = qs('::before', card);
+    gsap.set(card, { '--card-draw': 0 });
+    if (signature) gsap.set(signature, { clipPath: 'inset(0 100% 0 0)' });
 
     gsap.timeline({ scrollTrigger: { trigger: section, start: 'top 72%', once: true } })
       .to(card, { opacity: 1, y: 0, duration: .6, ease: 'power3.out' })
@@ -183,7 +209,8 @@ window.ScrollAnimations = (function () {
       .to(words, { opacity: 1, y: 0, filter: 'blur(0)', duration: .32, stagger: .065 }, '-=.25')
       .to(body, { opacity: 1, y: 0, filter: 'blur(0)', duration: .75 }, '-=.12')
       .to(closing, { opacity: 1, y: 0, duration: .5 }, '-=.18')
-      .to(card, { boxShadow: '0 0 34px rgba(201,168,76,.14)', duration: .35 }, '-=.1');
+      .to(signature, { clipPath: 'inset(0 0% 0 0)', duration: .75, ease: 'power2.inOut' }, '-=.25')
+      .to(card, { '--card-draw': 1, boxShadow: '0 0 34px rgba(201,168,76,.14)', duration: .35 }, '-=.1');
   }
 
   function initEvents() {
@@ -218,9 +245,21 @@ window.ScrollAnimations = (function () {
       });
     });
 
-    gsap.to(fill, {
+    const timelineTrigger = gsap.to(fill, {
       height: '100%', ease: 'none',
-      scrollTrigger: { trigger: track, start: 'top 70%', end: 'bottom 78%', scrub: true }
+      scrollTrigger: {
+        trigger: track, start: 'top 70%', end: 'bottom 78%', scrub: true,
+        onUpdate: (self) => {
+          const progress = self.progress;
+          items.forEach((item, i) => {
+            const threshold = (i + 0.5) / items.length;
+            const dot = qs('.event-dot', item);
+            if (!dot) return;
+            gsap.to(dot, { scale: progress >= threshold ? 1.12 : 1, duration: .16, overwrite: true });
+            dot.classList.toggle('timeline-reached', progress >= threshold);
+          });
+        }
+      }
     });
   }
 
@@ -228,6 +267,7 @@ window.ScrollAnimations = (function () {
     const section = qs('#section-countdown');
     const units = qsa('.countdown-unit', section);
     if (!section || !units.length || !canAnimate()) return;
+    section.style.setProperty('--countdown-pulse', '0');
 
     gsap.set(units, { opacity: 0, y: -22, scale: .96 });
     gsap.timeline({ scrollTrigger: { trigger: section, start: 'top 75%', once: true } })
