@@ -162,18 +162,25 @@ window.ScrollAnimations = (function () {
     const caption = qs('.photo-caption', section);
     if (!section || !frame || !canAnimate()) return;
 
-    gsap.set(frame, { clipPath: 'circle(0% at 50% 55%)', opacity: 0, scale: .96 });
     const frameBorder = frame;
     const vignette = qs('.photo-frame-overlay', frame);
-    if (frameBorder) gsap.set(frameBorder, { '--frame-draw': 0 });
-    if (vignette) gsap.set(vignette, { opacity: .15 });
-    gsap.set(caption, { y: 28, opacity: 0, letterSpacing: '.22em' });
-    if (photo) gsap.set(photo, { scale: 1.08 });
 
+    /* Keep content visible if ScrollTrigger is delayed/blocked. The reveal
+       animation is applied only when the section actually enters view. */
     const tl = gsap.timeline({ scrollTrigger: { trigger: section, start: 'top 72%', once: true } });
-    tl.to(frame, { clipPath: 'circle(78% at 50% 55%)', opacity: 1, scale: 1, duration: 1.15, ease: 'power3.inOut' })
+    tl.fromTo(frame,
+      { clipPath: 'circle(0% at 50% 55%)', opacity: 0, scale: .96 },
+      { clipPath: 'circle(78% at 50% 55%)', opacity: 1, scale: 1, duration: 1.15, ease: 'power3.inOut', immediateRender: false }
+    )
       .to(frame, { filter: 'drop-shadow(0 0 22px rgba(201,168,76,.32))', duration: .45 }, '-=.15')
-      .to(caption, { y: 0, opacity: 1, letterSpacing: '.08em', duration: .7 }, '-=.2');
+      .fromTo(caption,
+        { y: 28, opacity: 0, letterSpacing: '.22em' },
+        { y: 0, opacity: 1, letterSpacing: '.08em', duration: .7, immediateRender: false },
+        '-=.2'
+      );
+    if (vignette) {
+      tl.fromTo(vignette, { opacity: .15 }, { opacity: .35, duration: .45 }, '-=.25');
+    }
 
     if (photo) gsap.to(photo, {
       scale: 1.01, ease: 'none',
@@ -220,6 +227,8 @@ window.ScrollAnimations = (function () {
     const items = qsa('.event-item', section);
     if (!section || !track || !fill || !items.length || !canAnimate()) return;
 
+    /* The timeline line is the only element intentionally held at zero;
+       event cards themselves must remain readable if ScrollTrigger is late. */
     gsap.set(fill, { height: 0 });
 
     items.forEach((item, i) => {
@@ -229,15 +238,12 @@ window.ScrollAnimations = (function () {
       const dress = qs('.event-card-dresscode', item);
       const x = i % 2 === 0 ? -70 : 70;
 
-      gsap.set(card, { opacity: 0, x, y: 18 });
-      gsap.set(dot, { opacity: 0, scale: .2 });
-      if (photo) gsap.set(photo, { scale: 1.1 });
-      if (dress) gsap.set(dress, { opacity: 0, y: 8 });
-
       const tl = gsap.timeline({ scrollTrigger: { trigger: item, start: 'top 78%', once: true } });
-      tl.to(dot, { opacity: 1, scale: 1, duration: .5, ease: 'back.out(2)' })
-        .to(card, { opacity: 1, x: 0, y: 0, duration: .7, ease: 'power3.out' }, '-=.22');
-      if (dress) tl.to(dress, { opacity: 1, y: 0, duration: .35 }, '-=.18');
+      tl.fromTo(dot, { opacity: 0, scale: .2 }, { opacity: 1, scale: 1, duration: .5, ease: 'back.out(2)', immediateRender: false })
+        .fromTo(card, { opacity: 0, x, y: 18 }, { opacity: 1, x: 0, y: 0, duration: .7, ease: 'power3.out', immediateRender: false }, '-=.22');
+      if (dress) {
+        tl.fromTo(dress, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: .35, immediateRender: false }, '-=.18');
+      }
 
       if (photo) gsap.to(photo, {
         scale: 1, xPercent: 2, ease: 'none',
@@ -269,9 +275,8 @@ window.ScrollAnimations = (function () {
     if (!section || !units.length || !canAnimate()) return;
     section.style.setProperty('--countdown-pulse', '0');
 
-    gsap.set(units, { opacity: 0, y: -22, scale: .96 });
     gsap.timeline({ scrollTrigger: { trigger: section, start: 'top 75%', once: true } })
-      .to(units, {
+      .fromTo(units, { opacity: 0, y: -22, scale: .96 }, {
         opacity: 1, y: 0, scale: 1, duration: .55, stagger: .11,
         ease: 'back.out(1.4)',
         onComplete: () => qsa('.countdown-number', section).forEach(el => el.classList.add('countdown-live'))
@@ -287,16 +292,12 @@ window.ScrollAnimations = (function () {
     const button = qs('#venue-directions-btn', section);
 
     if (name) name.classList.add('gold-shimmer');
-    gsap.set([name, address], { opacity: 0, y: 16 });
-    gsap.set(map, { opacity: 0, clipPath: 'inset(0 50% 0 50% round 8px)' });
-    gsap.set(button, { opacity: 0, y: 16 });
-
     gsap.timeline({ scrollTrigger: { trigger: section, start: 'top 72%', once: true } })
-      .to(name, { opacity: 1, y: 0, duration: .65 })
+      .fromTo(name, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: .65, immediateRender: false })
       .to(name, { backgroundPosition: '-120% 0', duration: 1.05 }, '-=.3')
-      .to(address, { opacity: 1, y: 0, duration: .5 }, '-=.5')
-      .to(map, { opacity: 1, clipPath: 'inset(0 0% 0 0% round 8px)', duration: .9, ease: 'power3.inOut' }, '-=.15')
-      .to(button, { opacity: 1, y: 0, duration: .5 }, '-=.2')
+      .fromTo(address, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: .5, immediateRender: false }, '-=.5')
+      .fromTo(map, { opacity: 0, clipPath: 'inset(0 50% 0 50% round 8px)' }, { opacity: 1, clipPath: 'inset(0 0% 0 0% round 8px)', duration: .9, ease: 'power3.inOut', immediateRender: false }, '-=.15')
+      .fromTo(button, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: .5, immediateRender: false }, '-=.2')
       .call(() => button && button.classList.add('venue-directions-ready'));
   }
 
