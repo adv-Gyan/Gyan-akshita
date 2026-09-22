@@ -62,7 +62,7 @@ body.invite-open #gold-particles{opacity:.7}
 }
 
 /* Venue curtain reveal */
-.venue-map-wrap{clip-path:inset(0 50% 0 50% round var(--radius-md));}
+
 .venue-directions-ready{animation:directionGlow 2.5s ease-in-out infinite;}
 @keyframes directionGlow{
   0%,100%{box-shadow:0 4px 16px rgba(201,168,76,.25)}
