@@ -136,3 +136,13 @@ body.invite-open #gold-particles{opacity:.72;}
  .message-card::after,.photo-mughal-frame::before{clip-path:none!important}
  #section-countdown::before{display:none}
 }
+
+
+/* Stronger but restrained countdown choreography */
+.countdown-unit{will-change:transform,opacity,filter;}
+.countdown-live-unit .countdown-number{box-shadow:0 0 0 rgba(201,168,76,.05);}
+@keyframes countdownUnitGlow{
+  0%,100%{transform:translateY(0);box-shadow:0 0 0 rgba(201,168,76,.04);}
+  50%{transform:translateY(-1px);box-shadow:0 0 24px rgba(201,168,76,.18);}
+}
+.countdown-live-unit .countdown-number{animation:countdownUnitGlow 2.4s ease-in-out infinite;}
