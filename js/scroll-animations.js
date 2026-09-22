@@ -282,15 +282,45 @@ window.ScrollAnimations = (function () {
 
   function initCountdown() {
     const section = qs('#section-countdown');
+    const grid = qs('.countdown-grid', section);
     const units = qsa('.countdown-unit', section);
-    if (!section || !units.length || !canAnimate()) return;
-    section.style.setProperty('--countdown-pulse', '0');
+    const separators = qsa('.countdown-sep', section);
+    if (!section || !grid || !units.length || !canAnimate()) return;
 
-    gsap.timeline({ scrollTrigger: { trigger: section, start: 'top 75%', once: true } })
-      .fromTo(units, { opacity: 0, y: -22, scale: .96 }, {
-        opacity: 1, y: 0, scale: 1, duration: .55, stagger: .11,
-        ease: 'back.out(1.4)',
-        onComplete: () => qsa('.countdown-number', section).forEach(el => el.classList.add('countdown-live'))
+    section.style.setProperty('--pulse-opacity', '0.035');
+
+    const tl = gsap.timeline({
+      scrollTrigger: { trigger: section, start: 'top 78%', once: true }
+    });
+
+    tl.fromTo(grid,
+      { opacity: 0, scale: .94 },
+      { opacity: 1, scale: 1, duration: .45, ease: 'power2.out', immediateRender: false }
+    )
+      .fromTo(units,
+        { opacity: 0, y: 34, scale: .88, filter: 'blur(5px)' },
+        {
+          opacity: 1, y: 0, scale: 1, filter: 'blur(0)',
+          duration: .65, stagger: .13, ease: 'back.out(1.5)',
+          immediateRender: false
+        },
+        '-=.2'
+      )
+      .fromTo(separators,
+        { opacity: 0, scale: .4, y: 12 },
+        { opacity: .45, scale: 1, y: 0, duration: .35, stagger: .08, ease: 'back.out(1.8)', immediateRender: false },
+        '-=.35'
+      )
+      .to(section, {
+        '--pulse-opacity': .14,
+        duration: .28,
+        yoyo: true,
+        repeat: 1,
+        ease: 'power2.out'
+      }, '-=.15')
+      .add(() => {
+        qsa('.countdown-number', section).forEach(el => el.classList.add('countdown-live'));
+        units.forEach(el => el.classList.add('countdown-live-unit'));
       });
   }
 
