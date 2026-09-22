@@ -338,18 +338,14 @@ window.ScrollAnimations = (function () {
       header.style.transform = 'none';
     }
 
+    /* RSVP is deliberately not hidden for its entrance animation. It remains
+       usable on Safari and when ScrollTrigger/CDN loading is delayed. */
     if (!canAnimate()) return;
-
-    gsap.timeline({ scrollTrigger: { trigger: section, start: 'top 82%', once: true } })
-      .fromTo(header,
-        { opacity: 0, y: 24 },
-        { opacity: 1, y: 0, duration: .65, ease: 'power3.out', immediateRender: false }
-      )
-      .fromTo(form,
-        { opacity: 0, y: 30 },
-        { opacity: 1, y: 0, duration: .8, ease: 'power3.out', immediateRender: false },
-        '-=.35'
-      );
+    gsap.fromTo(section,
+      { y: 18 },
+      { y: 0, duration: .65, ease: 'power3.out', immediateRender: false,
+        scrollTrigger: { trigger: section, start: 'top 88%', once: true } }
+    );
   }
 
   function initVenue() {
