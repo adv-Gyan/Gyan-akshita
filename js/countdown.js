@@ -13,7 +13,13 @@ function update(){
  if(diff<=0){[daysEl,hoursEl,minsEl,secsEl].forEach(e=>e&&(e.textContent='00'));const l=document.querySelector('.countdown-date-label');if(l)l.textContent='🎉 Today is the day!';return}
  const v={d:pad(Math.floor(diff/86400000)),h:pad(Math.floor(diff%86400000/3600000)),m:pad(Math.floor(diff%3600000/60000)),s:pad(Math.floor(diff%60000/1000))},e={d:daysEl,h:hoursEl,m:minsEl,s:secsEl};
  Object.keys(v).forEach(k=>{if(e[k]&&v[k]!==last[k]){e[k].textContent=v[k];tick(e[k]);last[k]=v[k]}});
- if(grid&&Number(v.s)%2===0&&typeof gsap!=='undefined'&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches)gsap.to(grid,{scale:1.003,duration:.18,yoyo:true,repeat:1,overwrite:true,ease:'power2.out'});
+ if(grid&&typeof gsap!=='undefined'&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+   const section=grid.closest('#section-countdown');
+   if(section){
+     gsap.fromTo(section,{ '--pulse-opacity': 0.035 },{ '--pulse-opacity': 0.12,duration:.22,yoyo:true,repeat:1,overwrite:true,ease:'power2.out' });
+   }
+   gsap.to(grid,{scale:1.003,duration:.18,yoyo:true,repeat:1,overwrite:true,ease:'power2.out'});
+ }
 }
 update();setInterval(update,1000);
 })();
