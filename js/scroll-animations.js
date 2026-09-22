@@ -300,6 +300,58 @@ window.ScrollAnimations = (function () {
       .call(() => button && button.classList.add('venue-directions-ready'));
   }
 
+  async function inlineAndAnimateDividers() {
+    const images = qsa('.section-header img, .caption-divider, .hero-divider img, .site-footer > img');
+    if (!images.length) return;
+    const seen = {};
+    for (const img of images) {
+      const src = img.getAttribute('src');
+      if (!src || seen[src] === false) continue;
+      try {
+        let svgText = seen[src];
+        if (!svgText) {
+          const response = await fetch(src);
+          if (!response.ok) throw new Error('divider fetch failed');
+          svgText = await response.text();
+          seen[src] = svgText;
+        }
+        const holder = document.createElement('div');
+        holder.innerHTML = svgText.trim();
+        const svg = holder.firstElementChild;
+        if (!svg || svg.tagName.toLowerCase() !== 'svg') continue;
+        svg.classList.add(...Array.from(img.classList));
+        svg.setAttribute('aria-hidden', 'true');
+        svg.style.width = getComputedStyle(img).width;
+        svg.style.opacity = '1';
+        img.replaceWith(svg);
+        const strokes = qsa('path,line,polyline,polygon,circle', svg).filter(el => {
+          const fill = el.getAttribute('fill');
+          return !fill || fill === 'none';
+        });
+        strokes.forEach(el => {
+          try {
+            const length = el.getTotalLength ? el.getTotalLength() : 120;
+            gsap.set(el, { strokeDasharray: length, strokeDashoffset: length });
+            gsap.to(el, {
+              strokeDashoffset: 0,
+              duration: .8,
+              ease: 'power2.out',
+              scrollTrigger: { trigger: svg, start: 'top 84%', once: true }
+            });
+          } catch (_) {}
+        });
+        qsa('polygon,circle', svg).forEach(el => {
+          gsap.fromTo(el, { opacity: 0, scale: .7, transformOrigin: '50% 50%' }, {
+            opacity: 1, scale: 1, duration: .35, ease: 'back.out(1.6)',
+            scrollTrigger: { trigger: svg, start: 'top 84%', once: true }
+          });
+        });
+      } catch (_) {
+        seen[src] = false;
+      }
+    }
+  }
+
   function initDividersAndFooter() {
     const dividers = qsa('.section-header img, .caption-divider, .hero-divider img');
     if (canAnimate()) {
@@ -353,6 +405,7 @@ window.ScrollAnimations = (function () {
       initCountdown();
       initVenue();
       initDividersAndFooter();
+      inlineAndAnimateDividers();
       initGenericReveals();
       ScrollTrigger.refresh();
     };
