@@ -587,3 +587,11 @@
 
 /* Cinematic timeline choreography */
 .timeline-line-fill{height:0;transition:none;transform-origin:top center}.event-item{transform:none;opacity:1}.event-card{overflow:hidden}.event-card-photo-wrap{isolation:isolate}.event-card-photo{transform:scale(1.06)}.event-card-dresscode{opacity:0;transform:translateY(10px)}.event-dot{animation:none}.venue-map-wrap{clip-path:inset(0 50% 0 50% round var(--radius-md))}
+
+
+/* Cinematic timeline */
+.timeline-line-fill{height:0;transition:none;transform-origin:top center;}
+.event-item{transform:none;opacity:1;}
+.event-card-photo{transform:scale(1.06);}
+.event-card-dresscode{opacity:0;transform:translateY(8px);}
+.event-dot{animation:none;}
