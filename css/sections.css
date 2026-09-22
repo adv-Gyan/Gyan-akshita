@@ -593,5 +593,5 @@
 .timeline-line-fill{height:0;transition:none;transform-origin:top center;}
 .event-item{transform:none;opacity:1;}
 .event-card-photo{transform:scale(1.06);}
-.event-card-dresscode{opacity:0;transform:translateY(8px);}
+.event-card-dresscode{opacity:1;transform:none;}
 .event-dot{animation:none;}
