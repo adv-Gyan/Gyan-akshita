@@ -324,6 +324,34 @@ window.ScrollAnimations = (function () {
       });
   }
 
+  function initRSVP() {
+    const section = qs('#section-rsvp');
+    const header = qs('.section-header', section);
+    const form = qs('#rsvp-form', section);
+    if (!section || !form) return;
+
+    /* Keep RSVP visible even if GSAP/ScrollTrigger is unavailable. */
+    form.style.opacity = '1';
+    form.style.transform = 'none';
+    if (header) {
+      header.style.opacity = '1';
+      header.style.transform = 'none';
+    }
+
+    if (!canAnimate()) return;
+
+    gsap.timeline({ scrollTrigger: { trigger: section, start: 'top 82%', once: true } })
+      .fromTo(header,
+        { opacity: 0, y: 24 },
+        { opacity: 1, y: 0, duration: .65, ease: 'power3.out', immediateRender: false }
+      )
+      .fromTo(form,
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: .8, ease: 'power3.out', immediateRender: false },
+        '-=.35'
+      );
+  }
+
   function initVenue() {
     const section = qs('#section-venue');
     if (!section || !canAnimate()) return;
@@ -446,6 +474,7 @@ window.ScrollAnimations = (function () {
       initEvents();
       initCountdown();
       initVenue();
+      initRSVP();
       initDividersAndFooter();
       inlineAndAnimateDividers();
       initGenericReveals();
