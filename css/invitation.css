@@ -519,3 +519,8 @@
   .hero-name { font-size: clamp(3rem, 8vw, 5rem); }
   .section-inner { padding: var(--space-2xl) var(--space-xl); }
 }
+
+
+/* Cinematic animation support */
+.hero-bg{will-change:transform}.hero-arch-svg{transform-origin:50% 100%}.message-card{overflow:hidden}.message-card .message-body{overflow:hidden}
+@media(max-width:600px){.hero-name{letter-spacing:.07em}.hero-content{padding-left:12px;padding-right:12px}}
