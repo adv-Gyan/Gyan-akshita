@@ -146,3 +146,25 @@ body.invite-open #gold-particles{opacity:.72;}
   50%{transform:translateY(-1px);box-shadow:0 0 24px rgba(201,168,76,.18);}
 }
 .countdown-live-unit .countdown-number{animation:countdownUnitGlow 2.4s ease-in-out infinite;}
+
+
+/* RSVP visibility safeguard — content must never depend on animation execution */
+#section-rsvp,
+#section-rsvp .section-inner,
+#section-rsvp .section-header,
+#section-rsvp .rsvp-form,
+#section-rsvp .form-group,
+#section-rsvp .form-fieldset {
+  visibility: visible !important;
+}
+#section-rsvp .section-header,
+#section-rsvp .rsvp-form {
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+}
+#section-rsvp .section-header img,
+#section-rsvp .section-header svg {
+  opacity: .8 !important;
+  clip-path: none !important;
+}
