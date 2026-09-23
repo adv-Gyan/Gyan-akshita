@@ -1034,3 +1034,46 @@
     height: 8px;
   }
 }
+
+
+/* Restore the original elegant divider proportions and central ornament. */
+.section-break {
+  height: clamp(62px, 9vw, 88px);
+}
+
+.section-break::before {
+  width: min(72vw, 340px);
+  height: 1px;
+}
+
+.section-break-ornament {
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(232,201,122,0.55);
+  border-radius: 50%;
+  background: rgba(18,5,5,0.72);
+  color: rgba(232,201,122,0.88);
+  font-family: var(--font-display);
+  font-size: .72rem;
+  line-height: 1;
+  box-shadow:
+    0 0 0 5px rgba(18,5,5,.12),
+    0 0 14px rgba(201,168,76,.10);
+  opacity: .9;
+}
+
+@media (max-width: 600px) {
+  .section-break {
+    height: 62px;
+  }
+
+  .section-break::before {
+    width: 72vw;
+  }
+
+  .section-break-ornament {
+    width: 28px;
+    height: 28px;
+    font-size: .68rem;
+  }
+}
