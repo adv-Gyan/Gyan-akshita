@@ -468,6 +468,8 @@ window.ScrollAnimations = (function () {
      */
     reveal(qs('.photo-mughal-frame'), 'native-photo-reveal');
     reveal(qs('.photo-caption'), 'native-slide-up');
+    qsa('#section-photo .caption-divider, #section-message .caption-divider, #section-events .section-header img, #section-countdown .section-header img, #section-venue .section-header img, #section-rsvp .section-header img, .site-footer > img')
+      .forEach(el => reveal(el, 'native-divider-reveal'));
     reveal(qs('#section-message .message-card'), 'native-message-reveal');
     reveal(qs('#section-events .section-header'), 'native-slide-up');
     qsa('.event-item').forEach((item, i) => reveal(item, i % 2 === 0 ? 'native-event-left' : 'native-event-right'));
