@@ -694,3 +694,16 @@ body.invite-open #gold-particles{opacity:.72;}
     width: 56vw;
   }
 }
+
+
+/* Event visibility safeguard: timeline cards must remain visible even if the
+   native IntersectionObserver fires late or a cached mobile session restores
+   the page after the event trigger has already been crossed. */
+.section-events .event-item.native-animation-target {
+  opacity: 1 !important;
+}
+.section-events .event-card,
+.section-events .event-card-photo-wrap,
+.section-events .event-card-body > * {
+  opacity: 1 !important;
+}
