@@ -338,22 +338,81 @@ window.ScrollAnimations = (function () {
       const dot = qs('.event-dot', item);
       if (!card || !dot) return;
 
-      gsap.set(card, { x: i % 2 === 0 ? -18 : 18 });
+      const photo = qs('.event-card-photo-wrap', card);
+      const body = qs('.event-card-body', card);
+      const name = qs('.event-card-name', card);
+      const dateTime = qs('.event-card-date-time', card);
+      const venue = qs('.event-card-venue', card);
+      const description = qs('.event-card-description', card);
+      const dresscode = qs('.event-card-dresscode', card);
 
-      gsap.timeline({
-        scrollTrigger: { trigger: item, start: 'top 84%', once: true }
-      })
-      .fromTo(dot,
-        { opacity: .2, scale: .72 },
-        { opacity: 1, scale: 1.04, duration: .48, ease: 'back.out(1.8)', immediateRender: false }
+      /* Each event now enters as a chapter:
+         dot → card → image → title → details. The connector is the
+         continuous visual thread between those chapters. */
+      gsap.set(card, { x: i % 2 === 0 ? -22 : 22, opacity: 0 });
+      gsap.set([photo, body, name, dateTime, venue, description, dresscode].filter(Boolean), {
+        opacity: 0
+      });
+      if (photo) gsap.set(photo, { scale: 1.035, transformOrigin: 'center center' });
+
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: item,
+          start: 'top 78%',
+          once: true,
+          onEnter: () => {
+            item.classList.add('event-reached');
+            dot.classList.add('event-dot-lit');
+          }
+        }
+      });
+
+      tl.fromTo(dot,
+        { opacity: .18, scale: .65 },
+        { opacity: 1, scale: 1.12, duration: .42, ease: 'back.out(1.8)', immediateRender: false }
       )
+      .to(dot, {
+        scale: 1,
+        duration: .18,
+        ease: 'power2.out'
+      })
       .to(card, {
         x: 0,
         opacity: 1,
-        duration: .68,
+        duration: .58,
         ease: 'power3.out',
         immediateRender: false
-      }, '-=.22');
+      }, '-=.16')
+      .to(photo, {
+        opacity: 1,
+        scale: 1,
+        duration: .72,
+        ease: 'power2.out',
+        immediateRender: false
+      }, '-=.28')
+      .to(name, {
+        opacity: 1,
+        y: 0,
+        duration: .38,
+        ease: 'power2.out',
+        immediateRender: false
+      }, '-=.38')
+      .to([dateTime, venue].filter(Boolean), {
+        opacity: 1,
+        y: 0,
+        duration: .3,
+        stagger: .05,
+        ease: 'power2.out',
+        immediateRender: false
+      }, '-=.20')
+      .to([description, dresscode].filter(Boolean), {
+        opacity: 1,
+        y: 0,
+        duration: .32,
+        stagger: .06,
+        ease: 'power2.out',
+        immediateRender: false
+      }, '-=.16');
     });
 
     const draw = () => {
