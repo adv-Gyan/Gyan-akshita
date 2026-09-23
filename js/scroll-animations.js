@@ -141,8 +141,10 @@ window.ScrollAnimations = (function () {
     });
     gsap.set(kicker, { y: 9, letterSpacing: '.28em' });
     gsap.set(monogram, { y: 9, scale: .94 });
-    gsap.set(bride, { x: -36, y: 4, scale: .99 });
-    gsap.set(groom, { x: 36, y: 4, scale: .99 });
+    /* Script names enter like handwritten ink: the word is revealed from
+       left to right while settling gently into place. */
+    gsap.set(bride, { x: -12, y: 3, scale: .99, clipPath: 'inset(0 100% 0 0)' });
+    gsap.set(groom, { x: 12, y: 3, scale: .99, clipPath: 'inset(0 100% 0 0)' });
     gsap.set(amp, { scale: .5, rotation: -10 });
     gsap.set(flourish, { y: 6, scaleX: .72 });
     gsap.set(divider, { y: 5, scaleX: .82 });
@@ -166,12 +168,16 @@ window.ScrollAnimations = (function () {
       }, '-=.10')
       .to(bride, {
         x: 0, y: 0, scale: 1, opacity: 1, filter: 'blur(0)',
-        duration: .30
+        clipPath: 'inset(0 0% 0 0)',
+        duration: .72,
+        ease: 'power2.inOut'
       }, '-=.10')
       .to(groom, {
         x: 0, y: 0, scale: 1, opacity: 1, filter: 'blur(0)',
-        duration: .30
-      }, '<')
+        clipPath: 'inset(0 0% 0 0)',
+        duration: .72,
+        ease: 'power2.inOut'
+      }, '-=.48')
       .to(amp, {
         scale: 1, rotation: -5, opacity: 1, filter: 'blur(0)',
         duration: .20, ease: 'back.out(1.55)'
@@ -200,6 +206,17 @@ window.ScrollAnimations = (function () {
         y: 0, opacity: 1, filter: 'blur(0)',
         duration: .14
       }, '-=.05');
+
+    /* A faint ink-settle after the written reveal keeps the script organic
+       without adding a flashy typewriter effect. */
+    gsap.to([bride, groom], {
+      filter: 'drop-shadow(0 0 8px rgba(232,201,122,.08))',
+      duration: .22,
+      yoyo: true,
+      repeat: 1,
+      ease: 'power1.inOut',
+      delay: .08
+    });
 
     if (bg) {
       gsap.to(bg, {
