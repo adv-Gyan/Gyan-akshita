@@ -349,9 +349,15 @@ window.ScrollAnimations = (function () {
       /* Each event now enters as a chapter:
          dot → card → image → title → details. The connector is the
          continuous visual thread between those chapters. */
-      gsap.set(card, { x: i % 2 === 0 ? -22 : 22, opacity: 0 });
+      /* Never hide an event card while waiting for ScrollTrigger. On cached
+         mobile/Safari sessions the section can be initialised after its trigger
+         position has already been crossed; opacity:0 here could leave the card
+         permanently invisible. Keep the chapter visible and animate only its
+         entrance transform. */
+      gsap.set(card, { x: i % 2 === 0 ? -22 : 22, opacity: 1 });
       gsap.set([photo, body, name, dateTime, venue, description, dresscode].filter(Boolean), {
-        opacity: 0
+        opacity: 1,
+        y: 0
       });
       if (photo) gsap.set(photo, { scale: 1.035, transformOrigin: 'center center' });
 
