@@ -544,3 +544,153 @@ body.invite-open #gold-particles{opacity:.72;}
     font-size: clamp(3.6rem, 6.3vw, 5.1rem);
   }
 }
+
+
+/* HERO REFINEMENT V3 — final polish pass across all ten requested areas. */
+.hero-content {
+  gap: 0;
+  padding: 8svh 18px 11svh;
+  justify-content: center;
+}
+
+.hero-kicker {
+  font-family: var(--font-body);
+  font-size: .5rem;
+  font-weight: 500;
+  letter-spacing: .19em;
+  text-transform: uppercase;
+  color: rgba(232,201,122,.76);
+  margin-bottom: 9px;
+  text-shadow: 0 1px 8px rgba(0,0,0,.35);
+}
+
+.hero-monogram {
+  font-family: var(--font-script);
+  font-size: clamp(1.95rem, 8.2vw, 2.75rem);
+  line-height: .9;
+  margin-bottom: 9px;
+  color: rgba(232,201,122,.92);
+}
+
+.hero-names-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  line-height: 1;
+  position: relative;
+}
+
+.hero-name {
+  font-family: var(--font-script);
+  font-style: normal;
+  font-weight: 400;
+  font-size: clamp(3.05rem, 14vw, 4rem);
+  line-height: .76;
+  letter-spacing: 0;
+  color: #F8F2E6;
+  white-space: nowrap;
+  text-shadow:
+    0 3px 19px rgba(0,0,0,.55),
+    0 0 16px rgba(232,201,122,.08);
+}
+
+.hero-bride {
+  margin-left: -1rem;
+}
+
+.hero-groom {
+  margin-right: -1rem;
+}
+
+.hero-and {
+  font-family: var(--font-script);
+  font-size: clamp(1.85rem, 7.2vw, 2.45rem);
+  line-height: .58;
+  margin: .28rem 0 .34rem;
+  color: var(--color-gold-light);
+  transform-origin: center;
+  text-shadow: 0 0 13px rgba(232,201,122,.36);
+}
+
+.hero-flourish {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: min(60vw, 190px);
+  gap: 8px;
+  margin: 11px 0 0;
+}
+
+.hero-flourish-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(232,201,122,.38), transparent);
+}
+
+.hero-flourish-mark {
+  font-family: var(--font-script);
+  font-size: 1.15rem;
+  line-height: 1;
+  color: rgba(232,201,122,.92);
+}
+
+.hero-divider {
+  width: min(45vw, 165px);
+  margin: 9px 0 10px;
+  opacity: .5;
+}
+
+.hero-invite-line {
+  margin: 0;
+  max-width: 285px;
+  font-size: .69rem;
+  line-height: 1.72;
+  letter-spacing: .085em;
+  color: rgba(248,242,230,.74);
+}
+
+.hero-invite-line em {
+  color: rgba(232,201,122,.88);
+}
+
+.hero-date {
+  margin-top: 15px;
+  padding: 0 0 8px;
+  min-width: 188px;
+  border: 0;
+  border-bottom: 1px solid rgba(232,201,122,.48);
+}
+
+.hero-date-text {
+  font-size: .71rem;
+  letter-spacing: .21em;
+}
+
+.scroll-indicator {
+  bottom: 18px;
+}
+
+@media (min-width: 601px) {
+  .hero-content {
+    padding: 7svh 24px 10svh;
+  }
+  .hero-name {
+    font-size: clamp(3.4rem, 7vw, 5rem);
+  }
+  .hero-kicker {
+    font-size: .54rem;
+  }
+  .hero-monogram {
+    font-size: 3rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .hero-name {
+    font-size: 2.85rem;
+  }
+  .hero-flourish {
+    width: 56vw;
+  }
+}
