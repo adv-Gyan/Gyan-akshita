@@ -63,7 +63,7 @@ const weddingData = {
       name:        "Wedding Ceremony",
       icon:        "🪷",
       date:        "21 November 2026",
-      time:        "TBD",                  // ← e.g. "11:00 AM"
+      time:        "8:00 PM",                  // ← e.g. "11:00 AM"
       venue:       "Harding Road",
       address:     "R-37, Harding Rd, Rajbansi Nagar, Patna, Bihar 800014",
       description: "The sacred union of two hearts. Join us as we take our vows and begin our journey together.",
