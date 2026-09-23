@@ -90,7 +90,7 @@ const weddingData = {
 
   /* ── Audio ───────────────────────────────────────────────── */
   audio: {
-    src:      "assets/audio/ambient.mp3",
+    src:      "assets/audio/ambience.mp3",
     autoplay: true,
     loop:     true,
     volume:   0.4,
