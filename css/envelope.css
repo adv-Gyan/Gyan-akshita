@@ -313,3 +313,154 @@ body.invite-open {
     right: 16px;
   }
 }
+
+
+/* ============================================================
+   FINAL MUSIC CONTROL — icon only, no text
+   ============================================================ */
+#main-invite > .sound-toggle {
+  width: 50px;
+  height: 50px;
+  padding: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #F5D98B;
+  background:
+    radial-gradient(circle at 35% 28%, rgba(255,245,201,.13), transparent 35%),
+    linear-gradient(145deg, rgba(54,12,12,.92), rgba(18,5,5,.86));
+  border: 1px solid rgba(232,201,122,.58);
+  box-shadow:
+    0 10px 28px rgba(0,0,0,.40),
+    0 0 0 5px rgba(232,201,122,.035),
+    0 0 22px rgba(201,168,76,.13),
+    inset 0 1px 0 rgba(255,245,201,.10);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: transform .28s cubic-bezier(.22,.61,.36,1),
+              border-color .28s ease,
+              box-shadow .28s ease;
+}
+
+#main-invite > .sound-toggle::before {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  border: 1px solid rgba(232,201,122,.15);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+#main-invite > .sound-toggle:not(:disabled):hover {
+  transform: translateY(-2px) scale(1.04);
+  border-color: rgba(255,245,201,.88);
+  box-shadow:
+    0 13px 32px rgba(0,0,0,.44),
+    0 0 0 5px rgba(232,201,122,.045),
+    0 0 28px rgba(232,201,122,.22);
+}
+
+#main-invite > .sound-toggle:active {
+  transform: scale(.96);
+}
+
+#main-invite > .sound-toggle.is-playing {
+  border-color: rgba(245,217,139,.78);
+  box-shadow:
+    0 10px 28px rgba(0,0,0,.40),
+    0 0 0 5px rgba(232,201,122,.045),
+    0 0 25px rgba(232,201,122,.20),
+    inset 0 1px 0 rgba(255,245,201,.12);
+}
+
+#main-invite > .sound-toggle .sound-icon {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+}
+
+#main-invite > .sound-toggle .sound-note {
+  position: relative;
+  z-index: 2;
+  font-family: Georgia, serif;
+  font-size: 22px;
+  line-height: 1;
+  transform: translateY(-1px);
+  text-shadow: 0 0 9px rgba(232,201,122,.32);
+}
+
+#main-invite > .sound-toggle .sound-wave {
+  position: absolute;
+  border: 1px solid rgba(232,201,122,.72);
+  border-left-color: transparent;
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  transform: rotate(45deg);
+  opacity: .72;
+}
+
+#main-invite > .sound-toggle .sound-wave-1 {
+  width: 10px;
+  height: 10px;
+  right: -1px;
+  top: 7px;
+}
+#main-invite > .sound-toggle .sound-wave-2 {
+  width: 15px;
+  height: 15px;
+  right: -4px;
+  top: 4.5px;
+  opacity: .48;
+}
+#main-invite > .sound-toggle .sound-wave-3 {
+  width: 20px;
+  height: 20px;
+  right: -7px;
+  top: 2px;
+  opacity: .25;
+}
+
+#main-invite > .sound-toggle.is-playing .sound-wave-1 {
+  animation: musicWave .9s ease-in-out infinite;
+}
+#main-invite > .sound-toggle.is-playing .sound-wave-2 {
+  animation: musicWave 1.1s ease-in-out .08s infinite;
+}
+#main-invite > .sound-toggle.is-playing .sound-wave-3 {
+  animation: musicWave 1.3s ease-in-out .16s infinite;
+}
+
+#main-invite > .sound-toggle .sound-slash {
+  position: absolute;
+  width: 25px;
+  height: 1.5px;
+  background: #E8C97A;
+  transform: rotate(-45deg);
+  box-shadow: 0 0 5px rgba(232,201,122,.28);
+}
+
+@keyframes musicWave {
+  0%, 100% { opacity: .18; transform: rotate(45deg) scale(.92); }
+  50% { opacity: .9; transform: rotate(45deg) scale(1.04); }
+}
+
+@media (max-width: 480px) {
+  #main-invite > .sound-toggle {
+    width: 46px;
+    height: 46px;
+    right: 16px;
+    bottom: max(18px, env(safe-area-inset-bottom));
+  }
+
+  #main-invite > .sound-toggle .sound-note {
+    font-size: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #main-invite > .sound-toggle .sound-wave {
+    animation: none !important;
+  }
+}
