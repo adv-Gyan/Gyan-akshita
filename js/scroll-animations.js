@@ -365,7 +365,15 @@ window.ScrollAnimations = (function () {
         opacity: 1,
         y: 0
       });
-      if (photo) gsap.set(photo, { scale: 1.035, transformOrigin: 'center center' });
+      if (photo) {
+        /* Simple editorial photo reveal: a very slight scale-in with a soft
+           fade. No bounce, rotation, clipping, or card movement. */
+        gsap.set(photo, {
+          opacity: 0.72,
+          scale: 0.985,
+          transformOrigin: 'center center'
+        });
+      }
 
       const tl = gsap.timeline({
         scrollTrigger: {
@@ -393,10 +401,10 @@ window.ScrollAnimations = (function () {
       .to(photo, {
         opacity: 1,
         scale: 1,
-        duration: .72,
+        duration: .58,
         ease: 'power2.out',
         immediateRender: false
-      }, '-=.28')
+      }, '-=.16')
       .to(name, {
         opacity: 1,
         y: 0,
