@@ -256,23 +256,22 @@ window.ScrollAnimations = (function () {
       line.appendChild(glow);
     }
 
-    /* Cards alternate. The connector is one continuous ribbon whose
-       anchor points sit just outside the inner edge of each card. */
+    /* Put the event dots in a deliberately alternating column layout.
+       The connector's anchor points use the dot positions, not the card
+       edges, so the stroke is a single continuous path from event to event. */
     items.forEach((item, i) => {
       const card = qs('.event-card', item);
       const dot = qs('.event-dot', item);
       if (!card || !dot) return;
 
-      gsap.set(card, {
-        x: i % 2 === 0 ? -18 : 18
-      });
+      gsap.set(card, { x: i % 2 === 0 ? -18 : 18 });
 
       gsap.timeline({
         scrollTrigger: { trigger: item, start: 'top 84%', once: true }
       })
       .fromTo(dot,
-        { opacity: .15, scale: .72 },
-        { opacity: 1, scale: 1.06, duration: .48, ease: 'back.out(1.9)', immediateRender: false }
+        { opacity: .2, scale: .72 },
+        { opacity: 1, scale: 1.04, duration: .48, ease: 'back.out(1.8)', immediateRender: false }
       )
       .to(card, {
         x: 0,
@@ -286,41 +285,46 @@ window.ScrollAnimations = (function () {
     const draw = () => {
       const rect = track.getBoundingClientRect();
       const center = rect.width / 2;
-      const halfCard = Math.min(rect.width * .40, 170);
-      const edge = 10;
-      const leftX = center - halfCard - edge;
-      const rightX = center + halfCard + edge;
+      const cardWidth = Math.min(rect.width * .80, 340);
+      const side = Math.max(0, (rect.width - cardWidth) / 2);
+      const corridor = Math.min(28, Math.max(18, rect.width * .045));
+
+      /* Dot centres live just outside the inner corners of the cards. */
+      const leftDotX = center - side - corridor;
+      const rightDotX = center + side + corridor;
 
       const anchors = items.map((item, i) => {
         const card = qs('.event-card', item);
         const r = card?.getBoundingClientRect();
-        const y = r ? (r.top - rect.top) + 3 : item.offsetTop;
         return {
-          x: i % 2 === 0 ? leftX : rightX,
-          y
+          x: i % 2 === 0 ? leftDotX : rightDotX,
+          y: r ? (r.top - rect.top) + 14 : item.offsetTop + 14
         };
       });
       if (anchors.length < 2) return;
 
-      /* One continuous, soft calligraphy stroke.
-         It gently bows around each card and makes a single flourish
-         across the gap, rather than creating a timeline rail. */
+      /* A single elegant S stroke: no side rail, no vertical spine.
+         Each segment begins at one event, bows once across the gap, and
+         naturally arrives at the next event. */
       let d = `M ${anchors[0].x} ${anchors[0].y}`;
+      for (let i = 1; i < anchors.length; i++) {
+        const a = anchors[i - 1];
+        const b = anchors[i];
+        const dy = Math.max(70, b.y - a.y);
+        const bow = Math.min(118, Math.max(52, rect.width * .19));
+        const sign = a.x < center ? 1 : -1;
 
-      for (let i = 0; i < anchors.length - 1; i++) {
-        const a = anchors[i];
-        const b = anchors[i + 1];
-        const gap = Math.max(40, b.y - a.y);
-        const bow = Math.min(150, Math.max(70, rect.width * .25));
-        const sgn = i % 2 === 0 ? 1 : -1;
+        const c1x = a.x + bow * sign;
+        const c2x = center + bow * .22 * sign;
+        const c3x = center - bow * .22 * sign;
+        const c4x = b.x - bow * sign;
 
-        const c1x = a.x + bow * sgn;
-        const c2x = center - bow * .45 * sgn;
-        const c3x = center + bow * .45 * sgn;
-        const c4x = b.x - bow * sgn;
-
-        d += ` C ${c1x} ${a.y + gap * .18}, ${c2x} ${a.y + gap * .36}, ${center} ${a.y + gap * .50}`;
-        d += ` C ${c3x} ${a.y + gap * .64}, ${c4x} ${a.y + gap * .82}, ${b.x} ${b.y}`;
+        d += ` C ${c1x} ${a.y + dy * .16},
+                     ${c2x} ${a.y + dy * .34},
+                     ${center} ${a.y + dy * .50}`;
+        d += ` C ${c3x} ${a.y + dy * .66},
+                     ${c4x} ${a.y + dy * .84},
+                     ${b.x} ${b.y}`;
       }
 
       svg.setAttribute('viewBox', `0 0 ${Math.max(1, rect.width)} ${Math.max(1, rect.height)}`);
@@ -336,34 +340,36 @@ window.ScrollAnimations = (function () {
 
     requestAnimationFrame(draw);
 
-    const redraw = () => requestAnimationFrame(draw);
+    let redrawTimer = 0;
+    const redraw = () => {
+      cancelAnimationFrame(redrawTimer);
+      redrawTimer = requestAnimationFrame(() => {
+        draw();
+        ScrollTrigger.refresh();
+      });
+    };
     window.addEventListener('resize', redraw, { passive: true });
-    window.addEventListener('load', () => {
-      redraw();
-      ScrollTrigger.refresh();
-    }, { once: true });
+    window.addEventListener('load', redraw, { once: true });
 
     ScrollTrigger.create({
       trigger: track,
-      start: 'top 86%',
-      end: 'bottom 70%',
-      scrub: .7,
+      start: 'top 88%',
+      end: 'bottom 68%',
+      scrub: .65,
       onRefresh: draw,
       onUpdate: self => {
         const p = Math.max(0, Math.min(1, self.progress));
         const len = Number(path.dataset.length || 0);
         if (!len) return;
 
-        gsap.set(path, {
-          strokeDashoffset: len * (1 - p)
-        });
+        gsap.set(path, { strokeDashoffset: len * (1 - p) });
 
         try {
           const point = path.getPointAtLength(len * p);
           gsap.set(glow, {
             x: point.x,
             y: point.y,
-            opacity: p > .01 && p < .995 ? .95 : 0
+            opacity: p > .01 && p < .995 ? 1 : 0
           });
         } catch (_) {
           gsap.set(glow, { opacity: 0 });
