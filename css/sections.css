@@ -809,3 +809,26 @@
     font-size: .65rem;
   }
 }
+
+
+/* Section dividers are purely ornamental — no mirrored or repeated photography. */
+.section-break {
+  background:
+    radial-gradient(circle at 50% 50%, rgba(232,201,122,.09), transparent 34%),
+    linear-gradient(90deg, #120505 0%, #3b1010 22%, #5c1515 50%, #3b1010 78%, #120505 100%);
+}
+.section-break-image {
+  background-image: none !important;
+  filter: none !important;
+  transform: none !important;
+  opacity: 0 !important;
+}
+.section-break-overlay {
+  background:
+    radial-gradient(ellipse at center, rgba(201,168,76,.08), transparent 52%),
+    linear-gradient(180deg, rgba(12,3,3,.72), rgba(12,3,3,.18) 48%, rgba(12,3,3,.72));
+}
+.section-break::after {
+  border-top-color: rgba(232,201,122,.18);
+  border-bottom-color: rgba(232,201,122,.18);
+}
