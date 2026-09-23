@@ -702,11 +702,7 @@ body.invite-open #gold-particles{opacity:.72;}
 .section-events .event-item.native-animation-target {
   opacity: 1 !important;
 }
-.section-events .event-card,
-.section-events .event-card-photo-wrap,
-.section-events .event-card-body > * {
-  opacity: 1 !important;
-}
+/* Event-card opacity is owned by GSAP during its reveal. */
 
 
 /* Petal layer — softer than the previous dust treatment. */
@@ -730,9 +726,3 @@ body.invite-open #gold-particles {
 }
 
 
-/* Event timeline: let GSAP own event transforms; native fallback may only fade. */
-.section-events .event-item.native-animation-target {
-  opacity: 1 !important;
-  transform: none !important;
-  animation: none !important;
-}

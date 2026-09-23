@@ -357,7 +357,7 @@ window.ScrollAnimations = (function () {
       /* Restore the original GSAP card entrance. The card itself is the
          animated chapter; the native fallback is prevented from applying a
          competing transform. */
-      gsap.set(card, { x: i % 2 === 0 ? -22 : 22, opacity: 1 });
+      gsap.set(card, { opacity: 0 });
       gsap.set([photo, body, name, dateTime, venue, description, dresscode].filter(Boolean), {
         opacity: 1,
         y: 0
@@ -385,6 +385,12 @@ window.ScrollAnimations = (function () {
         duration: .18,
         ease: 'power2.out'
       })
+      .to(card, {
+        opacity: 1,
+        duration: .58,
+        ease: 'power3.out',
+        immediateRender: false
+      }, '-=.16')
       .to(photo, {
         opacity: 1,
         scale: 1,
