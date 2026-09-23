@@ -227,17 +227,55 @@ window.ScrollAnimations = (function () {
     const items = qsa('.event-item', section);
     if (!section || !track || !fill || !items.length || !canAnimate()) return;
 
-    /* Keep the cards readable at all times; the connecting line is drawn
-       with scroll and a restrained luminous point travels along it. */
-    gsap.set(fill, { height: '100%', scaleY: 0, transformOrigin: 'top center' });
+    /* The event connector is a continuous hand-drawn gold path.
+       Its SVG stroke is revealed by the guest's scroll position. */
+    gsap.set(fill, { opacity: 0, scaleY: 1, transformOrigin: 'center center' });
 
+    const timelineLine = qs('.timeline-line', track);
+    let timelinePath = qs('.timeline-line-path', track);
     let timelineGlow = qs('.timeline-line-glow', track);
-    if (!timelineGlow) {
+
+    if (timelineLine && !timelinePath) {
+      timelinePath = document.createElement('path');
+      timelinePath.className = 'timeline-line-path';
+      timelinePath.setAttribute('aria-hidden', 'true');
+      timelineLine.appendChild(timelinePath);
+    }
+    if (timelineLine && !timelineGlow) {
       timelineGlow = document.createElement('span');
       timelineGlow.className = 'timeline-line-glow';
       timelineGlow.setAttribute('aria-hidden', 'true');
-      track.querySelector('.timeline-line')?.appendChild(timelineGlow);
+      timelineLine.appendChild(timelineGlow);
     }
+
+    const drawTimelinePath = () => {
+      if (!timelineLine || !timelinePath) return;
+
+      const points = items.map(item => {
+        const dot = qs('.event-dot', item);
+        const dotRect = dot?.getBoundingClientRect();
+        const trackRect = track.getBoundingClientRect();
+        return {
+          x: trackRect.width / 2 + (item === items[1] ? Math.min(76, trackRect.width * .18) : item === items[0] ? -Math.min(18, trackRect.width * .06) : 0),
+          y: (dotRect ? dotRect.top - trackRect.top + dotRect.height / 2 : item.offsetTop)
+        };
+      });
+      if (points.length < 2) return;
+
+      let d = `M ${points[0].x} ${points[0].y}`;
+      for (let i = 1; i < points.length; i++) {
+        const prev = points[i - 1], cur = points[i];
+        const bend = Math.max(34, Math.min(92, Math.abs(cur.y - prev.y) * .22));
+        d += ` C ${prev.x} ${prev.y + bend}, ${cur.x} ${cur.y - bend}, ${cur.x} ${cur.y}`;
+      }
+      timelinePath.setAttribute('d', d);
+      timelinePath.setAttribute('fill', 'none');
+      const len = timelinePath.getTotalLength();
+      gsap.set(timelinePath, { strokeDasharray: len, strokeDashoffset: len });
+      timelinePath.dataset.length = len;
+    };
+
+    items.forEach((item, i) => {
 
     items.forEach((item, i) => {
       const card = qs('.event-card', item);
@@ -268,19 +306,32 @@ window.ScrollAnimations = (function () {
       });
     });
 
+    requestAnimationFrame(drawTimelinePath);
+
     ScrollTrigger.create({
       trigger: track,
       start: 'top 78%',
       end: 'bottom 72%',
       scrub: 0.35,
+      onRefresh: drawTimelinePath,
       onUpdate: (self) => {
         const progress = self.progress;
-        gsap.set(fill, { scaleY: progress });
-        if (timelineGlow) {
-          gsap.set(timelineGlow, {
-            y: Math.max(0, Math.min(1, progress)) * 100 + '%',
-            opacity: progress > 0.01 && progress < 0.995 ? 1 : 0
-          });
+        const clamped = Math.max(0, Math.min(1, progress));
+        if (timelinePath && timelinePath.dataset.length) {
+          gsap.set(timelinePath, { strokeDashoffset: Number(timelinePath.dataset.length) * (1 - clamped) });
+        }
+        if (timelineGlow && timelinePath && timelinePath.dataset.length) {
+          const len = Number(timelinePath.dataset.length);
+          try {
+            const pt = timelinePath.getPointAtLength(len * clamped);
+            gsap.set(timelineGlow, {
+              x: pt.x,
+              y: pt.y,
+              opacity: clamped > 0.015 && clamped < 0.995 ? 1 : 0
+            });
+          } catch (_) {
+            gsap.set(timelineGlow, { opacity: 0 });
+          }
         }
         items.forEach((item, i) => {
           const threshold = items.length === 1 ? 0 : i / (items.length - 1);
