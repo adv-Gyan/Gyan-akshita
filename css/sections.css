@@ -1451,3 +1451,35 @@
     margin: -3.5px 0 0 -3.5px;
   }
 }
+
+
+/* Reliable two-layer event connector: a faint calligraphic guide is
+   always visible; the brighter stroke draws over it on scroll. */
+.section-events .timeline-line-base {
+  fill: none;
+  stroke: rgba(232,201,122,.24);
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  filter: drop-shadow(0 0 3px rgba(201,168,76,.16));
+  opacity: .95;
+}
+
+.section-events .timeline-line-path {
+  position: static;
+  stroke: rgba(232,201,122,.98);
+  stroke-width: 1.55;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  filter:
+    drop-shadow(0 0 4px rgba(232,201,122,.62))
+    drop-shadow(0 0 11px rgba(201,168,76,.28));
+  opacity: 1;
+}
+
+@media (max-width: 600px) {
+  .section-events .timeline-line-base { stroke-width: 1.5; }
+  .section-events .timeline-line-path { stroke-width: 1.4; }
+}
