@@ -38,8 +38,8 @@ const weddingData = {
       id:          "ring",
       name:        "Ring Ceremony",
       icon:        "💍",
-      date:        "TBD",                  // ← e.g. "18 November 2026"
-      time:        "TBD",                  // ← e.g. "6:00 PM onwards"
+      date:        "20 November 2026",
+      time:        "6:00 PM"
       venue: "Harding Road",
       address: "R-37, Harding Rd, Rajbansi Nagar, Patna, Bihar 800014",
       description: "The beginning of forever — an intimate ring exchange ceremony with our closest family.",
@@ -50,8 +50,8 @@ const weddingData = {
       id:          "haldi",
       name:        "Haldi Carnival",
       icon:        "🌼",
-      date:        "TBD",
-      time:        "TBD",
+      date:        "21 November 2026",
+      time:        "10:00 AM",
       venue:       "Harding Road",
       address:     "R-37, Harding Rd, Rajbansi Nagar, Patna, Bihar 800014",
       description: "A joyous celebration of colour, laughter, and blessings as we usher in the wedding festivities.",
