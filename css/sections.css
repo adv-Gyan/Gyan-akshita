@@ -1510,3 +1510,38 @@
   .section-events .timeline-line-base { stroke-width: 1.6; }
   .section-events .timeline-line-path { stroke-width: 1.2; }
 }
+
+
+/* FINAL EVENT CONNECTOR: decorative calligraphy lives in the gutter only.
+   Cards alternate on every viewport size; no rail passes through card content. */
+.section-events .timeline-track { position: relative; }
+.section-events .timeline-line { z-index: 1; pointer-events:none; }
+.section-events .events-container { z-index: 3; }
+.section-events .event-card { z-index: 4; }
+.section-events .event-dot { z-index: 5; }
+.section-events .timeline-line-svg { position:absolute; inset:0; z-index:1; overflow:visible; }
+.section-events .timeline-line-base {
+  fill:none;
+  stroke:rgba(232,201,122,.18);
+  stroke-width:2;
+  stroke-linecap:round;
+  opacity:.82;
+  vector-effect:non-scaling-stroke;
+}
+.section-events .timeline-line-path {
+  fill:none;
+  stroke:rgba(232,201,122,.96);
+  stroke-width:1.35;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  vector-effect:non-scaling-stroke;
+  filter:drop-shadow(0 0 4px rgba(232,201,122,.52));
+}
+.section-events .timeline-line-glow {
+  width:7px;
+  height:7px;
+  margin:-3.5px 0 0 -3.5px;
+  z-index:6;
+  background:var(--color-gold-light);
+  box-shadow:0 0 6px rgba(255,245,201,.96),0 0 16px rgba(232,201,122,.72),0 0 28px rgba(201,168,76,.28);
+}
