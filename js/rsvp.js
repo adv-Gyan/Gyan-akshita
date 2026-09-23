@@ -10,19 +10,8 @@
   const form       = document.getElementById('rsvp-form');
   const submitBtn  = document.getElementById('rsvp-submit');
   const successDiv = document.getElementById('rsvp-success');
-  const mealGroup  = document.getElementById('meal-group');
 
   if (!form) return;
-
-  /* ── Show/hide meal preference based on attendance ──── */
-  const radios = form.querySelectorAll('input[name="attending"]');
-  radios.forEach(radio => {
-    radio.addEventListener('change', () => {
-      if (mealGroup) {
-        mealGroup.style.display = radio.value === 'yes' ? 'flex' : 'none';
-      }
-    });
-  });
 
   /* ── Form submission ──────────────────────────────────── */
   form.addEventListener('submit', async (e) => {
@@ -35,9 +24,7 @@
 
     const data = {
       name:      form.elements['name'].value.trim(),
-      guests:    form.elements['guests'].value,
       attending: form.elements['attending'].value,
-      meal:      form.elements['meal']?.value || '',
       message:   form.elements['message'].value.trim(),
       timestamp: new Date().toISOString(),
     };
@@ -54,9 +41,7 @@
       const subject = encodeURIComponent(`RSVP — ${data.name} — ${data.attending === 'yes' ? 'Attending' : 'Declining'}`);
       const body = encodeURIComponent(
         `Name: ${data.name}\n` +
-        `Guests: ${data.guests}\n` +
         `Attending: ${data.attending === 'yes' ? 'Yes 🎉' : 'Regretfully No'}\n` +
-        (data.attending === 'yes' ? `Meal preference: ${data.meal}\n` : '') +
         (data.message ? `\nMessage: ${data.message}` : '')
       );
       window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
