@@ -17,7 +17,7 @@
   let width=0,height=0,dpr=1,dust=[],petals=[],raf=0,last=0;
   const isSmall=()=>window.innerWidth<600;
   const dustCount=()=>isSmall()?22:34;
-  const petalCount=()=>isSmall()?15:24;
+  const petalCount=()=>isSmall()?20:32;
 
   function resize(){
     dpr=Math.min(window.devicePixelRatio||1,2);
@@ -59,11 +59,11 @@
     return {
       x,
       y:initial?Math.random()*height:height+24,
-      size:4.2+Math.random()*4.6,
-      alpha:.18+Math.random()*.25,
-      speed:.20+Math.random()*.30,
+      size:5.2+Math.random()*5.4,
+      alpha:.24+Math.random()*.30,
+      speed:.24+Math.random()*.34,
       drift:.06+Math.random()*.16,
-      sway:22+Math.random()*36,
+      sway:26+Math.random()*42,
       phase:Math.random()*Math.PI*2,
       rotation:Math.random()*Math.PI*2,
       spin:(Math.random()-.5)*.006,
