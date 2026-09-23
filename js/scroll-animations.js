@@ -440,6 +440,52 @@ window.ScrollAnimations = (function () {
     }
   }
 
+  function initSectionTransitions() {
+    if (!canAnimate()) return;
+
+    /*
+     * Subtle section-to-section movement. This is intentionally scrubbed
+     * rather than a large entrance animation, so the page feels continuous
+     * while scrolling instead of stopping between sections.
+     */
+    qsa('#main-invite > .section:not(#section-hero)').forEach(section => {
+      const inner = qs('.section-inner', section);
+      if (inner) {
+        gsap.fromTo(inner,
+          { y: 18 },
+          {
+            y: 0,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: section,
+              start: 'top bottom',
+              end: 'top 58%',
+              scrub: 0.8
+            }
+          }
+        );
+      }
+    });
+
+    qsa('.section-break').forEach(divider => {
+      gsap.fromTo(divider,
+        { opacity: 0.55, scaleY: 0.92 },
+        {
+          opacity: 1,
+          scaleY: 1,
+          transformOrigin: 'center center',
+          ease: 'none',
+          scrollTrigger: {
+            trigger: divider,
+            start: 'top bottom',
+            end: 'center 68%',
+            scrub: 0.7
+          }
+        }
+      );
+    });
+  }
+
   function initGenericReveals() {
     if (!canAnimate()) return;
     qsa('.reveal-on-scroll').forEach(el => {
@@ -577,6 +623,7 @@ window.ScrollAnimations = (function () {
       initCountdown();
       initVenue();
       initRSVP();
+      initSectionTransitions();
       initDividersAndFooter();
       inlineAndAnimateDividers();
       initGenericReveals();
