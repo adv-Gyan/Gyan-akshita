@@ -239,3 +239,55 @@ body.invite-open {
 @media (prefers-reduced-motion: reduce) {
   .tap-hint { animation: none; opacity: 0.7; }
 }
+
+
+/* ── Wedding music control ───────────────────────────────── */
+.sound-toggle {
+  width: 46px;
+  height: 46px;
+  bottom: max(20px, env(safe-area-inset-bottom));
+  right: max(20px, env(safe-area-inset-right));
+  border: 1px solid rgba(232,201,122,.48);
+  background:
+    radial-gradient(circle at 35% 28%, rgba(255,245,201,.10), transparent 36%),
+    rgba(18,5,5,.72);
+  color: #E8C97A;
+  box-shadow:
+    0 8px 24px rgba(0,0,0,.34),
+    0 0 18px rgba(201,168,76,.10),
+    inset 0 0 0 1px rgba(255,255,255,.025);
+  transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease, background .25s ease;
+}
+
+.sound-toggle:not(:disabled):hover {
+  transform: translateY(-2px);
+  border-color: rgba(232,201,122,.82);
+  box-shadow:
+    0 10px 28px rgba(0,0,0,.38),
+    0 0 22px rgba(201,168,76,.18);
+}
+
+.sound-toggle:disabled {
+  opacity: .72;
+  cursor: default;
+}
+
+.sound-toggle.is-playing {
+  box-shadow:
+    0 8px 24px rgba(0,0,0,.34),
+    0 0 22px rgba(232,201,122,.18),
+    inset 0 0 0 1px rgba(255,255,255,.025);
+}
+
+.sound-toggle .sound-icon {
+  font-size: 1.05rem;
+  line-height: 1;
+}
+
+@media (max-width: 480px) {
+  .sound-toggle {
+    width: 44px;
+    height: 44px;
+    right: 16px;
+  }
+}
