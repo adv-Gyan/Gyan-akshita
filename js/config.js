@@ -40,8 +40,8 @@ const weddingData = {
       icon:        "💍",
       date:        "TBD",                  // ← e.g. "18 November 2026"
       time:        "TBD",                  // ← e.g. "6:00 PM onwards"
-      venue:       "TBD",                  // ← venue name
-      address:     "TBD",                  // ← full address
+      venue: "Harding Road",
+      address: "R-37, Harding Rd, Rajbansi Nagar, Patna, Bihar 800014",
       description: "The beginning of forever — an intimate ring exchange ceremony with our closest family.",
       dressCode:   "Festive / Semi-Formal",
       photo:       "assets/images/events/ring.jpg",
@@ -74,11 +74,11 @@ const weddingData = {
 
   /* ── Venue (Wedding) ─────────────────────────────────────── */
   venue: {
-    name:      "TBD",                      // ← e.g. "The Grand Palace Hotel"
-    address:   "TBD",                      // ← full address
-    city:      "TBD",                      // ← city name
-    mapsUrl:   "https://maps.google.com",  // ← Google Maps share link
-    embedUrl:  "",                         // ← Maps iframe embed URL
+    name:      "Harding Road",
+    address:   "R-37, Harding Rd, Rajbansi Nagar, Patna, Bihar 800014",
+    city:      "Patna, Bihar",
+    mapsUrl:   "https://maps.app.goo.gl/spTvXEKddzQnfgh17?g_st=ic",
+    embedUrl:  "",
   },
 
   /* ── RSVP ────────────────────────────────────────────────── */
