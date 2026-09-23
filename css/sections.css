@@ -689,3 +689,123 @@
 .event-card-photo{transform:scale(1.06);}
 .event-card-dresscode{opacity:1;transform:none;}
 .event-dot{animation:none;}
+
+
+/* ============================================================
+   PHOTOREALISTIC CINEMATIC SECTION BREAKS
+   ============================================================ */
+.section-break {
+  position: relative;
+  width: 100%;
+  height: clamp(110px, 18vw, 170px);
+  overflow: hidden;
+  isolation: isolate;
+  background: #100404;
+}
+
+.section-break-image {
+  position: absolute;
+  inset: -8%;
+  background-size: cover;
+  background-position: center 48%;
+  filter: saturate(.82) contrast(1.04) brightness(.52);
+  transform: scale(1.04);
+}
+
+.section-break-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg,
+      rgba(12,3,3,.98) 0%,
+      rgba(12,3,3,.12) 22%,
+      rgba(12,3,3,.08) 50%,
+      rgba(12,3,3,.12) 78%,
+      rgba(12,3,3,.98) 100%),
+    linear-gradient(180deg,
+      rgba(12,3,3,.78) 0%,
+      rgba(12,3,3,.08) 48%,
+      rgba(12,3,3,.78) 100%);
+  z-index: 1;
+}
+
+.section-break::before,
+.section-break::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  z-index: 2;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.section-break::before {
+  top: 50%;
+  width: min(72vw, 340px);
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(232,201,122,.16) 14%,
+    rgba(232,201,122,.68) 50%,
+    rgba(232,201,122,.16) 86%,
+    transparent);
+  box-shadow: 0 0 16px rgba(201,168,76,.12);
+}
+
+.section-break::after {
+  inset: 0;
+  border-top: 1px solid rgba(232,201,122,.10);
+  border-bottom: 1px solid rgba(232,201,122,.10);
+}
+
+.section-break-ornament {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 3;
+  transform: translate(-50%, -50%);
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(232,201,122,.45);
+  border-radius: 50%;
+  background: rgba(16,4,4,.62);
+  color: rgba(232,201,122,.92);
+  font-family: var(--font-display);
+  font-size: .72rem;
+  line-height: 1;
+  box-shadow:
+    0 0 0 7px rgba(16,4,4,.18),
+    0 0 18px rgba(201,168,76,.10);
+}
+
+.section-break-couple .section-break-image {
+  background-position: center 38%;
+  filter: saturate(.72) contrast(1.05) brightness(.48);
+}
+
+@media (max-width: 600px) {
+  .section-break {
+    height: 118px;
+  }
+
+  .section-break-image {
+    inset: -12%;
+    background-position: center 46%;
+  }
+
+  .section-break-couple .section-break-image {
+    background-position: center 34%;
+  }
+
+  .section-break::before {
+    width: 64vw;
+  }
+
+  .section-break-ornament {
+    width: 30px;
+    height: 30px;
+    font-size: .65rem;
+  }
+}
