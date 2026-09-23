@@ -354,7 +354,10 @@ window.ScrollAnimations = (function () {
          position has already been crossed; opacity:0 here could leave the card
          permanently invisible. Keep the chapter visible and animate only its
          entrance transform. */
-      gsap.set(card, { x: 0, opacity: 1 });
+      /* Restore the original GSAP card entrance. The card itself is the
+         animated chapter; the native fallback is prevented from applying a
+         competing transform. */
+      gsap.set(card, { x: i % 2 === 0 ? -22 : 22, opacity: 1 });
       gsap.set([photo, body, name, dateTime, venue, description, dresscode].filter(Boolean), {
         opacity: 1,
         y: 0
