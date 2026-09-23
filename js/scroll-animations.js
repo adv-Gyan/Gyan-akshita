@@ -388,12 +388,8 @@ window.ScrollAnimations = (function () {
         duration: .18,
         ease: 'power2.out'
       })
-      .to(card, {
-        opacity: 1,
-        duration: .58,
-        ease: 'power3.out',
-        immediateRender: false
-      }, '-=.16')
+      /* Keep the card box completely stationary. Only its media/details and
+         the timeline dot participate in the entrance choreography. */
       .to(photo, {
         opacity: 1,
         scale: 1,
@@ -425,6 +421,8 @@ window.ScrollAnimations = (function () {
         immediateRender: false
       }, '-=.16');
     });
+
+    let timelineProgress = 0;
 
     const draw = () => {
       const rect = track.getBoundingClientRect();
@@ -478,7 +476,10 @@ window.ScrollAnimations = (function () {
 
       const len = path.getTotalLength();
       path.dataset.length = len;
-      gsap.set(path, { strokeDasharray: len, strokeDashoffset: len });
+      gsap.set(path, {
+        strokeDasharray: len,
+        strokeDashoffset: len * (1 - timelineProgress)
+      });
       gsap.set(glow, { opacity: 0 });
     };
 
@@ -486,11 +487,11 @@ window.ScrollAnimations = (function () {
 
     let redrawTimer = 0;
     const redraw = () => {
-      cancelAnimationFrame(redrawTimer);
-      redrawTimer = requestAnimationFrame(() => {
+      window.clearTimeout(redrawTimer);
+      redrawTimer = window.setTimeout(() => {
         draw();
         ScrollTrigger.refresh();
-      });
+      }, 120);
     };
     window.addEventListener('resize', redraw, { passive: true });
     window.addEventListener('load', redraw, { once: true });
@@ -503,6 +504,7 @@ window.ScrollAnimations = (function () {
       onRefresh: draw,
       onUpdate: self => {
         const p = Math.max(0, Math.min(1, self.progress));
+        timelineProgress = p;
         const len = Number(path.dataset.length || 0);
         if (!len) return;
 
@@ -683,7 +685,7 @@ window.ScrollAnimations = (function () {
      * rather than a large entrance animation, so the page feels continuous
      * while scrolling instead of stopping between sections.
      */
-    qsa('#main-invite > .section:not(#section-hero)').forEach(section => {
+    qsa('#main-invite > .section:not(#section-hero):not(#section-events)').forEach(section => {
       const inner = qs('.section-inner', section);
       if (inner) {
         gsap.fromTo(inner,
@@ -762,7 +764,11 @@ window.ScrollAnimations = (function () {
       .forEach(el => reveal(el, 'native-divider-reveal'));
     reveal(qs('#section-message .message-card'), 'native-message-reveal');
     reveal(qs('#section-events .section-header'), 'native-slide-up');
-    qsa('.event-item').forEach((item, i) => reveal(item, i % 2 === 0 ? 'native-event-left' : 'native-event-right'));
+    qsa('.event-item').forEach(item => {
+      /* Event cards stay spatially fixed. The native fallback is opacity-only
+         and starts visible so a delayed observer can never hide the chapter. */
+      reveal(item, 'native-event-static');
+    });
     reveal(qs('#section-countdown .section-header'), 'native-slide-up');
     qsa('.countdown-unit').forEach((unit, i) => {
       unit.style.setProperty('--native-delay', (i * 120) + 'ms');
@@ -864,6 +870,10 @@ window.ScrollAnimations = (function () {
         return;
       }
       gsap.registerPlugin(ScrollTrigger);
+      ScrollTrigger.config({
+        ignoreMobileResize: true,
+        limitCallbacks: true
+      });
       initHero();
       initPhoto();
       initMessage();
@@ -873,9 +883,18 @@ window.ScrollAnimations = (function () {
       initRSVP();
       initSectionTransitions();
       initDividersAndFooter();
-      inlineAndAnimateDividers();
+      inlineAndAnimateDividers().finally(() => {
+        requestAnimationFrame(() => ScrollTrigger.refresh(true));
+      });
       initGenericReveals();
-      ScrollTrigger.refresh();
+
+      /* Recalculate after fonts and late image/layout work settle. */
+      if (document.fonts?.ready) {
+        document.fonts.ready.then(() => ScrollTrigger.refresh(true)).catch(() => {});
+      }
+      window.addEventListener('load', () => ScrollTrigger.refresh(true), { once: true });
+      setTimeout(() => ScrollTrigger.refresh(true), 350);
+      ScrollTrigger.refresh(true);
     };
     waitForGSAP();
   }

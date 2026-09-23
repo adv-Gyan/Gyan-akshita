@@ -183,11 +183,10 @@ body.invite-open #gold-particles{opacity:.72;}
 .native-animation-target.native-message-reveal {
   transform: translateY(30px) scale(.985);
 }
-.native-animation-target.native-event-left {
-  transform: translateX(-42px);
-}
-.native-animation-target.native-event-right {
-  transform: translateX(42px);
+.native-animation-target.native-event-static {
+  opacity: 1 !important;
+  transform: none !important;
+  animation: none !important;
 }
 .native-animation-target.native-countdown {
   transform: translateY(28px) scale(.9);
