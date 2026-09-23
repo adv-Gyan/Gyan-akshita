@@ -707,3 +707,24 @@ body.invite-open #gold-particles{opacity:.72;}
 .section-events .event-card-body > * {
   opacity: 1 !important;
 }
+
+
+/* Petal layer — softer than the previous dust treatment. */
+#gold-particles {
+  opacity: 0;
+  mix-blend-mode: screen;
+  transition: opacity 1.8s ease;
+}
+body.invite-open #gold-particles {
+  opacity: .82;
+}
+@media (max-width: 600px) {
+  body.invite-open #gold-particles {
+    opacity: .72;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #gold-particles {
+    display: none !important;
+  }
+}
