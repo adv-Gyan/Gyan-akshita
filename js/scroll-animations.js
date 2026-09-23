@@ -253,13 +253,10 @@ window.ScrollAnimations = (function () {
       const points = items.map((item, i) => {
         const dot = qs('.event-dot', item);
         const dotRect = dot?.getBoundingClientRect();
-        /* Deliberately exaggerate the alternating offsets so the S-curve
-           remains clearly visible on narrow screens, while the end points
-           still meet their event dots. */
-        const sideOffset = Math.max(42, Math.min(82, trackRect.width * 0.17));
-        const waveX = i % 2 === 0 ? -sideOffset * .55 : sideOffset * .55;
+        /* Anchor every point to its event dot. The S-shape is created
+           by alternating the Bezier control points between the dots. */
         return {
-          x: trackRect.width / 2 + waveX,
+          x: trackRect.width / 2,
           y: dotRect ? dotRect.top - trackRect.top + dotRect.height / 2 : item.offsetTop
         };
       });
@@ -268,11 +265,12 @@ window.ScrollAnimations = (function () {
       let d = `M ${points[0].x} ${points[0].y}`;
       for (let i = 1; i < points.length; i++) {
         const prev = points[i - 1], cur = points[i];
-        const dy = Math.max(28, Math.abs(cur.y - prev.y) * .34);
-        const sway = Math.max(18, Math.min(54, Math.abs(cur.y - prev.y) * .16));
-        const sign = i % 2 === 0 ? -1 : 1;
-        const c1x = prev.x + (cur.x - prev.x) * .45 + sway * sign;
-        const c2x = cur.x - (cur.x - prev.x) * .45 + sway * sign;
+        const dy = Math.max(34, Math.abs(cur.y - prev.y) * .34);
+        const sway = Math.max(34, Math.min(78, trackRect.width * .16));
+        /* Alternate the bulge left/right for a clean editorial S-curve. */
+        const sign = i % 2 === 1 ? -1 : 1;
+        const c1x = prev.x + sway * sign;
+        const c2x = cur.x + sway * sign;
         d += ` C ${c1x} ${prev.y + dy}, ${c2x} ${cur.y - dy}, ${cur.x} ${cur.y}`;
       }
       const svg = timelineLine.querySelector('svg.timeline-line-svg');
