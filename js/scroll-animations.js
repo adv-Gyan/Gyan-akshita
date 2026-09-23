@@ -237,23 +237,16 @@ window.ScrollAnimations = (function () {
       svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
       svg.classList.add('timeline-line-svg');
       svg.setAttribute('aria-hidden', 'true');
+      svg.setAttribute('preserveAspectRatio', 'none');
       line.appendChild(svg);
     }
 
-    let basePath = svg.querySelector('.timeline-line-base');
-    if (!basePath) {
-      basePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-      basePath.classList.add('timeline-line-base');
-      basePath.setAttribute('fill', 'none');
-      svg.appendChild(basePath);
-    }
-
-    let drawPath = svg.querySelector('.timeline-line-path');
-    if (!drawPath) {
-      drawPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-      drawPath.classList.add('timeline-line-path');
-      drawPath.setAttribute('fill', 'none');
-      svg.appendChild(drawPath);
+    let path = svg.querySelector('.timeline-line-path');
+    if (!path) {
+      path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.classList.add('timeline-line-path');
+      path.setAttribute('fill', 'none');
+      svg.appendChild(path);
     }
 
     let glow = qs('.timeline-line-glow', line);
@@ -264,63 +257,60 @@ window.ScrollAnimations = (function () {
       line.appendChild(glow);
     }
 
-    const draw = () => {
+    /* A decorative flourish is not a rail. It is a single elegant stroke
+       drawn through the empty space BETWEEN cards, with small tails that
+       terminate at each event dot. */
+    const drawPath = () => {
       const trackRect = track.getBoundingClientRect();
       const centerX = trackRect.width / 2;
-      const cardWidth = Math.min(trackRect.width * 0.80, 340);
-      const gutterX = Math.min(28, Math.max(18, trackRect.width * 0.045));
-
-      /* The decorative flourish does not connect through the cards.
-         It travels only in the empty gutter between alternating cards. */
       const anchors = items.map((item, i) => {
         const card = qs('.event-card', item);
         const cardRect = card?.getBoundingClientRect();
         const cardTop = cardRect ? cardRect.top - trackRect.top : item.offsetTop;
         const cardBottom = cardRect ? cardRect.bottom - trackRect.top : item.offsetTop + item.offsetHeight;
         const isLeft = i % 2 === 0;
-        const edgeX = isLeft
-          ? centerX - cardWidth / 2 - gutterX
-          : centerX + cardWidth / 2 + gutterX;
-        return {
-          dotX: edgeX,
-          dotY: cardTop,
-          startY: cardTop + 6,
-          endY: cardBottom - 6,
-          side: isLeft ? -1 : 1
-        };
-      });
 
+        /* Dot sits just outside the card's inner edge. */
+        const dotX = isLeft
+          ? centerX + Math.min(24, Math.max(16, trackRect.width * .045))
+          : centerX - Math.min(24, Math.max(16, trackRect.width * .045));
+
+        return { x: dotX, top: cardTop, bottom: cardBottom, y: cardTop, isLeft };
+      });
       if (anchors.length < 2) return;
 
-      let d = `M ${anchors[0].dotX} ${anchors[0].startY}`;
+      let d = `M ${anchors[0].x} ${anchors[0].y}`;
 
       for (let i = 0; i < anchors.length - 1; i++) {
         const a = anchors[i];
         const b = anchors[i + 1];
-        const y1 = a.endY;
-        const y2 = b.startY;
-        const gap = Math.max(70, y2 - y1);
-        const loop = Math.min(76, Math.max(28, trackRect.width * 0.13));
-        const dir = a.side < 0 ? 1 : -1;
+        const gapStart = a.bottom + 7;
+        const gapEnd = b.top - 7;
+        const gap = Math.max(70, gapEnd - gapStart);
+        const loop = Math.min(78, Math.max(34, trackRect.width * .13));
+        const direction = i % 2 === 0 ? -1 : 1;
 
-        d += ` L ${a.dotX} ${y1}`;
-        d += ` C ${a.dotX + loop * dir} ${y1 + gap * .16}, ${centerX + loop * dir} ${y1 + gap * .28}, ${centerX} ${y1 + gap * .50}`;
-        d += ` C ${centerX - loop * dir} ${y2 - gap * .28}, ${b.dotX + loop * -b.side} ${y2 - gap * .16}, ${b.dotX} ${y2}`;
-        d += ` L ${b.dotX} ${b.startY}`;
+        /* Exit vertically along the card edge first, then make one clean
+           ink-like flourish across the gap and return to the next edge. */
+        d += ` L ${a.x} ${gapStart}`;
+        d += ` C ${a.x + loop * direction} ${gapStart + gap * .12},
+                 ${centerX + loop * direction} ${gapStart + gap * .18},
+                 ${centerX} ${gapStart + gap * .42}`;
+        d += ` C ${centerX - loop * direction} ${gapStart + gap * .70},
+                 ${b.x + loop * -direction} ${gapEnd - gap * .12},
+                 ${b.x} ${gapEnd}`;
+        d += ` L ${b.x} ${b.y}`;
       }
 
       svg.setAttribute('viewBox', `0 0 ${Math.max(1, trackRect.width)} ${Math.max(1, trackRect.height)}`);
       svg.setAttribute('width', trackRect.width);
       svg.setAttribute('height', trackRect.height);
-      basePath.setAttribute('d', d);
-      drawPath.setAttribute('d', d);
+      path.setAttribute('d', d);
 
-      const baseLen = basePath.getTotalLength();
-      const len = drawPath.getTotalLength();
-
-      gsap.set(basePath, { strokeDasharray: baseLen, strokeDashoffset: 0 });
-      gsap.set(drawPath, { strokeDasharray: len, strokeDashoffset: len });
-      drawPath.dataset.length = len;
+      const len = path.getTotalLength();
+      path.dataset.length = len;
+      gsap.set(path, { strokeDasharray: len, strokeDashoffset: len });
+      gsap.set(glow, { opacity: 0 });
     };
 
     items.forEach((item, i) => {
@@ -328,29 +318,28 @@ window.ScrollAnimations = (function () {
       const dot = qs('.event-dot', item);
       if (!card || !dot) return;
 
-      gsap.set(card, { x: i % 2 === 0 ? -22 : 22 });
+      gsap.set(card, { x: i % 2 === 0 ? -24 : 24 });
 
-      const tl = gsap.timeline({
+      gsap.timeline({
         scrollTrigger: {
           trigger: item,
           start: 'top 84%',
           once: true
         }
-      });
-      tl.fromTo(dot,
+      })
+      .fromTo(dot,
         { opacity: .25, scale: .72 },
-        { opacity: 1, scale: 1.05, duration: .48, ease: 'back.out(2)', immediateRender: false }
+        { opacity: 1, scale: 1.04, duration: .5, ease: 'back.out(1.8)', immediateRender: false }
       )
-      .to(dot, { scale: 1, duration: .16 }, '-=.07')
       .to(card,
-        { x: 0, y: 0, opacity: 1, duration: .7, ease: 'power3.out', immediateRender: false },
-        '-=.24'
+        { x: 0, y: 0, opacity: 1, duration: .72, ease: 'power3.out', immediateRender: false },
+        '-=.22'
       );
     });
 
-    requestAnimationFrame(draw);
+    requestAnimationFrame(drawPath);
 
-    const redraw = () => requestAnimationFrame(draw);
+    const redraw = () => requestAnimationFrame(drawPath);
     window.addEventListener('resize', redraw, { passive: true });
     window.addEventListener('load', () => {
       redraw();
@@ -359,26 +348,26 @@ window.ScrollAnimations = (function () {
 
     ScrollTrigger.create({
       trigger: track,
-      start: 'top 86%',
-      end: 'bottom 68%',
-      scrub: .55,
-      onRefresh: draw,
+      start: 'top 88%',
+      end: 'bottom 72%',
+      scrub: .6,
+      onRefresh: drawPath,
       onUpdate: self => {
-        const p = Math.max(0, Math.min(1, self.progress));
-        const len = Number(drawPath.dataset.length || 0);
+        const progress = Math.max(0, Math.min(1, self.progress));
+        const len = Number(path.dataset.length || 0);
+        if (!len) return;
 
-        if (len) {
-          gsap.set(drawPath, { strokeDashoffset: len * (1 - p) });
-          try {
-            const point = drawPath.getPointAtLength(len * p);
-            gsap.set(glow, {
-              x: point.x,
-              y: point.y,
-              opacity: p > .015 && p < .995 ? 1 : 0
-            });
-          } catch (_) {
-            gsap.set(glow, { opacity: 0 });
-          }
+        gsap.set(path, { strokeDashoffset: len * (1 - progress) });
+
+        try {
+          const point = path.getPointAtLength(len * progress);
+          gsap.set(glow, {
+            x: point.x,
+            y: point.y,
+            opacity: progress > .015 && progress < .995 ? 1 : 0
+          });
+        } catch (_) {
+          gsap.set(glow, { opacity: 0 });
         }
       }
     });
