@@ -1580,3 +1580,43 @@
 @media (max-width:600px){
   .section-events .timeline-line-path { stroke-width:1.05; }
 }
+
+
+/* FINAL: clean center-to-center calligraphic ribbon. The stroke is a single
+   ornamental path, with the cards kept clear of its central corridor. */
+.section-events .event-card {
+  z-index: 3;
+}
+.section-events .event-dot {
+  z-index: 5;
+}
+.section-events .timeline-line {
+  z-index: 4;
+  overflow: visible;
+}
+.section-events .timeline-line-svg {
+  z-index: 4;
+  overflow: visible;
+}
+.section-events .timeline-line-path {
+  stroke: #E8C97A;
+  stroke-width: 1.25;
+  opacity: .98;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  filter:
+    drop-shadow(0 0 3px rgba(232,201,122,.55))
+    drop-shadow(0 0 8px rgba(201,168,76,.22));
+}
+.section-events .timeline-line-glow {
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
+  z-index: 6;
+  box-shadow:
+    0 0 5px rgba(255,245,201,.96),
+    0 0 14px rgba(232,201,122,.72),
+    0 0 24px rgba(201,168,76,.22);
+}
