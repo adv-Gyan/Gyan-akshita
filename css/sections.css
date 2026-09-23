@@ -913,3 +913,58 @@
   .section-break::after { width: 68%; }
   .section-break-ornament { width: 24px; height: 24px; }
 }
+
+
+/* Compact section rhythm */
+.section-events,
+.section-countdown,
+.section-venue {
+  padding-top: clamp(2.3rem, 7vw, 3.5rem);
+  padding-bottom: clamp(2.5rem, 8vw, 4rem);
+}
+
+.section-events .section-header,
+.section-countdown .section-header,
+.section-venue .section-header {
+  margin-bottom: clamp(1.35rem, 4vw, 2.2rem);
+}
+
+.events-container {
+  gap: clamp(2rem, 6vw, 3.25rem);
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.timeline-track {
+  padding-top: .5rem;
+  padding-bottom: .5rem;
+}
+
+.section-countdown .section-inner,
+.section-venue .section-inner {
+  padding-top: 0;
+}
+
+.section-countdown .section-header,
+.section-venue .section-header {
+  gap: .65rem;
+}
+
+@media (max-width: 600px) {
+  .section-events,
+  .section-countdown,
+  .section-venue {
+    padding-top: 2rem;
+    padding-bottom: 2.8rem;
+  }
+
+  .section-events .section-header,
+  .section-countdown .section-header,
+  .section-venue .section-header {
+    margin-bottom: 1.15rem;
+  }
+
+  .events-container {
+    gap: 2.15rem;
+  }
+}
