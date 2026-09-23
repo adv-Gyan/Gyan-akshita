@@ -1167,30 +1167,25 @@
   overflow:visible;
   pointer-events:none;
 }
+.timeline-line-svg {
+  z-index: 1;
+}
 .timeline-line-path {
-  stroke:rgba(232,201,122,.74);
-  stroke-width:1.15;
+  stroke:rgba(232,201,122,.88);
+  stroke-width:1.45;
   stroke-linecap:round;
   fill:none;
   vector-effect:non-scaling-stroke;
-  filter:drop-shadow(0 0 5px rgba(201,168,76,.30));
+  filter:drop-shadow(0 0 6px rgba(201,168,76,.34));
+  opacity:.95;
 }
-.timeline-line-path::after { content:''; }
+/* Remove the old straight center rail — the SVG is now the only connector. */
 .timeline-line::after {
-  content:'';
-  position:absolute;
-  left:50%;
-  top:0;
-  bottom:0;
-  width:1px;
-  transform:translateX(-50%);
-  background:linear-gradient(180deg,rgba(201,168,76,.06),rgba(201,168,76,.12) 14%,rgba(201,168,76,.06) 86%,rgba(201,168,76,0));
-  opacity:.55;
-  z-index:0;
+  display:none;
 }
 .timeline-line-glow {
   z-index:4;
 }
 @media (max-width:600px){
-  .timeline-line-path{stroke-width:1px;}
+  .timeline-line-path{stroke-width:1.25px;}
 }
