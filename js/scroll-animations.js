@@ -134,7 +134,7 @@ window.ScrollAnimations = (function () {
     gsap.set(arch, { scale: .82, opacity: 0 });
 
     gsap.timeline({ defaults: { ease: 'power3.out' } })
-      .to(arch, { scale: 1, opacity: 1, duration: 1.25, filter: 'drop-shadow(0 0 18px rgba(201,168,76,.3))' })
+      .to(arch, { scale: 1, opacity: 0.34, duration: 1.25, filter: 'drop-shadow(0 0 14px rgba(201,168,76,.12))' })
       .to(monogram, { opacity: 1, y: 0, filter: 'blur(0)', duration: .55 }, '-=.6')
       .to(bride, { opacity: 1, x: 0, filter: 'blur(0)', duration: .8 }, '-=.3')
       .to(groom, { opacity: 1, x: 0, filter: 'blur(0)', duration: .8 }, '<')
