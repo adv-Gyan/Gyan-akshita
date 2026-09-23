@@ -13,7 +13,7 @@
 
   <!-- CSS -->
   <link rel="stylesheet" href="css/variables.css?v=20260923countdown2" />
-  <link rel="stylesheet" href="css/envelope.css?v=20260923music1" />
+  <link rel="stylesheet" href="css/envelope.css?v=20260923music2" />
   <link rel="stylesheet" href="css/invitation.css?v=20260923countdown2" />
   <link rel="stylesheet" href="css/sections.css?v=20260923countdown2" />
   <link rel="stylesheet" href="css/animations.css?v=20260923countdown2" />
@@ -65,15 +65,6 @@
       <span class="tap-hint-line"></span>
     </div>
 
-    <!-- Sound toggle (visible after interaction) -->
-    <button id="sound-toggle"
-            class="sound-toggle hidden"
-            aria-label="Toggle background music"
-            title="Toggle music">
-      <span class="sound-icon sound-on">♪</span>
-      <span class="sound-icon sound-off hidden">♪̶</span>
-    </button>
-
   </div><!-- /#envelope-scene -->
 
 
@@ -81,6 +72,15 @@
        SCREEN 2 — MAIN WEDDING INVITATION
   ════════════════════════════════════════════════════════ -->
   <div id="main-invite" aria-hidden="true">
+
+    <!-- Wedding music control -->
+    <button id="sound-toggle"
+            class="sound-toggle hidden"
+            aria-label="Play wedding music"
+            title="Play music">
+      <span class="sound-icon sound-on">♪</span>
+      <span class="sound-icon sound-off hidden">♪̶</span>
+    </button>
 
     <!-- ── SECTION: HERO ─────────────────────────────────── -->
     <section id="section-hero" class="section section-hero" aria-labelledby="hero-names">
@@ -413,7 +413,7 @@
   <script src="js/scroll-animations.js?v=20260923countdown2" defer></script>
   <script src="js/countdown.js?v=20260923countdown2" defer></script>
   <script src="js/rsvp.js?v=20260923countdown2" defer></script>
-  <script src="js/sound.js?v=20260923music1" defer></script>
+  <script src="js/sound.js?v=20260923music2" defer></script>
 
 </body>
 </html>
