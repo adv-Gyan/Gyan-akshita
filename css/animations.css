@@ -214,6 +214,21 @@ body.invite-open #gold-particles{opacity:.72;}
   animation-name: nativePhotoReveal;
   animation-duration: 1s;
 }
+
+/* Section ornaments also need a native path when ScrollTrigger is delayed. */
+.native-divider-reveal {
+  clip-path: inset(0 50% 0 50%);
+}
+.native-divider-reveal.native-is-visible {
+  animation-name: nativeDividerReveal;
+  animation-duration: .8s;
+  animation-timing-function: cubic-bezier(.22,.61,.36,1);
+  animation-fill-mode: forwards;
+}
+@keyframes nativeDividerReveal {
+  from { opacity: 0; clip-path: inset(0 50% 0 50%); }
+  to { opacity: 1; clip-path: inset(0 0% 0 0%); }
+}
 @keyframes nativeCinematicReveal {
   from { opacity: 0; transform: translateY(28px); }
   to { opacity: 1; transform: translateY(0); }
