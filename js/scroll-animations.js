@@ -357,7 +357,10 @@ window.ScrollAnimations = (function () {
       /* Restore the original GSAP card entrance. The card itself is the
          animated chapter; the native fallback is prevented from applying a
          competing transform. */
-      gsap.set(card, { opacity: 0 });
+      /* Keep the card itself paintable at all times. The entrance animation
+       only fades/scales the inner content, so a late ScrollTrigger init or
+       cached mobile session cannot leave an entire event card hidden. */
+      gsap.set(card, { opacity: 1, clearProps: 'opacity' });
       gsap.set([photo, body, name, dateTime, venue, description, dresscode].filter(Boolean), {
         opacity: 1,
         y: 0
