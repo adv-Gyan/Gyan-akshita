@@ -291,3 +291,25 @@ body.invite-open {
     right: 16px;
   }
 }
+
+
+/* ── Invitation-page music control ───────────────────────── */
+#main-invite > .sound-toggle {
+  display: flex;
+  position: fixed;
+  z-index: 9999;
+  bottom: max(22px, env(safe-area-inset-bottom));
+  right: max(22px, env(safe-area-inset-right));
+}
+
+#main-invite > .sound-toggle.hidden {
+  display: none;
+}
+
+@media (max-width: 480px) {
+  #main-invite > .sound-toggle {
+    width: 44px;
+    height: 44px;
+    right: 16px;
+  }
+}
