@@ -531,3 +531,184 @@
 .hero-arch-svg{transform-origin:50% 100%;}
 .message-card{overflow:hidden;}
 @media(max-width:600px){.hero-name{letter-spacing:.07em}.hero-content{padding-left:12px;padding-right:12px}}
+
+
+/* ============================================================
+   ELEGANT HERO REFINEMENT
+   Single-frame editorial treatment: fewer ornaments, more space,
+   quieter gold, and stronger typographic hierarchy.
+   ============================================================ */
+
+.section-hero {
+  min-height: 100svh;
+  background: #100404;
+}
+
+.hero-bg {
+  background-position: center center;
+  transform: scale(1.04);
+}
+
+.hero-overlay {
+  background:
+    radial-gradient(circle at 50% 46%, rgba(16,4,4,0.08) 0%, rgba(16,4,4,0.28) 46%, rgba(8,2,2,0.72) 100%),
+    linear-gradient(180deg, rgba(8,2,2,0.34) 0%, rgba(12,3,3,0.38) 48%, rgba(8,2,2,0.72) 100%);
+}
+
+/* The photograph already contains the Mughal architecture.
+   Keep the SVG arch as a very quiet atmospheric layer rather than
+   stacking another dominant frame on top of it. */
+.hero-arch-svg {
+  width: min(82vw, 350px);
+  opacity: 0.22;
+  filter: drop-shadow(0 0 12px rgba(201,168,76,0.08));
+}
+
+.hero-content {
+  gap: 0;
+  padding: 12svh 28px 15svh;
+  justify-content: center;
+}
+
+.hero-content::before {
+  content: '';
+  position: absolute;
+  inset: 10.5% 7.5%;
+  border: 1px solid rgba(232,201,122,0.22);
+  pointer-events: none;
+  opacity: 0.9;
+}
+
+.corner-ornament {
+  display: none;
+}
+
+.hero-monogram {
+  font-size: clamp(2.2rem, 9vw, 3.5rem);
+  color: rgba(232,201,122,0.9);
+  margin-bottom: 20px;
+  letter-spacing: 0.01em;
+  text-shadow: 0 2px 18px rgba(0,0,0,0.45);
+}
+
+.hero-names {
+  gap: 2px;
+}
+
+.hero-name {
+  font-size: clamp(2.65rem, 11vw, 4.6rem);
+  letter-spacing: 0.075em;
+  line-height: 1.08;
+  text-shadow: 0 3px 18px rgba(0,0,0,0.58);
+}
+
+.hero-and {
+  font-size: clamp(1.35rem, 5vw, 2rem);
+  line-height: 1;
+  color: rgba(232,201,122,0.95);
+  margin: 5px 0;
+}
+
+.hero-divider {
+  width: min(34vw, 105px);
+  margin: 22px 0 18px;
+  opacity: 0.42;
+}
+
+.hero-invite-line {
+  max-width: 290px;
+  font-size: 0.78rem;
+  line-height: 1.85;
+  letter-spacing: 0.105em;
+  color: rgba(248,242,230,0.72);
+}
+
+.hero-date {
+  margin-top: 26px;
+  padding: 0 0 9px;
+  border: 0;
+  border-bottom: 1px solid rgba(232,201,122,0.55);
+  min-width: 185px;
+}
+
+.hero-date::before,
+.hero-date::after {
+  content: '';
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--color-gold-light);
+  top: auto;
+  bottom: -2px;
+  transform: none;
+  opacity: 0.85;
+}
+
+.hero-date::before { left: 0; }
+.hero-date::after { right: 0; }
+
+.hero-date-text {
+  font-size: 0.72rem;
+  letter-spacing: 0.24em;
+  color: rgba(232,201,122,0.9);
+}
+
+.scroll-indicator {
+  bottom: 22px;
+  gap: 7px;
+  opacity: 0.62;
+}
+
+.scroll-line {
+  height: 24px;
+  opacity: 0.42;
+}
+
+.scroll-label {
+  font-size: 0.52rem;
+  letter-spacing: 0.24em;
+  color: rgba(232,201,122,0.52);
+}
+
+@media (max-width: 600px) {
+  .hero-content {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  .hero-content::before {
+    inset: 8.5% 6%;
+  }
+
+  .hero-monogram {
+    margin-bottom: 17px;
+  }
+
+  .hero-name {
+    font-size: clamp(2.55rem, 12vw, 3.55rem);
+  }
+
+  .hero-divider {
+    margin-top: 19px;
+    margin-bottom: 15px;
+  }
+
+  .hero-invite-line {
+    max-width: 265px;
+    font-size: 0.72rem;
+  }
+
+  .hero-date {
+    margin-top: 23px;
+  }
+}
+
+@media (min-width: 768px) {
+  .hero-name {
+    font-size: clamp(3.2rem, 7vw, 4.8rem);
+  }
+
+  .hero-content::before {
+    inset: 8% 18%;
+  }
+}
