@@ -1077,3 +1077,27 @@
     font-size: .68rem;
   }
 }
+
+
+/* Scroll-linked event connector glow: a small luminous point travels
+   down the connecting line as the guest scrolls through the events. */
+.timeline-line-glow {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 7px;
+  height: 7px;
+  margin-left: -3.5px;
+  margin-top: -3.5px;
+  border-radius: 50%;
+  background: var(--color-gold-light);
+  box-shadow:
+    0 0 5px rgba(232,201,122,.95),
+    0 0 12px rgba(201,168,76,.62),
+    0 0 24px rgba(201,168,76,.28);
+  transform: translateY(0);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 3;
+  will-change: transform, opacity;
+}
