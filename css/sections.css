@@ -1189,3 +1189,124 @@
 @media (max-width:600px){
   .timeline-line-path{stroke-width:1.25px;}
 }
+
+
+/* ============================================================
+   ALTERNATING EVENT CARDS + CALLIGRAPHIC S-LINE
+   The connector lives in the central gutter; cards alternate on
+   both desktop and mobile so the stroke never crosses event copy.
+   ============================================================ */
+.event-item {
+  position: relative;
+  display: block;
+  min-height: 1px;
+}
+
+.events-container {
+  gap: clamp(2.75rem, 7vw, 4.5rem);
+}
+
+.event-card {
+  width: min(82vw, 360px);
+  margin: 0;
+  position: relative;
+  z-index: 2;
+}
+
+.event-item:nth-child(odd) .event-card {
+  margin-right: auto;
+  margin-left: 0;
+}
+
+.event-item:nth-child(even) .event-card {
+  margin-left: auto;
+  margin-right: 0;
+}
+
+/* Anchor the gold dot to the inner edge of the alternating card. */
+.event-dot {
+  top: 0;
+  left: auto;
+  right: auto;
+  width: 14px;
+  height: 14px;
+  transform: translateY(0);
+  z-index: 4;
+}
+
+.event-item:nth-child(odd) .event-dot {
+  left: min(82vw, 360px);
+  transform: translateX(-50%);
+}
+
+.event-item:nth-child(even) .event-dot {
+  left: calc(100% - min(82vw, 360px));
+  transform: translateX(-50%);
+}
+
+.timeline-line {
+  z-index: 1;
+}
+
+.timeline-line-svg {
+  z-index: 1;
+  overflow: visible;
+}
+
+.timeline-line-path {
+  stroke: rgba(232,201,122,.92);
+  stroke-width: 1.65;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+  vector-effect: non-scaling-stroke;
+  filter:
+    drop-shadow(0 0 3px rgba(232,201,122,.48))
+    drop-shadow(0 0 9px rgba(201,168,76,.22));
+  opacity: .92;
+}
+
+.timeline-line-glow {
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  box-shadow:
+    0 0 6px rgba(255,245,201,.98),
+    0 0 14px rgba(232,201,122,.72),
+    0 0 28px rgba(201,168,76,.30);
+}
+
+/* Keep the central gutter clean even where cards are tall. */
+.event-item::after {
+  content: '';
+  display: block;
+  height: 0;
+}
+
+@media (max-width: 600px) {
+  .events-container {
+    gap: 3rem;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .event-card {
+    width: min(82vw, 330px);
+  }
+
+  .event-item:nth-child(odd) .event-dot {
+    left: min(82vw, 330px);
+  }
+
+  .event-item:nth-child(even) .event-dot {
+    left: calc(100% - min(82vw, 330px));
+  }
+
+  .event-card-body {
+    padding: 1.1rem;
+  }
+
+  .event-card-name {
+    font-size: clamp(1.05rem, 4.6vw, 1.35rem);
+  }
+}
