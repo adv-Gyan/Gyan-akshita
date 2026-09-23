@@ -102,10 +102,8 @@ window.ScrollAnimations = (function () {
     const hero = qs('#section-hero');
     if (!hero || !canAnimate()) return;
 
-    /* Remove the pre-paint guard immediately before GSAP sets the
-       initial off-screen positions, so the first visible frame is
-       already the intended animation state. */
-    document.getElementById('main-invite')?.classList.add('hero-animation-ready');
+    const main = document.getElementById('main-invite');
+    main?.classList.add('hero-animation-ready');
 
     const bg = qs('.hero-bg', hero);
     const arch = qs('.hero-arch-frame', hero);
@@ -119,10 +117,13 @@ window.ScrollAnimations = (function () {
     const cue = qs('.scroll-indicator', hero);
     const dateText = qs('.hero-date-text', hero);
 
+    if (!monogram || !bride || !groom) return;
+
+    /* Run the entrance faster and with a more editorial hierarchy. */
     if (dateText && !dateText.dataset.splitLetters) {
       const text = dateText.textContent;
       dateText.textContent = '';
-      Array.from(text).forEach((char) => {
+      Array.from(text).forEach(char => {
         const span = document.createElement('span');
         span.className = char === ' ' ? 'date-letter date-space' : 'date-letter';
         span.textContent = char;
@@ -130,36 +131,97 @@ window.ScrollAnimations = (function () {
       });
       dateText.dataset.splitLetters = 'true';
     }
+
     const dateLetters = dateText ? qsa('.date-letter', dateText) : [];
 
-    gsap.set([monogram, bride, groom, amp, divider, invite, date, cue], { opacity: 0, y: 18, filter: 'blur(7px)' });
-    gsap.set(bride, { x: -90 });
-    gsap.set(groom, { x: 90 });
-    gsap.set(amp, { y: 0, scale: .35 });
-    gsap.set(dateLetters, { opacity: 0, y: 8, filter: 'blur(3px)' });
-    gsap.set(arch, { scale: .82, opacity: 0 });
-
-    gsap.timeline({ defaults: { ease: 'power3.out' } })
-      .to(arch, { scale: 1, opacity: 0.34, duration: 1.25, filter: 'drop-shadow(0 0 14px rgba(201,168,76,.12))' })
-      .to(monogram, { opacity: 1, y: 0, filter: 'blur(0)', duration: .55 }, '-=.6')
-      .to(bride, { opacity: 1, x: 0, filter: 'blur(0)', duration: .8 }, '-=.3')
-      .to(groom, { opacity: 1, x: 0, filter: 'blur(0)', duration: .8 }, '<')
-      .to(amp, { opacity: 1, scale: 1, filter: 'blur(0)', duration: .55, ease: 'back.out(1.7)' }, '-=.35')
-      .to(amp, { textShadow: '0 0 8px rgba(255,245,201,.9), 0 0 24px rgba(201,168,76,.55)', duration: .28, yoyo: true, repeat: 1 }, '-=.15')
-      .to(divider, { opacity: 1, y: 0, filter: 'blur(0)', duration: .5 }, '-=.2')
-      .to(invite, { opacity: 1, y: 0, filter: 'blur(0)', duration: .55 }, '-=.18')
-      .to(date, { opacity: 1, y: 0, filter: 'blur(0)', duration: .3 }, '-=.12')
-      .to(dateLetters, { opacity: 1, y: 0, filter: 'blur(0)', duration: .08, stagger: .055, ease: 'power2.out' }, '-=.05')
-      .to(cue, { opacity: 1, y: 0, filter: 'blur(0)', duration: .45 }, '-=.1');
-
-    if (bg) gsap.to(bg, {
-      yPercent: 12, scale: 1.12, ease: 'none',
-      scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: 1.2 }
+    gsap.set([monogram, bride, groom, amp, divider, invite, date, cue], {
+      opacity: 0,
+      filter: 'blur(5px)'
     });
-    gsap.to(arch, {
-      yPercent: -6, ease: 'none',
-      scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: 1.5 }
-    });
+    gsap.set(monogram, { y: 14, scale: .9 });
+    gsap.set(bride, { x: -54, y: 8 });
+    gsap.set(groom, { x: 54, y: 8 });
+    gsap.set(amp, { y: 0, scale: .55 });
+    gsap.set(divider, { y: 8 });
+    gsap.set(invite, { y: 10 });
+    gsap.set(date, { y: 8 });
+    gsap.set(dateLetters, { opacity: 0, y: 5, filter: 'blur(2px)' });
+    gsap.set(arch, { scale: .92, opacity: 0 });
+
+    const tl = gsap.timeline({ defaults: { ease: 'power2.out' } });
+
+    tl.to(arch, {
+      scale: 1,
+      opacity: .28,
+      duration: .55
+    })
+    .to(monogram, {
+      y: 0,
+      scale: 1,
+      opacity: 1,
+      filter: 'blur(0)',
+      duration: .42
+    }, '-=.28')
+    .to(bride, {
+      x: 0, y: 0, opacity: 1,
+      filter: 'blur(0)',
+      duration: .46
+    }, '-=.26')
+    .to(groom, {
+      x: 0, y: 0, opacity: 1,
+      filter: 'blur(0)',
+      duration: .46
+    }, '<')
+    .to(amp, {
+      opacity: 1,
+      scale: 1,
+      filter: 'blur(0)',
+      duration: .3,
+      ease: 'back.out(1.7)'
+    }, '-=.2')
+    .to(divider, {
+      y: 0, opacity: 1, filter: 'blur(0)', duration: .28
+    }, '-=.12')
+    .to(invite, {
+      y: 0, opacity: 1, filter: 'blur(0)', duration: .32
+    }, '-=.1')
+    .to(date, {
+      y: 0, opacity: 1, filter: 'blur(0)', duration: .2
+    }, '-=.08')
+    .to(dateLetters, {
+      opacity: 1, y: 0, filter: 'blur(0)',
+      duration: .06, stagger: .025, ease: 'power2.out'
+    }, '-=.08')
+    .to(cue, {
+      y: 0, opacity: 1, filter: 'blur(0)', duration: .25
+    }, '-=.08');
+
+    if (bg) {
+      gsap.to(bg, {
+        yPercent: 7,
+        scale: 1.08,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: hero,
+          start: 'top top',
+          end: 'bottom top',
+          scrub: .9
+        }
+      });
+    }
+
+    if (arch) {
+      gsap.to(arch, {
+        yPercent: -3,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: hero,
+          start: 'top top',
+          end: 'bottom top',
+          scrub: 1.1
+        }
+      });
+    }
   }
 
   function initPhoto() {
