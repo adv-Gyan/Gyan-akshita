@@ -319,3 +319,26 @@ body.invite-open #gold-particles{opacity:.72;}
 .event-card-name { font-size: clamp(1.45rem, 4.4vw, 1.8rem); }
 .venue-name { font-size: clamp(1.8rem, 5vw, 2.35rem); }
 .success-heading { font-size: clamp(1.7rem, 5vw, 2.2rem); }
+
+
+/* Prevent a first-paint flash: hero copy is invisible until the
+   animation controller has explicitly prepared it. */
+#main-invite:not(.hero-animation-ready) .hero-monogram,
+#main-invite:not(.hero-animation-ready) .hero-name,
+#main-invite:not(.hero-animation-ready) .hero-and,
+#main-invite:not(.hero-animation-ready) .hero-divider,
+#main-invite:not(.hero-animation-ready) .hero-invite-line,
+#main-invite:not(.hero-animation-ready) .hero-date,
+#main-invite:not(.hero-animation-ready) .scroll-indicator {
+  opacity: 0 !important;
+  visibility: hidden;
+}
+#main-invite.hero-animation-ready .hero-monogram,
+#main-invite.hero-animation-ready .hero-name,
+#main-invite.hero-animation-ready .hero-and,
+#main-invite.hero-animation-ready .hero-divider,
+#main-invite.hero-animation-ready .hero-invite-line,
+#main-invite.hero-animation-ready .hero-date,
+#main-invite.hero-animation-ready .scroll-indicator {
+  visibility: visible;
+}
