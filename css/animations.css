@@ -168,3 +168,76 @@ body.invite-open #gold-particles{opacity:.72;}
   opacity: .8 !important;
   clip-path: none !important;
 }
+
+
+/* Native animation fallback for Safari / delayed GSAP */
+.native-animation-target {
+  opacity: 0;
+}
+.native-animation-target.native-photo-reveal {
+  transform: scale(.94);
+}
+.native-animation-target.native-slide-up {
+  transform: translateY(28px);
+}
+.native-animation-target.native-message-reveal {
+  transform: translateY(30px) scale(.985);
+}
+.native-animation-target.native-event-left {
+  transform: translateX(-42px);
+}
+.native-animation-target.native-event-right {
+  transform: translateX(42px);
+}
+.native-animation-target.native-countdown {
+  transform: translateY(28px) scale(.9);
+}
+.native-animation-target.native-venue-reveal {
+  transform: translateY(26px);
+}
+.native-animation-target.native-rsvp-reveal {
+  transform: translateY(26px) scale(.985);
+}
+.native-animation-target.native-is-visible {
+  animation: nativeCinematicReveal .8s cubic-bezier(.22,.61,.36,1) forwards;
+  animation-delay: var(--native-delay, 0ms);
+}
+.native-event-left.native-is-visible,
+.native-event-right.native-is-visible {
+  animation-duration: .72s;
+}
+.native-countdown.native-is-visible {
+  animation-name: nativeCountReveal;
+  animation-duration: .62s;
+}
+.native-photo-reveal.native-is-visible {
+  animation-name: nativePhotoReveal;
+  animation-duration: 1s;
+}
+@keyframes nativeCinematicReveal {
+  from { opacity: 0; transform: translateY(28px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes nativePhotoReveal {
+  from { opacity: 0; transform: scale(.94); filter: brightness(.8); }
+  to { opacity: 1; transform: scale(1); filter: brightness(1); }
+}
+@keyframes nativeCountReveal {
+  from { opacity: 0; transform: translateY(28px) scale(.9); filter: blur(4px); }
+  to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .native-animation-target,
+  .native-animation-target.native-photo-reveal,
+  .native-animation-target.native-slide-up,
+  .native-animation-target.native-message-reveal,
+  .native-animation-target.native-event-left,
+  .native-animation-target.native-event-right,
+  .native-animation-target.native-countdown,
+  .native-animation-target.native-venue-reveal,
+  .native-animation-target.native-rsvp-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+}
