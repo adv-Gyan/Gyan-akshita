@@ -227,19 +227,13 @@ window.ScrollAnimations = (function () {
     const items = qsa('.event-item', section);
     if (!section || !track || !fill || !items.length || !canAnimate()) return;
 
-    /* The event connector is a continuous hand-drawn gold path.
-       Its SVG stroke is revealed by the guest's scroll position. */
-    gsap.set(fill, { opacity: 0, scaleY: 1, transformOrigin: 'center center' });
-
     const timelineLine = qs('.timeline-line', track);
     let timelinePath = qs('.timeline-line-path', track);
     let timelineBasePath = qs('.timeline-line-base', track);
     let timelineGlow = qs('.timeline-line-glow', track);
 
-    if (timelineLine && !timelinePath) {
-      /* The SVG path itself is created inside drawTimelinePath so it can
-         inherit the responsive track dimensions safely. */
-    }
+    gsap.set(fill, { opacity: 0 });
+
     if (timelineLine && !timelineGlow) {
       timelineGlow = document.createElement('span');
       timelineGlow.className = 'timeline-line-glow';
@@ -247,176 +241,201 @@ window.ScrollAnimations = (function () {
       timelineLine.appendChild(timelineGlow);
     }
 
-    const drawTimelinePath = () => {
-      if (!timelineLine) return;
-
-      const trackRect = track.getBoundingClientRect();
-      const anchors = items.map((item) => {
-        const dot = qs('.event-dot', item);
-        const card = qs('.event-card', item);
-        const dotRect = dot?.getBoundingClientRect();
-        const cardRect = card?.getBoundingClientRect();
-        return {
-          x: dotRect
-            ? dotRect.left - trackRect.left + dotRect.width / 2
-            : trackRect.width / 2,
-          y: dotRect
-            ? dotRect.top - trackRect.top + dotRect.height / 2
-            : item.offsetTop,
-          bottomY: cardRect
-            ? cardRect.bottom - trackRect.top + 8
-            : item.offsetTop + item.offsetHeight
-        };
-      });
-      if (anchors.length < 2) return;
-
-      /* Each event connector hugs the outside edge of its card, then
-         sweeps through the empty gap before curling into the next card.
-         This keeps every stroke away from the event text and imagery. */
-      let d = `M ${anchors[0].x} ${anchors[0].y}`;
-      for (let i = 0; i < anchors.length - 1; i++) {
-        const prev = anchors[i];
-        const cur = anchors[i + 1];
-        const nextTop = cur.y;
-        const gapTop = prev.bottomY;
-        const gapBottom = Math.max(gapTop + 24, nextTop - 8);
-        const gapHeight = gapBottom - gapTop;
-        const centerX = trackRect.width / 2;
-        const direction = cur.x > prev.x ? 1 : -1;
-        const flourish = Math.min(90, Math.max(28, trackRect.width * .12));
-
-        d += ` L ${prev.x} ${gapTop}`;
-        d += ` C ${prev.x} ${gapTop + gapHeight * .22}, ${centerX + flourish * direction} ${gapTop + gapHeight * .22}, ${centerX} ${gapTop + gapHeight * .50}`;
-        d += ` C ${centerX - flourish * direction} ${gapTop + gapHeight * .78}, ${cur.x} ${gapBottom - gapHeight * .22}, ${cur.x} ${gapBottom}`;
-        d += ` L ${cur.x} ${cur.y}`;
-      }
-      const svg = timelineLine.querySelector('svg.timeline-line-svg');
-      let timelineSvg = svg;
-      if (!timelineSvg) {
-        timelineSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        timelineSvg.classList.add('timeline-line-svg');
-        timelineSvg.setAttribute('aria-hidden', 'true');
-        timelineSvg.setAttribute('preserveAspectRatio', 'none');
-        timelineLine.appendChild(timelineSvg);
-      }
-
-      timelineBasePath = timelineSvg.querySelector('.timeline-line-base');
-      if (!timelineBasePath) {
-        timelineBasePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        timelineBasePath.classList.add('timeline-line-base');
-        timelineBasePath.setAttribute('fill', 'none');
-        timelineSvg.appendChild(timelineBasePath);
-      }
-
-      timelinePath = timelineSvg.querySelector('.timeline-line-path');
-      if (!timelinePath) {
-        timelinePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        timelinePath.classList.add('timeline-line-path');
-        timelinePath.setAttribute('fill', 'none');
-        timelineSvg.appendChild(timelinePath);
-      }
-
-      timelineSvg.setAttribute('viewBox', `0 0 ${Math.max(1, trackRect.width)} ${Math.max(1, trackRect.height)}`);
-      timelineSvg.setAttribute('width', trackRect.width);
-      timelineSvg.setAttribute('height', trackRect.height);
-      timelineBasePath.setAttribute('d', d);
-      timelinePath.setAttribute('d', d);
-
-      const baseLen = timelineBasePath.getTotalLength();
-      gsap.set(timelineBasePath, {
-        strokeDasharray: baseLen,
-        strokeDashoffset: 0
-      });
-
-      const len = timelinePath.getTotalLength();
-      /* The calligraphic stroke begins hidden and is drawn progressively
-         by the ScrollTrigger below. */
-      gsap.set(timelinePath, {
-        strokeDasharray: len,
-        strokeDashoffset: len
-      });
-      timelinePath.dataset.length = len;
-    };
-
     items.forEach((item, i) => {
       const card = qs('.event-card', item);
       const dot = qs('.event-dot', item);
       const photo = qs('.event-card-photo', item);
       const dress = qs('.event-card-dresscode', item);
-      const x = i % 2 === 0 ? -90 : 90;
 
-      const tl = gsap.timeline({ scrollTrigger: { trigger: item, start: 'top 82%', once: true } });
+      /* Alternate cards from the start on every viewport size. */
+      gsap.set(card, { x: i % 2 === 0 ? -34 : 34 });
+
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: item,
+          start: 'top 82%',
+          once: true
+        }
+      });
+
       tl.fromTo(dot,
-          { opacity: .35, scale: .65 },
-          { opacity: 1, scale: 1.08, duration: .55, ease: 'back.out(2)', immediateRender: false })
-        .to(dot, { scale: 1, duration: .2 }, '-=.08')
-        .fromTo(card,
-          { opacity: 0, x, y: 24 },
-          { opacity: 1, x: 0, y: 0, duration: .8, ease: 'power3.out', immediateRender: false },
-          '-=.3');
+        { opacity: 0.25, scale: 0.65 },
+        { opacity: 1, scale: 1.06, duration: 0.5, ease: 'back.out(2)', immediateRender: false }
+      )
+      .to(dot, { scale: 1, duration: 0.18 }, '-=.08')
+      .to(card, {
+        opacity: 1,
+        x: 0,
+        y: 0,
+        duration: 0.75,
+        ease: 'power3.out',
+        immediateRender: false
+      }, '-=.26');
+
       if (dress) {
         tl.fromTo(dress,
-          { opacity: 0, y: 10, scale: .92 },
-          { opacity: 1, y: 0, scale: 1, duration: .4, ease: 'back.out(1.5)', immediateRender: false },
-          '-=.18');
+          { opacity: 0, y: 8 },
+          { opacity: 1, y: 0, duration: 0.35, ease: 'power2.out', immediateRender: false },
+          '-=.16'
+        );
       }
 
-      if (photo) gsap.to(photo, {
-        scale: 1.08, xPercent: 2.5, ease: 'none',
-        scrollTrigger: { trigger: item, start: 'top bottom', end: 'bottom top', scrub: 1.2 }
-      });
+      if (photo) {
+        gsap.to(photo, {
+          scale: 1.055,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: item,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: 1.25
+          }
+        });
+      }
     });
 
-    requestAnimationFrame(drawTimelinePath);
-    window.addEventListener('load', () => {
-      requestAnimationFrame(() => {
-        drawTimelinePath();
-        ScrollTrigger.refresh();
+    const drawTimelinePath = () => {
+      if (!timelineLine) return;
+
+      const trackRect = track.getBoundingClientRect();
+      const anchors = items.map(item => {
+        const dot = qs('.event-dot', item);
+        const card = qs('.event-card', item);
+        const dotRect = dot?.getBoundingClientRect();
+        const cardRect = card?.getBoundingClientRect();
+
+        return {
+          x: dotRect ? dotRect.left - trackRect.left + dotRect.width / 2 : trackRect.width / 2,
+          y: dotRect ? dotRect.top - trackRect.top + dotRect.height / 2 : item.offsetTop,
+          bottomY: cardRect ? cardRect.bottom - trackRect.top : item.offsetTop + item.offsetHeight,
+          side: cardRect
+            ? (cardRect.left + cardRect.width / 2 < trackRect.left + trackRect.width / 2 ? 'left' : 'right')
+            : (items.indexOf(item) % 2 ? 'right' : 'left')
+        };
       });
-    }, { once: true });
+
+      if (anchors.length < 2) return;
+
+      const centerX = trackRect.width / 2;
+      const corridor = Math.min(56, Math.max(28, trackRect.width * 0.11));
+      let d = `M ${anchors[0].x} ${anchors[0].y}`;
+
+      for (let i = 0; i < anchors.length - 1; i++) {
+        const a = anchors[i];
+        const b = anchors[i + 1];
+
+        /* Leave the card, sweep inward, cross the empty gap, and return. */
+        const outward = a.side === 'left' ? 1 : -1;
+        const inward = b.side === 'left' ? -1 : 1;
+        const gapStart = Math.min(a.bottomY + 2, b.y - 18);
+        const gapEnd = Math.max(gapStart + 18, b.y - 7);
+        const gapHeight = gapEnd - gapStart;
+
+        d += ` C ${a.x + corridor * outward} ${a.y + Math.min(40, gapHeight * .22)}, ${centerX - corridor * .55 * outward} ${gapStart}, ${centerX} ${gapStart + gapHeight * .52}`;
+        d += ` C ${centerX + corridor * .55 * inward} ${gapStart + gapHeight * .78}, ${b.x + corridor * inward} ${gapEnd}, ${b.x} ${b.y}`;
+      }
+
+      const svg = timelineLine.querySelector('svg.timeline-line-svg') ||
+        document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+
+      if (!svg.parentNode) {
+        svg.classList.add('timeline-line-svg');
+        svg.setAttribute('aria-hidden', 'true');
+        svg.setAttribute('preserveAspectRatio', 'none');
+        timelineLine.appendChild(svg);
+      }
+
+      timelineBasePath = svg.querySelector('.timeline-line-base') ||
+        document.createElementNS('http://www.w3.org/2000/svg', 'path');
+
+      if (!timelineBasePath.parentNode) {
+        timelineBasePath.classList.add('timeline-line-base');
+        timelineBasePath.setAttribute('fill', 'none');
+        svg.appendChild(timelineBasePath);
+      }
+
+      timelinePath = svg.querySelector('.timeline-line-path') ||
+        document.createElementNS('http://www.w3.org/2000/svg', 'path');
+
+      if (!timelinePath.parentNode) {
+        timelinePath.classList.add('timeline-line-path');
+        timelinePath.setAttribute('fill', 'none');
+        svg.appendChild(timelinePath);
+      }
+
+      svg.setAttribute('viewBox', `0 0 ${Math.max(1, trackRect.width)} ${Math.max(1, trackRect.height)}`);
+      svg.setAttribute('width', trackRect.width);
+      svg.setAttribute('height', trackRect.height);
+
+      timelineBasePath.setAttribute('d', d);
+      timelinePath.setAttribute('d', d);
+
+      const baseLen = timelineBasePath.getTotalLength();
+      const len = timelinePath.getTotalLength();
+
+      gsap.set(timelineBasePath, {
+        strokeDasharray: baseLen,
+        strokeDashoffset: 0
+      });
+
+      gsap.set(timelinePath, {
+        strokeDasharray: len,
+        strokeDashoffset: len
+      });
+
+      timelinePath.dataset.length = len;
+    };
+
+    requestAnimationFrame(drawTimelinePath);
+
+    const redraw = () => requestAnimationFrame(() => {
+      drawTimelinePath();
+      ScrollTrigger.refresh();
+    });
+    window.addEventListener('load', redraw, { once: true });
+    window.addEventListener('resize', redraw);
 
     ScrollTrigger.create({
       trigger: track,
-      start: 'top 78%',
+      start: 'top 82%',
       end: 'bottom 72%',
-      scrub: 0.35,
+      scrub: 0.55,
       onRefresh: drawTimelinePath,
-      onUpdate: (self) => {
-        const progress = self.progress;
-        const clamped = Math.max(0, Math.min(1, progress));
-        if (timelinePath && timelinePath.dataset.length) {
+      onUpdate: self => {
+        const progress = Math.max(0, Math.min(1, self.progress));
+
+        if (timelinePath?.dataset.length) {
           const len = Number(timelinePath.dataset.length);
-          gsap.set(timelinePath, {
-            strokeDashoffset: len * (1 - clamped)
-          });
-        }
-        if (timelineGlow && timelinePath && timelinePath.dataset.length) {
-          const len = Number(timelinePath.dataset.length);
-          try {
-            const pt = timelinePath.getPointAtLength(len * clamped);
-            gsap.set(timelineGlow, {
-              x: pt.x,
-              y: pt.y,
-              opacity: clamped > 0.015 && clamped < 0.995 ? 1 : 0
-            });
-          } catch (_) {
-            gsap.set(timelineGlow, { opacity: 0 });
+          gsap.set(timelinePath, { strokeDashoffset: len * (1 - progress) });
+
+          if (timelineGlow) {
+            try {
+              const pt = timelinePath.getPointAtLength(len * progress);
+              gsap.set(timelineGlow, {
+                x: pt.x,
+                y: pt.y,
+                opacity: progress > 0.01 && progress < 0.995 ? 1 : 0
+              });
+            } catch (_) {
+              gsap.set(timelineGlow, { opacity: 0 });
+            }
           }
         }
+
         items.forEach((item, i) => {
-          const threshold = items.length === 1 ? 0 : i / (items.length - 1);
           const dot = qs('.event-dot', item);
           if (!dot) return;
-          const reached = progress >= Math.max(.08, threshold);
+          const threshold = i / Math.max(items.length - 1, 1);
+          const reached = progress >= Math.max(0.06, threshold);
+
           gsap.to(dot, {
-            scale: reached ? 1.18 : 1,
+            scale: reached ? 1.16 : 1,
             boxShadow: reached
-              ? '0 0 20px rgba(201,168,76,.65)'
-              : '0 0 12px rgba(201,168,76,.5)',
-            duration: .18,
+              ? '0 0 20px rgba(201,168,76,.72)'
+              : '0 0 12px rgba(201,168,76,.46)',
+            duration: 0.16,
             overwrite: true
           });
-          dot.classList.toggle('timeline-reached', reached);
         });
       }
     });
