@@ -712,3 +712,94 @@
     inset: 8% 18%;
   }
 }
+
+
+/* ============================================================
+   MOBILE RHYTHM REFINEMENT
+   Couple caption → divider → next section heading
+   ============================================================ */
+.section-photo {
+  padding-top: clamp(2.6rem, 7vw, 3.5rem);
+  padding-bottom: clamp(1.6rem, 5vw, 2.5rem);
+}
+
+.section-photo .section-inner {
+  padding-top: clamp(1.5rem, 5vw, 2.5rem);
+  padding-bottom: clamp(1.2rem, 4vw, 2rem);
+}
+
+.photo-frame-wrapper {
+  gap: clamp(.9rem, 3vw, 1.4rem);
+}
+
+.photo-caption {
+  gap: .45rem;
+}
+
+.photo-caption .caption-divider {
+  margin-top: .15rem;
+  margin-bottom: .15rem;
+}
+
+.photo-names {
+  line-height: 1.15;
+}
+
+/* The divider is a transition, not a separate section. */
+.section-break {
+  margin-top: -1px;
+  margin-bottom: -1px;
+}
+
+/* Bring the following section heading visually into the transition. */
+.section-break + .section .section-inner {
+  padding-top: clamp(1.9rem, 6vw, 3rem);
+}
+
+.section-break + .section .section-header {
+  margin-bottom: clamp(1.35rem, 4vw, 2rem);
+  gap: clamp(.55rem, 2vw, .8rem);
+}
+
+.section-header {
+  margin-bottom: clamp(1.5rem, 5vw, 2.4rem);
+  gap: clamp(.65rem, 2.5vw, 1rem);
+}
+
+/* Reduce the feeling of floating headings without making them cramped. */
+.section-header img {
+  max-width: 230px;
+}
+
+@media (max-width: 600px) {
+  .section-photo {
+    padding-top: 2.2rem;
+    padding-bottom: 1.2rem;
+  }
+
+  .section-photo .section-inner {
+    padding-top: 1rem;
+    padding-bottom: .8rem;
+  }
+
+  .photo-frame-wrapper {
+    gap: .75rem;
+  }
+
+  .photo-caption {
+    gap: .35rem;
+  }
+
+  .section-break + .section .section-inner {
+    padding-top: 1.55rem;
+  }
+
+  .section-break + .section .section-header {
+    margin-bottom: 1.25rem;
+  }
+
+  .section-header {
+    margin-bottom: 1.45rem;
+    gap: .55rem;
+  }
+}
