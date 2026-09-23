@@ -250,27 +250,31 @@ window.ScrollAnimations = (function () {
       if (!timelineLine) return;
 
       const trackRect = track.getBoundingClientRect();
-      const points = items.map((item, i) => {
+      const points = items.map((item) => {
         const dot = qs('.event-dot', item);
         const dotRect = dot?.getBoundingClientRect();
-        /* Anchor every point to its event dot. The S-shape is created
-           by alternating the Bezier control points between the dots. */
         return {
-          x: trackRect.width / 2,
-          y: dotRect ? dotRect.top - trackRect.top + dotRect.height / 2 : item.offsetTop
+          x: dotRect
+            ? dotRect.left - trackRect.left + dotRect.width / 2
+            : trackRect.width / 2,
+          y: dotRect
+            ? dotRect.top - trackRect.top + dotRect.height / 2
+            : item.offsetTop
         };
       });
       if (points.length < 2) return;
 
       let d = `M ${points[0].x} ${points[0].y}`;
+      const centerX = trackRect.width / 2;
       for (let i = 1; i < points.length; i++) {
         const prev = points[i - 1], cur = points[i];
-        const dy = Math.max(34, Math.abs(cur.y - prev.y) * .34);
-        const sway = Math.max(34, Math.min(78, trackRect.width * .16));
-        /* Alternate the bulge left/right for a clean editorial S-curve. */
-        const sign = i % 2 === 1 ? -1 : 1;
-        const c1x = prev.x + sway * sign;
-        const c2x = cur.x + sway * sign;
+        const dy = Math.max(34, Math.abs(cur.y - prev.y) * .36);
+        const direction = cur.x > prev.x ? 1 : -1;
+        const inward = Math.min(110, Math.max(46, trackRect.width * .18));
+        /* Pull both handles toward the centre gutter, producing a
+           graceful calligraphic S without entering the card interiors. */
+        const c1x = prev.x + (centerX - prev.x) * .76 + inward * .10 * direction;
+        const c2x = cur.x + (centerX - cur.x) * .76 + inward * .10 * direction;
         d += ` C ${c1x} ${prev.y + dy}, ${c2x} ${cur.y - dy}, ${cur.x} ${cur.y}`;
       }
       const svg = timelineLine.querySelector('svg.timeline-line-svg');
@@ -297,9 +301,12 @@ window.ScrollAnimations = (function () {
       timelinePath.setAttribute('d', d);
 
       const len = timelinePath.getTotalLength();
-      /* Keep the S-line visible at rest. Scroll now drives only the
-         travelling glow rather than hiding the connector itself. */
-      gsap.set(timelinePath, { strokeDasharray: len, strokeDashoffset: 0 });
+      /* The calligraphic stroke begins hidden and is drawn progressively
+         by the ScrollTrigger below. */
+      gsap.set(timelinePath, {
+        strokeDasharray: len,
+        strokeDashoffset: len
+      });
       timelinePath.dataset.length = len;
     };
 
@@ -344,7 +351,10 @@ window.ScrollAnimations = (function () {
         const progress = self.progress;
         const clamped = Math.max(0, Math.min(1, progress));
         if (timelinePath && timelinePath.dataset.length) {
-          gsap.set(timelinePath, { strokeDashoffset: 0 });
+          const len = Number(timelinePath.dataset.length);
+          gsap.set(timelinePath, {
+            strokeDashoffset: len * (1 - clamped)
+          });
         }
         if (timelineGlow && timelinePath && timelinePath.dataset.length) {
           const len = Number(timelinePath.dataset.length);
