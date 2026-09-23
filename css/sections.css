@@ -839,45 +839,44 @@
   height: clamp(76px, 11vw, 112px);
   margin: 0;
   background:
-    linear-gradient(
-      180deg,
+    radial-gradient(ellipse at center,
+      rgba(94,31,21,.34) 0%,
+      rgba(94,31,21,.16) 28%,
+      rgba(18,5,5,0) 58%),
+    linear-gradient(180deg,
       #1A0808 0%,
-      rgba(26,8,8,.92) 14%,
-      rgba(91,27,20,.34) 43%,
-      rgba(201,168,76,.05) 50%,
-      rgba(91,27,20,.34) 57%,
-      rgba(18,5,5,.92) 86%,
-      #120505 100%
-    );
+      rgba(26,8,8,.96) 15%,
+      rgba(31,9,8,.82) 34%,
+      rgba(52,15,11,.48) 47%,
+      rgba(44,12,10,.34) 53%,
+      rgba(23,6,6,.74) 70%,
+      rgba(18,5,5,.96) 86%,
+      #120505 100%);
 }
 
 .section-break-overlay {
   background:
-    linear-gradient(
-      180deg,
-      rgba(26,8,8,.72) 0%,
-      rgba(26,8,8,.10) 40%,
-      rgba(18,5,5,.10) 60%,
-      rgba(18,5,5,.78) 100%
-    );
+    linear-gradient(180deg,
+      rgba(26,8,8,.48) 0%,
+      rgba(26,8,8,.04) 34%,
+      rgba(18,5,5,.02) 56%,
+      rgba(18,5,5,.54) 100%);
 }
 
 .section-break::before {
   top: 50%;
   width: min(58vw, 280px);
   height: 1px;
-  opacity: .55;
-  background: linear-gradient(
-    90deg,
+  opacity: .28;
+  background: linear-gradient(90deg,
     transparent 0%,
-    rgba(232,201,122,.04) 12%,
-    rgba(232,201,122,.24) 33%,
-    rgba(232,201,122,.44) 50%,
-    rgba(232,201,122,.24) 67%,
-    rgba(232,201,122,.04) 88%,
-    transparent 100%
-  );
-  box-shadow: 0 0 12px rgba(201,168,76,.05);
+    rgba(232,201,122,.015) 18%,
+    rgba(232,201,122,.10) 36%,
+    rgba(232,201,122,.18) 50%,
+    rgba(232,201,122,.10) 64%,
+    rgba(232,201,122,.015) 82%,
+    transparent 100%);
+  box-shadow: 0 0 10px rgba(201,168,76,.025);
 }
 
 .section-break::after {
@@ -889,7 +888,7 @@
       rgba(232,201,122,.11) 50%,
       rgba(232,201,122,.05) 80%,
       transparent);
-  opacity: .35;
+  opacity: .14;
   height: 1px;
   top: 50%;
   bottom: auto;
@@ -903,7 +902,7 @@
   background: rgba(16,4,4,.30);
   color: rgba(232,201,122,.68);
   box-shadow: 0 0 0 5px rgba(16,4,4,.08), 0 0 14px rgba(201,168,76,.05);
-  opacity: .82;
+  opacity: .55;
 }
 
 @media (max-width: 600px) {
