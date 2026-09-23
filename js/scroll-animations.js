@@ -247,15 +247,17 @@ window.ScrollAnimations = (function () {
     }
 
     const drawTimelinePath = () => {
-      if (!timelineLine || !timelinePath) return;
+      if (!timelineLine) return;
 
-      const points = items.map(item => {
+      const trackRect = track.getBoundingClientRect();
+      const points = items.map((item, i) => {
         const dot = qs('.event-dot', item);
         const dotRect = dot?.getBoundingClientRect();
-        const trackRect = track.getBoundingClientRect();
+        const progressWave = Math.sin((i / Math.max(items.length - 1, 1)) * Math.PI * 2 - Math.PI / 2);
+        const sideOffset = Math.max(28, Math.min(58, trackRect.width * 0.105));
         return {
-          x: trackRect.width / 2 + (item === items[1] ? Math.min(76, trackRect.width * .18) : item === items[0] ? -Math.min(18, trackRect.width * .06) : 0),
-          y: (dotRect ? dotRect.top - trackRect.top + dotRect.height / 2 : item.offsetTop)
+          x: trackRect.width / 2 + (i === 0 ? -sideOffset * .35 : i === items.length - 1 ? sideOffset * .35 : sideOffset * progressWave),
+          y: dotRect ? dotRect.top - trackRect.top + dotRect.height / 2 : item.offsetTop
         };
       });
       if (points.length < 2) return;
@@ -263,8 +265,12 @@ window.ScrollAnimations = (function () {
       let d = `M ${points[0].x} ${points[0].y}`;
       for (let i = 1; i < points.length; i++) {
         const prev = points[i - 1], cur = points[i];
-        const bend = Math.max(34, Math.min(92, Math.abs(cur.y - prev.y) * .22));
-        d += ` C ${prev.x} ${prev.y + bend}, ${cur.x} ${cur.y - bend}, ${cur.x} ${cur.y}`;
+        const dy = Math.max(28, Math.abs(cur.y - prev.y) * .34);
+        const sway = Math.max(18, Math.min(54, Math.abs(cur.y - prev.y) * .16));
+        const sign = i % 2 === 0 ? -1 : 1;
+        const c1x = prev.x + (cur.x - prev.x) * .45 + sway * sign;
+        const c2x = cur.x - (cur.x - prev.x) * .45 + sway * sign;
+        d += ` C ${c1x} ${prev.y + dy}, ${c2x} ${cur.y - dy}, ${cur.x} ${cur.y}`;
       }
       const svg = timelineLine.querySelector('svg.timeline-line-svg');
       let timelineSvg = svg;
