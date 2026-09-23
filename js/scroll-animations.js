@@ -250,32 +250,44 @@ window.ScrollAnimations = (function () {
       if (!timelineLine) return;
 
       const trackRect = track.getBoundingClientRect();
-      const points = items.map((item) => {
+      const anchors = items.map((item) => {
         const dot = qs('.event-dot', item);
+        const card = qs('.event-card', item);
         const dotRect = dot?.getBoundingClientRect();
+        const cardRect = card?.getBoundingClientRect();
         return {
           x: dotRect
             ? dotRect.left - trackRect.left + dotRect.width / 2
             : trackRect.width / 2,
           y: dotRect
             ? dotRect.top - trackRect.top + dotRect.height / 2
-            : item.offsetTop
+            : item.offsetTop,
+          bottomY: cardRect
+            ? cardRect.bottom - trackRect.top + 8
+            : item.offsetTop + item.offsetHeight
         };
       });
-      if (points.length < 2) return;
+      if (anchors.length < 2) return;
 
-      let d = `M ${points[0].x} ${points[0].y}`;
-      const centerX = trackRect.width / 2;
-      for (let i = 1; i < points.length; i++) {
-        const prev = points[i - 1], cur = points[i];
-        const dy = Math.max(34, Math.abs(cur.y - prev.y) * .36);
+      /* Each event connector hugs the outside edge of its card, then
+         sweeps through the empty gap before curling into the next card.
+         This keeps every stroke away from the event text and imagery. */
+      let d = `M ${anchors[0].x} ${anchors[0].y}`;
+      for (let i = 0; i < anchors.length - 1; i++) {
+        const prev = anchors[i];
+        const cur = anchors[i + 1];
+        const nextTop = cur.y;
+        const gapTop = Math.min(prev.bottomY, nextTop - 8);
+        const gapBottom = Math.max(gapTop + 18, nextTop - 8);
+        const gapHeight = Math.max(24, gapBottom - gapTop);
+        const centerX = trackRect.width / 2;
         const direction = cur.x > prev.x ? 1 : -1;
-        const inward = Math.min(110, Math.max(46, trackRect.width * .18));
-        /* Pull both handles toward the centre gutter, producing a
-           graceful calligraphic S without entering the card interiors. */
-        const c1x = prev.x + (centerX - prev.x) * .76 + inward * .10 * direction;
-        const c2x = cur.x + (centerX - cur.x) * .76 + inward * .10 * direction;
-        d += ` C ${c1x} ${prev.y + dy}, ${c2x} ${cur.y - dy}, ${cur.x} ${cur.y}`;
+        const flourish = Math.min(90, Math.max(28, trackRect.width * .12));
+
+        d += ` L ${prev.x} ${gapTop}`;
+        d += ` C ${prev.x} ${gapTop + gapHeight * .22}, ${centerX + flourish * direction} ${gapTop + gapHeight * .22}, ${centerX} ${gapTop + gapHeight * .50}`;
+        d += ` C ${centerX - flourish * direction} ${gapTop + gapHeight * .78}, ${cur.x} ${gapBottom - gapHeight * .22}, ${cur.x} ${gapBottom}`;
+        d += ` L ${cur.x} ${cur.y}`;
       }
       const svg = timelineLine.querySelector('svg.timeline-line-svg');
       let timelineSvg = svg;
