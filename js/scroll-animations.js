@@ -253,10 +253,13 @@ window.ScrollAnimations = (function () {
       const points = items.map((item, i) => {
         const dot = qs('.event-dot', item);
         const dotRect = dot?.getBoundingClientRect();
-        const progressWave = Math.sin((i / Math.max(items.length - 1, 1)) * Math.PI * 2 - Math.PI / 2);
-        const sideOffset = Math.max(28, Math.min(58, trackRect.width * 0.105));
+        /* Deliberately exaggerate the alternating offsets so the S-curve
+           remains clearly visible on narrow screens, while the end points
+           still meet their event dots. */
+        const sideOffset = Math.max(42, Math.min(82, trackRect.width * 0.17));
+        const waveX = i % 2 === 0 ? -sideOffset * .55 : sideOffset * .55;
         return {
-          x: trackRect.width / 2 + (i === 0 ? -sideOffset * .35 : i === items.length - 1 ? sideOffset * .35 : sideOffset * progressWave),
+          x: trackRect.width / 2 + waveX,
           y: dotRect ? dotRect.top - trackRect.top + dotRect.height / 2 : item.offsetTop
         };
       });
@@ -296,7 +299,9 @@ window.ScrollAnimations = (function () {
       timelinePath.setAttribute('d', d);
 
       const len = timelinePath.getTotalLength();
-      gsap.set(timelinePath, { strokeDasharray: len, strokeDashoffset: len });
+      /* Keep the S-line visible at rest. Scroll now drives only the
+         travelling glow rather than hiding the connector itself. */
+      gsap.set(timelinePath, { strokeDasharray: len, strokeDashoffset: 0 });
       timelinePath.dataset.length = len;
     };
 
@@ -341,7 +346,7 @@ window.ScrollAnimations = (function () {
         const progress = self.progress;
         const clamped = Math.max(0, Math.min(1, progress));
         if (timelinePath && timelinePath.dataset.length) {
-          gsap.set(timelinePath, { strokeDashoffset: Number(timelinePath.dataset.length) * (1 - clamped) });
+          gsap.set(timelinePath, { strokeDashoffset: 0 });
         }
         if (timelineGlow && timelinePath && timelinePath.dataset.length) {
           const len = Number(timelinePath.dataset.length);
