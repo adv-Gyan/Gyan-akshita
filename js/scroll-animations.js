@@ -227,9 +227,17 @@ window.ScrollAnimations = (function () {
     const items = qsa('.event-item', section);
     if (!section || !track || !fill || !items.length || !canAnimate()) return;
 
-    /* Keep the cards readable at all times; only the timeline progression
-       itself is scrubbed from the user's scroll position. */
+    /* Keep the cards readable at all times; the connecting line is drawn
+       with scroll and a restrained luminous point travels along it. */
     gsap.set(fill, { height: '100%', scaleY: 0, transformOrigin: 'top center' });
+
+    let timelineGlow = qs('.timeline-line-glow', track);
+    if (!timelineGlow) {
+      timelineGlow = document.createElement('span');
+      timelineGlow.className = 'timeline-line-glow';
+      timelineGlow.setAttribute('aria-hidden', 'true');
+      track.querySelector('.timeline-line')?.appendChild(timelineGlow);
+    }
 
     items.forEach((item, i) => {
       const card = qs('.event-card', item);
@@ -268,6 +276,12 @@ window.ScrollAnimations = (function () {
       onUpdate: (self) => {
         const progress = self.progress;
         gsap.set(fill, { scaleY: progress });
+        if (timelineGlow) {
+          gsap.set(timelineGlow, {
+            y: Math.max(0, Math.min(1, progress)) * 100 + '%',
+            opacity: progress > 0.01 && progress < 0.995 ? 1 : 0
+          });
+        }
         items.forEach((item, i) => {
           const threshold = items.length === 1 ? 0 : i / (items.length - 1);
           const dot = qs('.event-dot', item);
