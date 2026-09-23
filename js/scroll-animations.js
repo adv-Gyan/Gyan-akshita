@@ -444,6 +444,69 @@ window.ScrollAnimations = (function () {
     });
   }
 
+  /* iOS/Safari-safe native fallback. GSAP remains primary, but the invitation
+     still gets visible motion if ScrollTrigger is blocked or unavailable. */
+  function initNativeScrollAnimations() {
+    const reveal = (el, cls = 'native-reveal') => {
+      if (!el) return;
+      el.classList.add('native-animation-target', cls);
+    };
+
+    reveal(qs('.photo-mughal-frame'), 'native-photo-reveal');
+    reveal(qs('.photo-caption'), 'native-slide-up');
+    reveal(qs('.message-card'), 'native-message-reveal');
+    qsa('.event-item').forEach((item, i) => reveal(item, i % 2 === 0 ? 'native-event-left' : 'native-event-right'));
+    qsa('.countdown-unit').forEach((unit, i) => {
+      unit.style.setProperty('--native-delay', (i * 120) + 'ms');
+      reveal(unit, 'native-countdown');
+    });
+    reveal(qs('.venue-card'), 'native-venue-reveal');
+    reveal(qs('.rsvp-form'), 'native-rsvp-reveal');
+    reveal(qs('.site-footer'), 'native-slide-up');
+
+    const targets = qsa('.native-animation-target');
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add('native-is-visible');
+          observer.unobserve(entry.target);
+        });
+      }, { rootMargin: '0px 0px -10% 0px', threshold: 0.12 });
+      targets.forEach(el => io.observe(el));
+    } else {
+      targets.forEach(el => el.classList.add('native-is-visible'));
+    }
+
+    const track = qs('.timeline-track');
+    const fill = qs('#timeline-fill');
+    const items = qsa('.event-item');
+    if (track && fill) {
+      const updateTimeline = () => {
+        const rect = track.getBoundingClientRect();
+        const viewport = Math.max(window.innerHeight, 1);
+        const start = viewport * 0.78;
+        const end = viewport * 0.72;
+        const total = Math.max(track.offsetHeight, 1);
+        const progress = Math.max(0, Math.min(1, (start - rect.top) / Math.max(total - (start - end), 1)));
+        fill.style.transform = 'scaleY(' + progress + ')';
+        items.forEach(item => {
+          const dot = qs('.event-dot', item);
+          if (dot) dot.classList.toggle('timeline-reached', item.getBoundingClientRect().top < viewport * 0.72);
+        });
+      };
+      let ticking = false;
+      const onScroll = () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => { updateTimeline(); ticking = false; });
+      };
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onScroll, { passive: true });
+      updateTimeline();
+    }
+  }
+
   function init() {
     if (initialized) return;
     initialized = true;
@@ -456,8 +519,14 @@ window.ScrollAnimations = (function () {
       return;
     }
 
+    const startedAt = Date.now();
+    let fallbackStarted = false;
     const waitForGSAP = () => {
       if (!canAnimate()) {
+        if (!fallbackStarted && Date.now() - startedAt > 1200) {
+          fallbackStarted = true;
+          initNativeScrollAnimations();
+        }
         if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
           setTimeout(waitForGSAP, 50);
         }
