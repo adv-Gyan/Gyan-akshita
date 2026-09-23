@@ -88,6 +88,7 @@ window.ScrollAnimations = (function () {
   }
 
   function reducedMotionFallback() {
+    document.getElementById('main-invite')?.classList.add('hero-animation-ready');
     qsa('.animate-hero, .reveal-on-scroll, .event-item').forEach(el => {
       el.style.opacity = '1';
       el.style.transform = 'none';
@@ -100,6 +101,11 @@ window.ScrollAnimations = (function () {
   function initHero() {
     const hero = qs('#section-hero');
     if (!hero || !canAnimate()) return;
+
+    /* Remove the pre-paint guard immediately before GSAP sets the
+       initial off-screen positions, so the first visible frame is
+       already the intended animation state. */
+    document.getElementById('main-invite')?.classList.add('hero-animation-ready');
 
     const bg = qs('.hero-bg', hero);
     const arch = qs('.hero-arch-frame', hero);
@@ -450,6 +456,9 @@ window.ScrollAnimations = (function () {
   function initNativeScrollAnimations() {
     if (nativeInitialized) return;
     nativeInitialized = true;
+
+    /* Native emergency path: reveal hero copy if the GSAP CDN is unavailable. */
+    document.getElementById('main-invite')?.classList.add('hero-animation-ready');
 
     const reveal = (el, cls = 'native-reveal') => {
       if (!el) return;
