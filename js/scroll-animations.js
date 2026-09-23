@@ -768,7 +768,20 @@ window.ScrollAnimations = (function () {
       const io = new IntersectionObserver((entries, observer) => {
         entries.forEach(entry => {
           if (!entry.isIntersecting) return;
-          entry.target.classList.add('native-is-visible');
+          if (entry.target.classList.contains('event-item')) {
+            /* Event cards must never translate as a whole. Use a quiet
+               opacity-only reveal on the item; the card and its layout stay
+               pixel-stable while the inner details can animate separately. */
+            entry.target.style.opacity = '1';
+            entry.target.style.transform = 'none';
+            entry.target.style.animation = 'none';
+            entry.target.animate(
+              [{ opacity: 0 }, { opacity: 1 }],
+              { duration: 680, easing: 'cubic-bezier(.22,.61,.36,1)', fill: 'forwards' }
+            );
+          } else {
+            entry.target.classList.add('native-is-visible');
+          }
           observer.unobserve(entry.target);
         });
       }, { rootMargin: '0px 0px -10% 0px', threshold: 0.12 });
