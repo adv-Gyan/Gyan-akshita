@@ -452,6 +452,10 @@ window.ScrollAnimations = (function () {
       el.classList.add('native-animation-target', cls);
     };
 
+    qsa('.hero-monogram, .hero-bride, .hero-groom, .hero-and, .hero-divider, .hero-invite-line, .hero-date, .scroll-indicator').forEach((el, i) => {
+      el.classList.add('native-hero-stagger');
+      el.style.setProperty('--native-delay', (i * 120) + 'ms');
+    });
     reveal(qs('.photo-mughal-frame'), 'native-photo-reveal');
     reveal(qs('.photo-caption'), 'native-slide-up');
     reveal(qs('.message-card'), 'native-message-reveal');
