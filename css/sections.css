@@ -968,3 +968,69 @@
     gap: 2.15rem;
   }
 }
+
+
+/* Minimal section divider — no gradient panel, only a subtle luminous line. */
+.section-break {
+  height: 54px;
+  background: transparent !important;
+}
+
+.section-break-overlay {
+  display: none;
+}
+
+.section-break-image {
+  display: none;
+}
+
+.section-break::before {
+  top: 50%;
+  width: min(62vw, 300px);
+  height: 1px;
+  opacity: 1;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(232,201,122,0.08) 15%,
+    rgba(232,201,122,0.42) 38%,
+    rgba(232,201,122,0.68) 50%,
+    rgba(232,201,122,0.42) 62%,
+    rgba(232,201,122,0.08) 85%,
+    transparent 100%
+  );
+  box-shadow:
+    0 0 5px rgba(232,201,122,0.18),
+    0 0 16px rgba(201,168,76,0.08);
+}
+
+.section-break::after {
+  display: none;
+}
+
+.section-break-ornament {
+  width: 10px;
+  height: 10px;
+  border: 1px solid rgba(232,201,122,0.55);
+  border-radius: 50%;
+  background: transparent;
+  color: transparent;
+  box-shadow: 0 0 8px rgba(201,168,76,0.12);
+  opacity: .9;
+  font-size: 0;
+}
+
+@media (max-width: 600px) {
+  .section-break {
+    height: 46px;
+  }
+
+  .section-break::before {
+    width: 64vw;
+  }
+
+  .section-break-ornament {
+    width: 8px;
+    height: 8px;
+  }
+}
