@@ -1913,3 +1913,49 @@
     transform: translateY(24px);
   }
 }
+
+
+/* ============================================================
+   EVENT TIMELINE — refined calligraphic chapter reveal
+   ============================================================ */
+.section-events .event-card {
+  will-change: transform, opacity;
+}
+
+.section-events .event-card-photo-wrap {
+  will-change: transform, opacity;
+}
+
+.section-events .event-card-body > * {
+  transform: translateY(8px);
+  will-change: transform, opacity;
+}
+
+.section-events .event-dot {
+  transition:
+    box-shadow .35s ease,
+    background-color .35s ease;
+}
+
+.section-events .event-dot.event-dot-lit {
+  background: #F5D98B;
+  box-shadow:
+    0 0 7px rgba(255,245,201,.95),
+    0 0 17px rgba(232,201,122,.72),
+    0 0 30px rgba(201,168,76,.28);
+}
+
+.section-events .event-item.event-reached .event-card {
+  box-shadow:
+    0 16px 44px rgba(0,0,0,.30),
+    0 0 24px rgba(201,168,76,.08);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .section-events .event-card,
+  .section-events .event-card-photo-wrap,
+  .section-events .event-card-body > * {
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
