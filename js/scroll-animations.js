@@ -6,6 +6,7 @@ window.ScrollAnimations = (function () {
   'use strict';
 
   let initialized = false;
+  let nativeInitialized = false;
 
   const qs = (s, root = document) => root.querySelector(s);
   const qsa = (s, root = document) => Array.from(root.querySelectorAll(s));
@@ -447,6 +448,9 @@ window.ScrollAnimations = (function () {
   /* iOS/Safari-safe native fallback. GSAP remains primary, but the invitation
      still gets visible motion if ScrollTrigger is blocked or unavailable. */
   function initNativeScrollAnimations() {
+    if (nativeInitialized) return;
+    nativeInitialized = true;
+
     const reveal = (el, cls = 'native-reveal') => {
       if (!el) return;
       el.classList.add('native-animation-target', cls);
