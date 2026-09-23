@@ -452,19 +452,30 @@ window.ScrollAnimations = (function () {
       el.classList.add('native-animation-target', cls);
     };
 
-    qsa('.hero-monogram, .hero-bride, .hero-groom, .hero-and, .hero-divider, .hero-invite-line, .hero-date, .scroll-indicator').forEach((el, i) => {
-      el.classList.add('native-hero-stagger');
-      el.style.setProperty('--native-delay', (i * 120) + 'ms');
-    });
+    /*
+     * Native reveals are the reliability layer for the live site. They run
+     * alongside GSAP rather than only when GSAP fails, because a page can
+     * have GSAP loaded while a ScrollTrigger calculation is delayed by a
+     * browser, cached page state, or mobile viewport change.
+     *
+     * The hero remains GSAP-controlled; everything after the hero gets a
+     * browser-native IntersectionObserver reveal so the motion is guaranteed
+     * to be visible while scrolling.
+     */
     reveal(qs('.photo-mughal-frame'), 'native-photo-reveal');
     reveal(qs('.photo-caption'), 'native-slide-up');
-    reveal(qs('.message-card'), 'native-message-reveal');
+    reveal(qs('#section-message .message-card'), 'native-message-reveal');
+    reveal(qs('#section-events .section-header'), 'native-slide-up');
     qsa('.event-item').forEach((item, i) => reveal(item, i % 2 === 0 ? 'native-event-left' : 'native-event-right'));
+    reveal(qs('#section-countdown .section-header'), 'native-slide-up');
     qsa('.countdown-unit').forEach((unit, i) => {
       unit.style.setProperty('--native-delay', (i * 120) + 'ms');
       reveal(unit, 'native-countdown');
     });
+    reveal(qs('.countdown-date-label'), 'native-slide-up');
+    reveal(qs('#section-venue .section-header'), 'native-slide-up');
     reveal(qs('.venue-card'), 'native-venue-reveal');
+    reveal(qs('#section-rsvp .section-header'), 'native-slide-up');
     reveal(qs('.rsvp-form'), 'native-rsvp-reveal');
     reveal(qs('.site-footer'), 'native-slide-up');
 
@@ -522,6 +533,13 @@ window.ScrollAnimations = (function () {
       reducedMotionFallback();
       return;
     }
+
+    /*
+     * Start the native scroll-reveal layer immediately. Do not wait for the
+     * GSAP CDN or ScrollTrigger. This is what makes the invite page animate
+     * reliably in Chrome, Safari and cached mobile sessions.
+     */
+    initNativeScrollAnimations();
 
     const startedAt = Date.now();
     let fallbackStarted = false;
