@@ -78,7 +78,7 @@ const weddingData = {
     address:   "R-37, Harding Rd, Rajbansi Nagar, Patna, Bihar 800014",
     city:      "Patna, Bihar",
     mapsUrl:   "https://maps.app.goo.gl/spTvXEKddzQnfgh17?g_st=ic",
-    embedUrl:  "",
+    embedUrl:  "https://www.google.com/maps?q=R-37%2C%20Harding%20Rd%2C%20Rajbansi%20Nagar%2C%20Patna%2C%20Bihar%20800014&output=embed",
   },
 
   /* ── RSVP ────────────────────────────────────────────────── */
