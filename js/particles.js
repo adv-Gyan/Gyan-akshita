@@ -17,7 +17,7 @@
 
   let width=0,height=0,dpr=1,particles=[],raf=0,last=0;
   const isSmall=()=>window.innerWidth<600;
-  const count=()=>isSmall()?10:16;
+  const count=()=>isSmall()?15:24;
 
   function resize(){
     dpr=Math.min(window.devicePixelRatio||1,2);
@@ -43,11 +43,11 @@
     return {
       x,
       y:initial?Math.random()*height:height+24,
-      size:3.2+Math.random()*3.8,
-      alpha:.12+Math.random()*.22,
-      speed:.16+Math.random()*.24,
+      size:4.2+Math.random()*4.6,
+      alpha:.18+Math.random()*.25,
+      speed:.20+Math.random()*.30,
       drift:.06+Math.random()*.16,
-      sway:18+Math.random()*30,
+      sway:22+Math.random()*36,
       phase:Math.random()*Math.PI*2,
       rotation:Math.random()*Math.PI*2,
       spin:(Math.random()-.5)*.006,
