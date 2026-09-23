@@ -728,3 +728,11 @@ body.invite-open #gold-particles {
     display: none !important;
   }
 }
+
+
+/* Event timeline: let GSAP own event transforms; native fallback may only fade. */
+.section-events .event-item.native-animation-target {
+  opacity: 1 !important;
+  transform: none !important;
+  animation: none !important;
+}
