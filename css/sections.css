@@ -1483,3 +1483,30 @@
   .section-events .timeline-line-base { stroke-width: 1.5; }
   .section-events .timeline-line-path { stroke-width: 1.4; }
 }
+
+
+/* FINAL CALLIGRAPHIC TIMELINE — clean ornamental stroke */
+.section-events .timeline-line-base {
+  stroke: rgba(232,201,122,.18);
+  stroke-width: 2;
+  opacity: .9;
+  fill: none;
+  vector-effect: non-scaling-stroke;
+}
+.section-events .timeline-line-path {
+  stroke: rgba(232,201,122,.98);
+  stroke-width: 1.35;
+  opacity: 1;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  filter: drop-shadow(0 0 4px rgba(232,201,122,.55));
+}
+.section-events .event-dot {
+  box-shadow: 0 0 12px rgba(201,168,76,.5);
+}
+@media (max-width:600px){
+  .section-events .timeline-line-base { stroke-width: 1.6; }
+  .section-events .timeline-line-path { stroke-width: 1.2; }
+}
