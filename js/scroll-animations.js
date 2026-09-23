@@ -137,87 +137,76 @@ window.ScrollAnimations = (function () {
 
     gsap.set([kicker, monogram, bride, groom, amp, flourish, divider, invite, date, cue], {
       opacity: 0,
-      filter: 'blur(3px)'
+      filter: 'blur(2.5px)'
     });
-    gsap.set(kicker, { y: 10, letterSpacing: '.26em' });
-    gsap.set(monogram, { y: 10, scale: .92 });
-    gsap.set(bride, { x: -42, y: 5, scale: .98 });
-    gsap.set(groom, { x: 42, y: 5, scale: .98 });
-    gsap.set(amp, { scale: .45, rotation: -12, y: 2 });
-    gsap.set(flourish, { y: 7, scaleX: .75 });
-    gsap.set(divider, { y: 6, scaleX: .8 });
-    gsap.set(invite, { y: 8 });
-    gsap.set(date, { y: 7 });
-    gsap.set(dateLetters, { opacity: 0, y: 4, filter: 'blur(1.5px)' });
-    gsap.set(cue, { y: 6 });
+    gsap.set(kicker, { y: 9, letterSpacing: '.28em' });
+    gsap.set(monogram, { y: 9, scale: .94 });
+    gsap.set(bride, { x: -36, y: 4, scale: .99 });
+    gsap.set(groom, { x: 36, y: 4, scale: .99 });
+    gsap.set(amp, { scale: .5, rotation: -10 });
+    gsap.set(flourish, { y: 6, scaleX: .72 });
+    gsap.set(divider, { y: 5, scaleX: .82 });
+    gsap.set(invite, { y: 7 });
+    gsap.set(date, { y: 6 });
+    gsap.set(dateLetters, { opacity: 0, y: 3, filter: 'blur(1px)' });
+    gsap.set(cue, { y: 5 });
+    gsap.set(arch, { scale: .97, opacity: 0 });
 
-    gsap.set(arch, { scale: .96, opacity: 0 });
-
-    /* A brisk 1.6–1.8 second sequence: the page should feel alive
-       immediately without making the entrance feel rushed. */
+    /* Fast, layered reveal: roughly 1.4 seconds with overlapping beats. */
     const tl = gsap.timeline({ defaults: { ease: 'power2.out' } });
 
-    tl.to(arch, {
-      scale: 1,
-      opacity: .24,
-      duration: .32
-    })
-    .to(kicker, {
-      y: 0, opacity: 1, filter: 'blur(0)',
-      letterSpacing: '.19em', duration: .22
-    }, '-=.18')
-    .to(monogram, {
-      y: 0, scale: 1, opacity: 1, filter: 'blur(0)',
-      duration: .25
-    }, '-=.12')
-    .to(bride, {
-      x: 0, y: 0, scale: 1, opacity: 1, filter: 'blur(0)',
-      duration: .34
-    }, '-=.13')
-    .to(groom, {
-      x: 0, y: 0, scale: 1, opacity: 1, filter: 'blur(0)',
-      duration: .34
-    }, '<')
-    .to(amp, {
-      scale: 1, rotation: -5, opacity: 1, filter: 'blur(0)',
-      duration: .24, ease: 'back.out(1.6)'
-    }, '-=.16')
-    .to(flourish, {
-      y: 0, scaleX: 1, opacity: 1, filter: 'blur(0)',
-      duration: .20
-    }, '-=.10')
-    .to(divider, {
-      y: 0, scaleX: 1, opacity: 1, filter: 'blur(0)',
-      duration: .18
-    }, '-=.08')
-    .to(invite, {
-      y: 0, opacity: 1, filter: 'blur(0)',
-      duration: .24
-    }, '-=.08')
-    .to(date, {
-      y: 0, opacity: 1, filter: 'blur(0)',
-      duration: .17
-    }, '-=.08')
-    .to(dateLetters, {
-      opacity: 1, y: 0, filter: 'blur(0)',
-      duration: .035, stagger: .014, ease: 'power2.out'
-    }, '-=.06')
-    .to(cue, {
-      y: 0, opacity: 1, filter: 'blur(0)',
-      duration: .16
-    }, '-=.05');
+    tl.to(arch, { scale: 1, opacity: .23, duration: .24 })
+      .to(kicker, {
+        y: 0, opacity: 1, filter: 'blur(0)',
+        letterSpacing: '.18em', duration: .18
+      }, '-=.12')
+      .to(monogram, {
+        y: 0, scale: 1, opacity: 1, filter: 'blur(0)',
+        duration: .20
+      }, '-=.10')
+      .to(bride, {
+        x: 0, y: 0, scale: 1, opacity: 1, filter: 'blur(0)',
+        duration: .30
+      }, '-=.10')
+      .to(groom, {
+        x: 0, y: 0, scale: 1, opacity: 1, filter: 'blur(0)',
+        duration: .30
+      }, '<')
+      .to(amp, {
+        scale: 1, rotation: -5, opacity: 1, filter: 'blur(0)',
+        duration: .20, ease: 'back.out(1.55)'
+      }, '-=.12')
+      .to(flourish, {
+        y: 0, scaleX: 1, opacity: 1, filter: 'blur(0)',
+        duration: .18
+      }, '-=.08')
+      .to(divider, {
+        y: 0, scaleX: 1, opacity: 1, filter: 'blur(0)',
+        duration: .16
+      }, '-=.07')
+      .to(invite, {
+        y: 0, opacity: 1, filter: 'blur(0)',
+        duration: .20
+      }, '-=.07')
+      .to(date, {
+        y: 0, opacity: 1, filter: 'blur(0)',
+        duration: .15
+      }, '-=.07')
+      .to(dateLetters, {
+        opacity: 1, y: 0, filter: 'blur(0)',
+        duration: .035, stagger: .012
+      }, '-=.05')
+      .to(cue, {
+        y: 0, opacity: 1, filter: 'blur(0)',
+        duration: .14
+      }, '-=.05');
 
     if (bg) {
       gsap.to(bg, {
         yPercent: 7,
         scale: 1.08,
         ease: 'none',
-        scrollTrigger: {
-          trigger: hero,
-          start: 'top top',
-          end: 'bottom top',
-          scrub: .9
-        }
+        scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: .9 }
       });
     }
 
@@ -225,12 +214,7 @@ window.ScrollAnimations = (function () {
       gsap.to(arch, {
         yPercent: -3,
         ease: 'none',
-        scrollTrigger: {
-          trigger: hero,
-          start: 'top top',
-          end: 'bottom top',
-          scrub: 1.1
-        }
+        scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: 1.1 }
       });
     }
   }
