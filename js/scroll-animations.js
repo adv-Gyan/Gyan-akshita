@@ -153,19 +153,19 @@ window.ScrollAnimations = (function () {
     tl.to(arch, {
       scale: 1,
       opacity: .28,
-      duration: .55
+      duration: .38
     })
     .to(monogram, {
       y: 0,
       scale: 1,
       opacity: 1,
       filter: 'blur(0)',
-      duration: .42
+      duration: .30
     }, '-=.28')
     .to(bride, {
       x: 0, y: 0, opacity: 1,
       filter: 'blur(0)',
-      duration: .46
+      duration: .34
     }, '-=.26')
     .to(groom, {
       x: 0, y: 0, opacity: 1,
@@ -176,24 +176,24 @@ window.ScrollAnimations = (function () {
       opacity: 1,
       scale: 1,
       filter: 'blur(0)',
-      duration: .3,
+      duration: .152,
       ease: 'back.out(1.7)'
     }, '-=.2')
     .to(divider, {
-      y: 0, opacity: 1, filter: 'blur(0)', duration: .28
+      y: 0, opacity: 1, filter: 'blur(0)', duration: .20
     }, '-=.12')
     .to(invite, {
-      y: 0, opacity: 1, filter: 'blur(0)', duration: .32
+      y: 0, opacity: 1, filter: 'blur(0)', duration: .24
     }, '-=.1')
     .to(date, {
       y: 0, opacity: 1, filter: 'blur(0)', duration: .2
     }, '-=.08')
     .to(dateLetters, {
       opacity: 1, y: 0, filter: 'blur(0)',
-      duration: .06, stagger: .025, ease: 'power2.out'
+      duration: .045, stagger: .018, ease: 'power2.out'
     }, '-=.08')
     .to(cue, {
-      y: 0, opacity: 1, filter: 'blur(0)', duration: .25
+      y: 0, opacity: 1, filter: 'blur(0)', duration: .18
     }, '-=.08');
 
     if (bg) {
