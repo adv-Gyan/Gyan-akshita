@@ -233,6 +233,7 @@ window.ScrollAnimations = (function () {
 
     const timelineLine = qs('.timeline-line', track);
     let timelinePath = qs('.timeline-line-path', track);
+    let timelineBasePath = qs('.timeline-line-base', track);
     let timelineGlow = qs('.timeline-line-glow', track);
 
     if (timelineLine && !timelinePath) {
@@ -299,6 +300,14 @@ window.ScrollAnimations = (function () {
         timelineLine.appendChild(timelineSvg);
       }
 
+      timelineBasePath = timelineSvg.querySelector('.timeline-line-base');
+      if (!timelineBasePath) {
+        timelineBasePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        timelineBasePath.classList.add('timeline-line-base');
+        timelineBasePath.setAttribute('fill', 'none');
+        timelineSvg.appendChild(timelineBasePath);
+      }
+
       timelinePath = timelineSvg.querySelector('.timeline-line-path');
       if (!timelinePath) {
         timelinePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
@@ -310,7 +319,14 @@ window.ScrollAnimations = (function () {
       timelineSvg.setAttribute('viewBox', `0 0 ${Math.max(1, trackRect.width)} ${Math.max(1, trackRect.height)}`);
       timelineSvg.setAttribute('width', trackRect.width);
       timelineSvg.setAttribute('height', trackRect.height);
+      timelineBasePath.setAttribute('d', d);
       timelinePath.setAttribute('d', d);
+
+      const baseLen = timelineBasePath.getTotalLength();
+      gsap.set(timelineBasePath, {
+        strokeDasharray: baseLen,
+        strokeDashoffset: 0
+      });
 
       const len = timelinePath.getTotalLength();
       /* The calligraphic stroke begins hidden and is drawn progressively
@@ -352,6 +368,12 @@ window.ScrollAnimations = (function () {
     });
 
     requestAnimationFrame(drawTimelinePath);
+    window.addEventListener('load', () => {
+      requestAnimationFrame(() => {
+        drawTimelinePath();
+        ScrollTrigger.refresh();
+      });
+    }, { once: true });
 
     ScrollTrigger.create({
       trigger: track,
