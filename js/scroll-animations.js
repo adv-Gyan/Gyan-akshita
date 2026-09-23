@@ -229,7 +229,6 @@ window.ScrollAnimations = (function () {
 
     const line = qs('.timeline-line', track);
     if (!line) return;
-
     gsap.set(fill, { opacity: 0 });
 
     let svg = line.querySelector('.timeline-line-svg');
@@ -257,54 +256,76 @@ window.ScrollAnimations = (function () {
       line.appendChild(glow);
     }
 
-    /* A decorative flourish is not a rail. It is a single elegant stroke
-       drawn through the empty space BETWEEN cards, with small tails that
-       terminate at each event dot. */
-    const drawPath = () => {
-      const trackRect = track.getBoundingClientRect();
-      const centerX = trackRect.width / 2;
+    /* Cards alternate. The connector is one continuous ribbon whose
+       anchor points sit just outside the inner edge of each card. */
+    items.forEach((item, i) => {
+      const card = qs('.event-card', item);
+      const dot = qs('.event-dot', item);
+      if (!card || !dot) return;
+
+      gsap.set(card, {
+        x: i % 2 === 0 ? -18 : 18
+      });
+
+      gsap.timeline({
+        scrollTrigger: { trigger: item, start: 'top 84%', once: true }
+      })
+      .fromTo(dot,
+        { opacity: .15, scale: .72 },
+        { opacity: 1, scale: 1.06, duration: .48, ease: 'back.out(1.9)', immediateRender: false }
+      )
+      .to(card, {
+        x: 0,
+        opacity: 1,
+        duration: .68,
+        ease: 'power3.out',
+        immediateRender: false
+      }, '-=.22');
+    });
+
+    const draw = () => {
+      const rect = track.getBoundingClientRect();
+      const center = rect.width / 2;
+      const halfCard = Math.min(rect.width * .40, 170);
+      const edge = 10;
+      const leftX = center - halfCard - edge;
+      const rightX = center + halfCard + edge;
+
       const anchors = items.map((item, i) => {
         const card = qs('.event-card', item);
-        const cardRect = card?.getBoundingClientRect();
-        const cardTop = cardRect ? cardRect.top - trackRect.top : item.offsetTop;
-        const cardBottom = cardRect ? cardRect.bottom - trackRect.top : item.offsetTop + item.offsetHeight;
-        const isLeft = i % 2 === 0;
-
-        /* Dot sits just outside the card's inner edge. */
-        const dotX = isLeft
-          ? centerX + Math.min(24, Math.max(16, trackRect.width * .045))
-          : centerX - Math.min(24, Math.max(16, trackRect.width * .045));
-
-        return { x: dotX, top: cardTop, bottom: cardBottom, y: cardTop, isLeft };
+        const r = card?.getBoundingClientRect();
+        const y = r ? (r.top - rect.top) + 3 : item.offsetTop;
+        return {
+          x: i % 2 === 0 ? leftX : rightX,
+          y
+        };
       });
       if (anchors.length < 2) return;
 
+      /* One continuous, soft calligraphy stroke.
+         It gently bows around each card and makes a single flourish
+         across the gap, rather than creating a timeline rail. */
       let d = `M ${anchors[0].x} ${anchors[0].y}`;
 
       for (let i = 0; i < anchors.length - 1; i++) {
         const a = anchors[i];
         const b = anchors[i + 1];
-        const gapStart = a.bottom + 7;
-        const gapEnd = b.top - 7;
-        const gap = Math.max(70, gapEnd - gapStart);
-        const loop = Math.min(78, Math.max(34, trackRect.width * .13));
-        const direction = i % 2 === 0 ? -1 : 1;
+        const gap = Math.max(40, b.y - a.y);
+        const bow = Math.min(150, Math.max(70, rect.width * .25));
+        const sgn = i % 2 === 0 ? 1 : -1;
 
-        /* Exit vertically along the card edge first, then make one clean
-           ink-like flourish across the gap and return to the next edge. */
-        d += ` L ${a.x} ${gapStart}`;
-        d += ` C ${a.x + loop * direction} ${gapStart + gap * .12},
-                 ${centerX + loop * direction} ${gapStart + gap * .18},
-                 ${centerX} ${gapStart + gap * .42}`;
-        d += ` C ${centerX - loop * direction} ${gapStart + gap * .70},
-                 ${b.x + loop * -direction} ${gapEnd - gap * .12},
-                 ${b.x} ${gapEnd}`;
-        d += ` L ${b.x} ${b.y}`;
+        const c1x = a.x + bow * sgn;
+        const c2x = center - bow * .45 * sgn;
+        const c3x = center + bow * .45 * sgn;
+        const c4x = b.x - bow * sgn;
+
+        d += ` C ${c1x} ${a.y + gap * .18}, ${c2x} ${a.y + gap * .36}, ${center} ${a.y + gap * .50}`;
+        d += ` C ${c3x} ${a.y + gap * .64}, ${c4x} ${a.y + gap * .82}, ${b.x} ${b.y}`;
       }
 
-      svg.setAttribute('viewBox', `0 0 ${Math.max(1, trackRect.width)} ${Math.max(1, trackRect.height)}`);
-      svg.setAttribute('width', trackRect.width);
-      svg.setAttribute('height', trackRect.height);
+      svg.setAttribute('viewBox', `0 0 ${Math.max(1, rect.width)} ${Math.max(1, rect.height)}`);
+      svg.setAttribute('width', rect.width);
+      svg.setAttribute('height', rect.height);
       path.setAttribute('d', d);
 
       const len = path.getTotalLength();
@@ -313,33 +334,9 @@ window.ScrollAnimations = (function () {
       gsap.set(glow, { opacity: 0 });
     };
 
-    items.forEach((item, i) => {
-      const card = qs('.event-card', item);
-      const dot = qs('.event-dot', item);
-      if (!card || !dot) return;
+    requestAnimationFrame(draw);
 
-      gsap.set(card, { x: i % 2 === 0 ? -24 : 24 });
-
-      gsap.timeline({
-        scrollTrigger: {
-          trigger: item,
-          start: 'top 84%',
-          once: true
-        }
-      })
-      .fromTo(dot,
-        { opacity: .25, scale: .72 },
-        { opacity: 1, scale: 1.04, duration: .5, ease: 'back.out(1.8)', immediateRender: false }
-      )
-      .to(card,
-        { x: 0, y: 0, opacity: 1, duration: .72, ease: 'power3.out', immediateRender: false },
-        '-=.22'
-      );
-    });
-
-    requestAnimationFrame(drawPath);
-
-    const redraw = () => requestAnimationFrame(drawPath);
+    const redraw = () => requestAnimationFrame(draw);
     window.addEventListener('resize', redraw, { passive: true });
     window.addEventListener('load', () => {
       redraw();
@@ -348,23 +345,25 @@ window.ScrollAnimations = (function () {
 
     ScrollTrigger.create({
       trigger: track,
-      start: 'top 88%',
-      end: 'bottom 72%',
-      scrub: .6,
-      onRefresh: drawPath,
+      start: 'top 86%',
+      end: 'bottom 70%',
+      scrub: .7,
+      onRefresh: draw,
       onUpdate: self => {
-        const progress = Math.max(0, Math.min(1, self.progress));
+        const p = Math.max(0, Math.min(1, self.progress));
         const len = Number(path.dataset.length || 0);
         if (!len) return;
 
-        gsap.set(path, { strokeDashoffset: len * (1 - progress) });
+        gsap.set(path, {
+          strokeDashoffset: len * (1 - p)
+        });
 
         try {
-          const point = path.getPointAtLength(len * progress);
+          const point = path.getPointAtLength(len * p);
           gsap.set(glow, {
             x: point.x,
             y: point.y,
-            opacity: progress > .015 && progress < .995 ? 1 : 0
+            opacity: p > .01 && p < .995 ? .95 : 0
           });
         } catch (_) {
           gsap.set(glow, { opacity: 0 });
