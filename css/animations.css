@@ -293,3 +293,29 @@ body.invite-open #gold-particles{opacity:.72;}
 @media (prefers-reduced-motion: reduce) {
   .native-hero-stagger { animation: none !important; }
 }
+
+
+/* Elegant section-break motion */
+.section-break {
+  will-change: transform, opacity;
+}
+.section-break-image {
+  will-change: transform;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .section-break-image {
+    animation: sectionBreakDrift 12s ease-in-out infinite alternate;
+  }
+}
+@keyframes sectionBreakDrift {
+  from { transform: scale(1.04) translate3d(0,0,0); }
+  to { transform: scale(1.08) translate3d(0,-1.5%,0); }
+}
+
+/* Restore a little typographic presence on intermediate sections. */
+.section-title { font-size: clamp(1.9rem, 5.5vw, 2.45rem); }
+.section-subtitle { font-size: clamp(.78rem, 2.2vw, .92rem); }
+.photo-names { font-size: clamp(1.65rem, 5vw, 2.15rem); }
+.event-card-name { font-size: clamp(1.45rem, 4.4vw, 1.8rem); }
+.venue-name { font-size: clamp(1.8rem, 5vw, 2.35rem); }
+.success-heading { font-size: clamp(1.7rem, 5vw, 2.2rem); }
