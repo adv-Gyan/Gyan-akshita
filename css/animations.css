@@ -323,9 +323,11 @@ body.invite-open #gold-particles{opacity:.72;}
 
 /* Prevent a first-paint flash: hero copy is invisible until the
    animation controller has explicitly prepared it. */
+#main-invite:not(.hero-animation-ready) .hero-kicker,
 #main-invite:not(.hero-animation-ready) .hero-monogram,
 #main-invite:not(.hero-animation-ready) .hero-name,
 #main-invite:not(.hero-animation-ready) .hero-and,
+#main-invite:not(.hero-animation-ready) .hero-flourish,
 #main-invite:not(.hero-animation-ready) .hero-divider,
 #main-invite:not(.hero-animation-ready) .hero-invite-line,
 #main-invite:not(.hero-animation-ready) .hero-date,
@@ -333,9 +335,11 @@ body.invite-open #gold-particles{opacity:.72;}
   opacity: 0 !important;
   visibility: hidden;
 }
+#main-invite.hero-animation-ready .hero-kicker,
 #main-invite.hero-animation-ready .hero-monogram,
 #main-invite.hero-animation-ready .hero-name,
 #main-invite.hero-animation-ready .hero-and,
+#main-invite.hero-animation-ready .hero-flourish,
 #main-invite.hero-animation-ready .hero-divider,
 #main-invite.hero-animation-ready .hero-invite-line,
 #main-invite.hero-animation-ready .hero-date,
@@ -390,5 +394,153 @@ body.invite-open #gold-particles{opacity:.72;}
   .photo-mughal-frame::before {
     inset: 6px;
     border-radius: 14px 14px 5px 5px;
+  }
+}
+
+
+/* Hero content hierarchy + signature flourish. */
+.hero-kicker {
+  font-family: var(--font-body);
+  font-size: .52rem;
+  font-weight: 500;
+  letter-spacing: .19em;
+  text-transform: uppercase;
+  color: rgba(232,201,122,.78);
+  margin-bottom: 10px;
+}
+.hero-monogram {
+  font-size: clamp(2rem, 8vw, 3rem);
+  margin-bottom: 11px;
+  color: rgba(232,201,122,.92);
+}
+.hero-names-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  line-height: 1;
+}
+.hero-name {
+  font-family: var(--font-script);
+  font-style: normal;
+  font-weight: 400;
+  font-size: clamp(3.15rem, 14vw, 4.9rem);
+  line-height: .78;
+  letter-spacing: .005em;
+  color: var(--color-paper);
+  white-space: nowrap;
+  text-shadow: 0 3px 20px rgba(0,0,0,.52), 0 0 18px rgba(232,201,122,.08);
+}
+.hero-bride {
+  margin-left: -1.25rem;
+}
+.hero-groom {
+  margin-right: -1.25rem;
+}
+.hero-and {
+  font-family: var(--font-script);
+  font-size: clamp(2rem, 8vw, 2.85rem);
+  line-height: .6;
+  color: var(--color-gold-light);
+  margin: .28rem 0 .34rem;
+  text-shadow: 0 0 13px rgba(232,201,122,.34);
+}
+.hero-flourish {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: min(58vw, 210px);
+  gap: 9px;
+  margin-top: 10px;
+  margin-bottom: 1px;
+}
+.hero-flourish-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(232,201,122,.34), transparent);
+}
+.hero-flourish-mark {
+  font-family: var(--font-script);
+  font-size: 1.25rem;
+  color: rgba(232,201,122,.9);
+  line-height: 1;
+}
+.hero-divider {
+  width: min(43vw, 165px);
+  margin: 12px 0 12px;
+  opacity: .5;
+}
+.hero-invite-line {
+  margin: 0;
+  max-width: 300px;
+  font-size: clamp(.72rem, 2.8vw, .88rem);
+  line-height: 1.7;
+  letter-spacing: .085em;
+  color: rgba(248,242,230,.72);
+}
+.hero-invite-line em {
+  color: rgba(232,201,122,.9);
+}
+.hero-date {
+  margin-top: 17px;
+  padding: 0 0 8px;
+  min-width: 190px;
+  border: 0;
+  border-bottom: 1px solid rgba(232,201,122,.48);
+}
+.hero-date-text {
+  font-size: .71rem;
+  letter-spacing: .22em;
+}
+.scroll-indicator {
+  bottom: 19px;
+}
+
+@media (max-width:600px) {
+  .hero-content {
+    padding: 7svh 18px 10svh;
+  }
+  .hero-kicker {
+    font-size: .49rem;
+    letter-spacing: .17em;
+    margin-bottom: 9px;
+  }
+  .hero-monogram {
+    font-size: clamp(1.95rem, 8.2vw, 2.65rem);
+    margin-bottom: 10px;
+  }
+  .hero-name {
+    font-size: clamp(3rem, 14.5vw, 3.95rem);
+  }
+  .hero-bride { margin-left: -1rem; }
+  .hero-groom { margin-right: -1rem; }
+  .hero-and {
+    font-size: clamp(1.85rem, 7.2vw, 2.45rem);
+    margin: .27rem 0 .33rem;
+  }
+  .hero-flourish {
+    width: min(62vw, 185px);
+    margin-top: 9px;
+  }
+  .hero-flourish-mark {
+    font-size: 1.15rem;
+  }
+  .hero-divider {
+    width: min(49vw, 155px);
+    margin-top: 10px;
+    margin-bottom: 11px;
+  }
+  .hero-invite-line {
+    max-width: 276px;
+    font-size: .68rem;
+  }
+  .hero-date {
+    margin-top: 15px;
+  }
+}
+@media (min-width:768px) {
+  .hero-name {
+    font-size: clamp(3.6rem, 6.3vw, 5.1rem);
   }
 }
