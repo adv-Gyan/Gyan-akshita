@@ -107,19 +107,20 @@ window.ScrollAnimations = (function () {
 
     const bg = qs('.hero-bg', hero);
     const arch = qs('.hero-arch-frame', hero);
+    const kicker = qs('.hero-kicker', hero);
     const monogram = qs('.hero-monogram', hero);
     const bride = qs('.hero-bride', hero);
     const groom = qs('.hero-groom', hero);
     const amp = qs('.hero-and', hero);
+    const flourish = qs('.hero-flourish', hero);
     const divider = qs('.hero-divider', hero);
     const invite = qs('.hero-invite-line', hero);
     const date = qs('.hero-date', hero);
     const cue = qs('.scroll-indicator', hero);
     const dateText = qs('.hero-date-text', hero);
 
-    if (!monogram || !bride || !groom) return;
+    if (!kicker || !monogram || !bride || !groom) return;
 
-    /* Run the entrance faster and with a more editorial hierarchy. */
     if (dateText && !dateText.dataset.splitLetters) {
       const text = dateText.textContent;
       dateText.textContent = '';
@@ -134,67 +135,77 @@ window.ScrollAnimations = (function () {
 
     const dateLetters = dateText ? qsa('.date-letter', dateText) : [];
 
-    gsap.set([monogram, bride, groom, amp, divider, invite, date, cue], {
+    gsap.set([kicker, monogram, bride, groom, amp, flourish, divider, invite, date, cue], {
       opacity: 0,
-      filter: 'blur(5px)'
+      filter: 'blur(3px)'
     });
-    gsap.set(monogram, { y: 14, scale: .9 });
-    gsap.set(bride, { x: -54, y: 8 });
-    gsap.set(groom, { x: 54, y: 8 });
-    gsap.set(amp, { y: 0, scale: .55 });
-    gsap.set(divider, { y: 8 });
-    gsap.set(invite, { y: 10 });
-    gsap.set(date, { y: 8 });
-    gsap.set(dateLetters, { opacity: 0, y: 5, filter: 'blur(2px)' });
-    gsap.set(arch, { scale: .92, opacity: 0 });
+    gsap.set(kicker, { y: 10, letterSpacing: '.26em' });
+    gsap.set(monogram, { y: 10, scale: .92 });
+    gsap.set(bride, { x: -42, y: 5, scale: .98 });
+    gsap.set(groom, { x: 42, y: 5, scale: .98 });
+    gsap.set(amp, { scale: .45, rotation: -12, y: 2 });
+    gsap.set(flourish, { y: 7, scaleX: .75 });
+    gsap.set(divider, { y: 6, scaleX: .8 });
+    gsap.set(invite, { y: 8 });
+    gsap.set(date, { y: 7 });
+    gsap.set(dateLetters, { opacity: 0, y: 4, filter: 'blur(1.5px)' });
+    gsap.set(cue, { y: 6 });
 
+    gsap.set(arch, { scale: .96, opacity: 0 });
+
+    /* A brisk 1.6–1.8 second sequence: the page should feel alive
+       immediately without making the entrance feel rushed. */
     const tl = gsap.timeline({ defaults: { ease: 'power2.out' } });
 
     tl.to(arch, {
       scale: 1,
-      opacity: .28,
-      duration: .38
+      opacity: .24,
+      duration: .32
     })
+    .to(kicker, {
+      y: 0, opacity: 1, filter: 'blur(0)',
+      letterSpacing: '.19em', duration: .22
+    }, '-=.18')
     .to(monogram, {
-      y: 0,
-      scale: 1,
-      opacity: 1,
-      filter: 'blur(0)',
-      duration: .30
-    }, '-=.28')
+      y: 0, scale: 1, opacity: 1, filter: 'blur(0)',
+      duration: .25
+    }, '-=.12')
     .to(bride, {
-      x: 0, y: 0, opacity: 1,
-      filter: 'blur(0)',
+      x: 0, y: 0, scale: 1, opacity: 1, filter: 'blur(0)',
       duration: .34
-    }, '-=.26')
+    }, '-=.13')
     .to(groom, {
-      x: 0, y: 0, opacity: 1,
-      filter: 'blur(0)',
-      duration: .46
+      x: 0, y: 0, scale: 1, opacity: 1, filter: 'blur(0)',
+      duration: .34
     }, '<')
     .to(amp, {
-      opacity: 1,
-      scale: 1,
-      filter: 'blur(0)',
-      duration: .152,
-      ease: 'back.out(1.7)'
-    }, '-=.2')
+      scale: 1, rotation: -5, opacity: 1, filter: 'blur(0)',
+      duration: .24, ease: 'back.out(1.6)'
+    }, '-=.16')
+    .to(flourish, {
+      y: 0, scaleX: 1, opacity: 1, filter: 'blur(0)',
+      duration: .20
+    }, '-=.10')
     .to(divider, {
-      y: 0, opacity: 1, filter: 'blur(0)', duration: .20
-    }, '-=.12')
+      y: 0, scaleX: 1, opacity: 1, filter: 'blur(0)',
+      duration: .18
+    }, '-=.08')
     .to(invite, {
-      y: 0, opacity: 1, filter: 'blur(0)', duration: .24
-    }, '-=.1')
+      y: 0, opacity: 1, filter: 'blur(0)',
+      duration: .24
+    }, '-=.08')
     .to(date, {
-      y: 0, opacity: 1, filter: 'blur(0)', duration: .2
+      y: 0, opacity: 1, filter: 'blur(0)',
+      duration: .17
     }, '-=.08')
     .to(dateLetters, {
       opacity: 1, y: 0, filter: 'blur(0)',
-      duration: .045, stagger: .018, ease: 'power2.out'
-    }, '-=.08')
+      duration: .035, stagger: .014, ease: 'power2.out'
+    }, '-=.06')
     .to(cue, {
-      y: 0, opacity: 1, filter: 'blur(0)', duration: .18
-    }, '-=.08');
+      y: 0, opacity: 1, filter: 'blur(0)',
+      duration: .16
+    }, '-=.05');
 
     if (bg) {
       gsap.to(bg, {
