@@ -342,3 +342,53 @@ body.invite-open #gold-particles{opacity:.72;}
 #main-invite.hero-animation-ready .scroll-indicator {
   visibility: visible;
 }
+
+
+/* Refined couple portrait frame — clean, editorial, no rough clipped border. */
+.photo-mughal-frame {
+  clip-path: none;
+  overflow: hidden;
+  border-radius: 22px 22px 10px 10px;
+  border: 1px solid rgba(232,201,122,.58);
+  background: #160606;
+  box-shadow:
+    0 18px 50px rgba(0,0,0,.42),
+    0 0 0 6px rgba(201,168,76,.05),
+    0 0 28px rgba(201,168,76,.08);
+}
+
+.photo-mughal-frame::before {
+  content: '';
+  position: absolute;
+  inset: 7px;
+  border: 1px solid rgba(232,201,122,.20);
+  border-radius: 16px 16px 6px 6px;
+  clip-path: none;
+  transform: none;
+  opacity: 1;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.couple-photo {
+  object-position: center 22%;
+  transform: scale(1.015);
+}
+
+.photo-frame-overlay {
+  background:
+    linear-gradient(180deg, rgba(18,5,5,.04) 48%, rgba(18,5,5,.25) 100%),
+    radial-gradient(ellipse at center, transparent 58%, rgba(10,3,3,.22) 100%);
+}
+
+@media (max-width: 600px) {
+  .photo-mughal-frame {
+    width: min(84vw, 340px);
+    border-radius: 20px 20px 9px 9px;
+  }
+
+  .photo-mughal-frame::before {
+    inset: 6px;
+    border-radius: 14px 14px 5px 5px;
+  }
+}
