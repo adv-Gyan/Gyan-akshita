@@ -280,7 +280,6 @@ window.ScrollAnimations = (function () {
         timelineSvg.setAttribute('aria-hidden', 'true');
         timelineSvg.setAttribute('preserveAspectRatio', 'none');
         timelineLine.appendChild(timelineSvg);
-        timelinePath.remove();
       }
 
       timelinePath = timelineSvg.querySelector('.timeline-line-path');
@@ -300,8 +299,6 @@ window.ScrollAnimations = (function () {
       gsap.set(timelinePath, { strokeDasharray: len, strokeDashoffset: len });
       timelinePath.dataset.length = len;
     };
-
-    items.forEach((item, i) => {
 
     items.forEach((item, i) => {
       const card = qs('.event-card', item);
