@@ -78,8 +78,16 @@
             class="sound-toggle hidden"
             aria-label="Play wedding music"
             title="Play music">
-      <span class="sound-icon sound-on">♪</span>
-      <span class="sound-icon sound-off hidden">♪̶</span>
+      <span class="sound-icon sound-on" aria-hidden="true">
+        <span class="sound-note">♪</span>
+        <span class="sound-wave sound-wave-1"></span>
+        <span class="sound-wave sound-wave-2"></span>
+        <span class="sound-wave sound-wave-3"></span>
+      </span>
+      <span class="sound-icon sound-off hidden" aria-hidden="true">
+        <span class="sound-note">♪</span>
+        <span class="sound-slash"></span>
+      </span>
     </button>
 
     <!-- ── SECTION: HERO ─────────────────────────────────── -->
