@@ -1310,3 +1310,144 @@
     font-size: clamp(1.05rem, 4.6vw, 1.35rem);
   }
 }
+
+
+/* ============================================================
+   FINAL EVENT TIMELINE LAYOUT — alternating cards + calligraphic path
+   ============================================================ */
+.section-events .timeline-track {
+  position: relative;
+  padding: .75rem 0;
+}
+
+.section-events .events-container {
+  position: relative;
+  z-index: 2;
+  gap: clamp(3.25rem, 8vw, 5rem);
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.section-events .event-item {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-height: 1px;
+}
+
+.section-events .event-card {
+  position: relative;
+  z-index: 3;
+  width: min(80vw, 340px);
+  margin: 0;
+}
+
+.section-events .event-item:nth-child(odd) .event-card {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+.section-events .event-item:nth-child(even) .event-card {
+  margin-left: auto;
+  margin-right: 0;
+}
+
+/* The dot sits just outside the inner card edge. The SVG follows this
+   anchor, runs alongside the card, then curls across the gap. */
+.section-events .event-dot {
+  top: 0;
+  width: 14px;
+  height: 14px;
+  z-index: 5;
+}
+
+.section-events .event-item:nth-child(odd) .event-dot {
+  left: calc(min(80vw, 340px) + 10px);
+  transform: translateX(-50%);
+}
+
+.section-events .event-item:nth-child(even) .event-dot {
+  left: calc(100% - min(80vw, 340px) - 10px);
+  transform: translateX(-50%);
+}
+
+.section-events .timeline-line {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  background: transparent;
+  pointer-events: none;
+}
+
+.section-events .timeline-line::after {
+  display: none;
+}
+
+.section-events .timeline-line-svg {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.section-events .timeline-line-path {
+  stroke: rgba(232,201,122,.94);
+  stroke-width: 1.55;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+  vector-effect: non-scaling-stroke;
+  filter:
+    drop-shadow(0 0 4px rgba(232,201,122,.48))
+    drop-shadow(0 0 10px rgba(201,168,76,.22));
+  opacity: .96;
+}
+
+.section-events .timeline-line-glow {
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  z-index: 6;
+  box-shadow:
+    0 0 6px rgba(255,245,201,1),
+    0 0 15px rgba(232,201,122,.75),
+    0 0 28px rgba(201,168,76,.30);
+}
+
+@media (max-width: 600px) {
+  .section-events .timeline-track {
+    padding-top: .5rem;
+    padding-bottom: .5rem;
+  }
+
+  .section-events .events-container {
+    gap: 3.5rem;
+  }
+
+  .section-events .event-card {
+    width: min(80vw, 330px);
+  }
+
+  .section-events .event-item:nth-child(odd) .event-dot {
+    left: calc(min(80vw, 330px) + 9px);
+  }
+
+  .section-events .event-item:nth-child(even) .event-dot {
+    left: calc(100% - min(80vw, 330px) - 9px);
+  }
+
+  .section-events .timeline-line-path {
+    stroke-width: 1.35;
+  }
+
+  .section-events .timeline-line-glow {
+    width: 7px;
+    height: 7px;
+    margin: -3.5px 0 0 -3.5px;
+  }
+}
