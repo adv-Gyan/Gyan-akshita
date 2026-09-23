@@ -236,10 +236,8 @@ window.ScrollAnimations = (function () {
     let timelineGlow = qs('.timeline-line-glow', track);
 
     if (timelineLine && !timelinePath) {
-      timelinePath = document.createElement('path');
-      timelinePath.className = 'timeline-line-path';
-      timelinePath.setAttribute('aria-hidden', 'true');
-      timelineLine.appendChild(timelinePath);
+      /* The SVG path itself is created inside drawTimelinePath so it can
+         inherit the responsive track dimensions safely. */
     }
     if (timelineLine && !timelineGlow) {
       timelineGlow = document.createElement('span');
@@ -268,8 +266,30 @@ window.ScrollAnimations = (function () {
         const bend = Math.max(34, Math.min(92, Math.abs(cur.y - prev.y) * .22));
         d += ` C ${prev.x} ${prev.y + bend}, ${cur.x} ${cur.y - bend}, ${cur.x} ${cur.y}`;
       }
+      const svg = timelineLine.querySelector('svg.timeline-line-svg');
+      let timelineSvg = svg;
+      if (!timelineSvg) {
+        timelineSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        timelineSvg.classList.add('timeline-line-svg');
+        timelineSvg.setAttribute('aria-hidden', 'true');
+        timelineSvg.setAttribute('preserveAspectRatio', 'none');
+        timelineLine.appendChild(timelineSvg);
+        timelinePath.remove();
+      }
+
+      timelinePath = timelineSvg.querySelector('.timeline-line-path');
+      if (!timelinePath) {
+        timelinePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        timelinePath.classList.add('timeline-line-path');
+        timelinePath.setAttribute('fill', 'none');
+        timelineSvg.appendChild(timelinePath);
+      }
+
+      timelineSvg.setAttribute('viewBox', `0 0 ${Math.max(1, trackRect.width)} ${Math.max(1, trackRect.height)}`);
+      timelineSvg.setAttribute('width', trackRect.width);
+      timelineSvg.setAttribute('height', trackRect.height);
       timelinePath.setAttribute('d', d);
-      timelinePath.setAttribute('fill', 'none');
+
       const len = timelinePath.getTotalLength();
       gsap.set(timelinePath, { strokeDasharray: len, strokeDashoffset: len });
       timelinePath.dataset.length = len;
