@@ -241,11 +241,15 @@
           <img src="assets/svg/section-divider.svg" alt="" />
         </div>
 
-        <!-- Timeline track -->
-        <div class="timeline-track" aria-label="Wedding events timeline">
-          <div class="timeline-line" aria-hidden="true">
-            <div class="timeline-line-fill" id="timeline-fill"></div>
-          </div>
+        <!-- Calligraphic wedding timeline -->
+        <div class="calendar-timeline" id="calendar-timeline" aria-label="Wedding events timeline">
+          <svg class="calendar-timeline-svg"
+               aria-hidden="true"
+               preserveAspectRatio="none">
+            <path class="calendar-timeline-shadow"></path>
+            <path class="calendar-timeline-path"></path>
+            <circle class="calendar-timeline-glow" cx="0" cy="0" r="3"></circle>
+          </svg>
 
           <!-- Events are injected here by JS from config.js -->
           <div id="events-container" class="events-container"></div>

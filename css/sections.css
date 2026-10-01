@@ -2,205 +2,383 @@
    SECTIONS CSS — Events timeline, countdown, venue, RSVP
    ============================================================ */
 
-/* ── EVENTS / MARK YOUR CALENDAR ────────────────────────── */
+/* ── MARK YOUR CALENDAR / CALLIGRAPHIC TIMELINE ─────────── */
 .section-events {
-  background: var(--color-bg-section);
-  padding: var(--space-xl) 0;
-}
-
-.timeline-track {
   position: relative;
-  padding: var(--space-lg) 0;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(201,168,76,.055), transparent 42%),
+    var(--color-bg-section);
+  padding: clamp(5rem, 11vw, 8rem) 0;
 }
 
-/* ── Vertical timeline line ──────────────────────────────── */
-.timeline-line {
+.section-events .section-inner {
+  position: relative;
+  z-index: 1;
+}
+
+.calendar-timeline {
+  position: relative;
+  width: min(100%, 1040px);
+  margin: clamp(2.5rem, 6vw, 4.5rem) auto 0;
+  padding: clamp(1rem, 3vw, 2rem) clamp(0.75rem, 2vw, 1.5rem);
+}
+
+.calendar-timeline::before,
+.calendar-timeline::after {
+  content: "";
   position: absolute;
   left: 50%;
+  width: 180px;
+  height: 1px;
   transform: translateX(-50%);
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  background: rgba(201,168,76,0.15);
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(232,201,122,.25), transparent);
+}
+
+.calendar-timeline::before { top: 0; }
+.calendar-timeline::after  { bottom: 0; opacity: .55; }
+
+.calendar-timeline-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
   z-index: 0;
 }
 
-.timeline-line-fill {
-  width: 100%;
-  height: 0%; /* animated by JS on scroll */
-  background: linear-gradient(
-    180deg,
-    var(--color-gold) 0%,
-    rgba(201,168,76,0.4) 100%
-  );
-  transition: height 0.3s linear;
-  box-shadow: 0 0 8px rgba(201,168,76,0.3);
+.calendar-timeline-shadow,
+.calendar-timeline-path {
+  fill: none;
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
-/* ── Events container ────────────────────────────────────── */
+.calendar-timeline-shadow {
+  stroke: rgba(201,168,76,.12);
+  stroke-width: 5.5;
+  filter: blur(1.8px);
+}
+
+.calendar-timeline-path {
+  stroke: rgba(232,201,122,.9);
+  stroke-width: 1.35;
+  filter: drop-shadow(0 0 5px rgba(201,168,76,.24));
+}
+
+.calendar-timeline-glow {
+  fill: #f5d98b;
+  opacity: 0;
+  filter:
+    drop-shadow(0 0 4px rgba(255,245,201,.95))
+    drop-shadow(0 0 12px rgba(232,201,122,.68));
+}
+
 .events-container {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   display: flex;
   flex-direction: column;
-  gap: var(--space-2xl);
-  padding: 0 var(--space-lg);
+  gap: clamp(3.75rem, 8vw, 6rem);
 }
 
-/* ── Individual event item ───────────────────────────────── */
 .event-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-md);
   position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 72px minmax(0, 1fr);
+  align-items: start;
+  min-height: 40px;
+  padding: 0;
 }
 
-/* Timeline dot */
+.event-card {
+  width: min(100%, 385px);
+  margin: 0;
+  position: relative;
+  background:
+    linear-gradient(180deg, rgba(248,242,230,.05), rgba(248,242,230,.022));
+  border: 1px solid rgba(201,168,76,.24);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow:
+    0 18px 48px rgba(0,0,0,.22),
+    inset 0 1px 0 rgba(255,255,255,.025);
+  opacity: .16;
+  transform: translateY(18px);
+  transition:
+    opacity .55s cubic-bezier(.22,.61,.36,1),
+    transform .75s cubic-bezier(.22,.61,.36,1),
+    border-color .45s ease,
+    box-shadow .45s ease;
+  will-change: transform, opacity;
+}
+
+.event-item:nth-child(odd)  .event-card { grid-column: 1; justify-self: end; }
+.event-item:nth-child(even) .event-card { grid-column: 3; justify-self: start; }
+
+.event-item.is-visible .event-card,
+.event-item.event-reached .event-card {
+  opacity: 1;
+  transform: translateY(0);
+  border-color: rgba(201,168,76,.38);
+  box-shadow:
+    0 22px 60px rgba(0,0,0,.28),
+    0 0 26px rgba(201,168,76,.08),
+    inset 0 1px 0 rgba(255,255,255,.03);
+}
+
 .event-dot {
   position: absolute;
   left: 50%;
-  top: 0;
-  transform: translateX(-50%);
-  width: 14px;
-  height: 14px;
+  top: 16px;
+  width: 15px;
+  height: 15px;
+  transform: translate(-50%, 0) scale(.78);
   border-radius: 50%;
-  background: var(--color-gold);
-  border: 2px solid var(--color-bg-section);
-  box-shadow: 0 0 12px rgba(201,168,76,0.5);
-  z-index: 2;
+  background: #2b1510;
+  border: 1px solid rgba(232,201,122,.5);
+  box-shadow:
+    0 0 0 5px rgba(232,201,122,.035),
+    0 0 12px rgba(201,168,76,.12);
+  z-index: 4;
+  transition:
+    transform .45s cubic-bezier(.22,.61,.36,1),
+    background .35s ease,
+    border-color .35s ease,
+    box-shadow .45s ease;
 }
 
 .event-dot::before {
-  content: '';
+  content: "";
   position: absolute;
-  inset: -4px;
+  inset: 3px;
   border-radius: 50%;
-  border: 1px solid rgba(201,168,76,0.3);
+  background: rgba(232,201,122,.3);
+  opacity: .55;
 }
 
-/* ── Event card ──────────────────────────────────────────── */
-.event-card {
-  background: rgba(248,242,230,0.04);
-  border: 1px solid rgba(201,168,76,0.2);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  width: min(85vw, 340px);
-  box-shadow: var(--shadow-card);
-  transition: transform var(--dur-base) var(--ease-smooth),
-              box-shadow var(--dur-base) var(--ease-smooth);
+.event-dot::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 28px;
+  height: 11px;
+  transform: translate(-50%, -50%) rotate(45deg);
+  border-top: 1px solid rgba(232,201,122,.18);
+  border-right: 1px solid rgba(232,201,122,.18);
+  border-radius: 0 14px 0 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .35s ease;
 }
 
-.event-card:hover,
-.event-card:focus-within {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(0,0,0,0.3), 0 0 20px rgba(201,168,76,0.1);
+.event-dot-lit,
+.event-item.is-visible .event-dot,
+.event-item.event-reached .event-dot {
+  background: #f5d98b;
+  border-color: rgba(255,245,201,.9);
+  transform: translate(-50%, 0) scale(1);
+  box-shadow:
+    0 0 0 6px rgba(232,201,122,.045),
+    0 0 10px rgba(255,245,201,.72),
+    0 0 24px rgba(201,168,76,.35);
 }
 
-/* Event card photo — Mughal arch top shape */
+.event-dot-lit::before,
+.event-item.is-visible .event-dot::before,
+.event-item.event-reached .event-dot::before {
+  background: #fff5c9;
+  opacity: 1;
+}
+
+.event-dot-lit::after,
+.event-item.is-visible .event-dot::after,
+.event-item.event-reached .event-dot::after {
+  opacity: .65;
+}
+
+/* Event card imagery */
 .event-card-photo-wrap {
   position: relative;
   width: 100%;
-  aspect-ratio: 4/3;
+  aspect-ratio: 4 / 3;
   overflow: hidden;
   background: linear-gradient(135deg, var(--color-primary-deep), var(--color-bg-deep));
-
-  /* Pointed Mughal arch bottom edge via clip-path */
   clip-path: polygon(
-    0 0, 100% 0, 100% 80%,
-    70% 80%, 50% 100%, 30% 80%, 0 80%
+    0 0, 100% 0, 100% 82%,
+    72% 82%, 50% 100%, 28% 82%, 0 82%
   );
 }
 
 .event-card-photo {
   width: 100%;
   height: 100%;
-  object-fit: cover;
   display: block;
-  transition: transform var(--dur-slow) var(--ease-silk);
+  object-fit: cover;
+  transform: scale(1.035);
+  transition: transform .9s cubic-bezier(.22,.61,.36,1), filter .7s ease;
+  filter: saturate(.88) contrast(1.02);
+}
+
+.event-item.is-visible .event-card-photo,
+.event-item.event-reached .event-card-photo {
+  transform: scale(1);
+  filter: saturate(.98) contrast(1.03);
 }
 
 .event-card:hover .event-card-photo {
-  transform: scale(1.05);
+  transform: scale(1.045);
 }
 
-/* Photo placeholder */
-.event-photo-placeholder {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  background: linear-gradient(135deg, var(--color-primary-deep), var(--color-bg-section));
-}
-
-.event-photo-placeholder .event-icon {
-  font-size: 2.5rem;
-  opacity: 0.7;
-}
-
-.event-photo-placeholder p {
-  font-family: var(--font-body);
-  font-size: var(--text-xs);
-  color: var(--color-muted-dark);
-  letter-spacing: 0.1em;
-}
-
-/* Event card body */
 .event-card-body {
-  padding: var(--space-lg);
+  padding: clamp(1.25rem, 3vw, 1.65rem);
   text-align: center;
 }
 
 .event-card-name {
+  margin-bottom: .55rem;
   font-family: var(--font-heading);
-  font-size: var(--text-lg);
+  font-size: clamp(1.45rem, 3vw, 1.9rem);
   font-weight: 400;
+  letter-spacing: .045em;
   color: var(--color-gold-light);
-  letter-spacing: 0.06em;
-  margin-bottom: var(--space-sm);
 }
 
 .event-card-date-time {
+  margin-bottom: .35rem;
   font-family: var(--font-body);
-  font-size: var(--text-sm);
-  font-weight: 300;
+  font-size: .83rem;
+  font-weight: 400;
   color: var(--color-text-on-dark);
-  letter-spacing: 0.08em;
-  margin-bottom: var(--space-xs);
+  letter-spacing: .075em;
 }
 
 .event-card-venue {
+  margin-bottom: .5rem;
   font-family: var(--font-body);
-  font-size: var(--text-xs);
-  color: var(--color-muted-dark);
-  letter-spacing: 0.06em;
-  line-height: 1.5;
-  margin-bottom: var(--space-sm);
+  font-size: .72rem;
+  line-height: 1.55;
+  color: rgba(248,242,230,.56);
+  letter-spacing: .05em;
 }
 
 .event-card-description {
+  margin-bottom: .7rem;
   font-family: var(--font-display);
   font-style: italic;
-  font-size: var(--text-sm);
-  color: var(--color-muted-dark);
+  font-size: .83rem;
   line-height: 1.7;
-  margin-bottom: var(--space-sm);
+  color: rgba(248,242,230,.54);
 }
 
 .event-card-dresscode {
   display: inline-block;
+  padding: .25rem .7rem;
+  border: 1px solid rgba(201,168,76,.28);
+  border-radius: 999px;
   font-family: var(--font-body);
-  font-size: var(--text-xs);
+  font-size: .67rem;
+  line-height: 1.45;
   color: var(--color-gold);
-  letter-spacing: 0.08em;
-  border: 1px solid rgba(201,168,76,0.3);
-  padding: 3px 10px;
-  border-radius: 20px;
+  letter-spacing: .075em;
 }
 
+.event-photo-placeholder {
+  position: absolute;
+  inset: 0;
+  display: none;
+  place-items: center;
+  align-content: center;
+  gap: .45rem;
+  background: linear-gradient(135deg, var(--color-primary-deep), var(--color-bg-section));
+}
+
+.event-photo-placeholder .event-icon { font-size: 2.4rem; opacity: .65; }
+
+.event-photo-placeholder p {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: .68rem;
+  color: rgba(248,242,230,.46);
+  letter-spacing: .1em;
+}
+
+/* Mobile: a single graceful spine, leaving the cards comfortable and readable. */
+@media (max-width: 720px) {
+  .section-events {
+    padding: 4.5rem 0 5rem;
+  }
+
+  .calendar-timeline {
+    margin-top: 2.5rem;
+    padding: .6rem .5rem .8rem;
+  }
+
+  .calendar-timeline::before,
+  .calendar-timeline::after {
+    left: 20px;
+    width: 96px;
+    transform: none;
+  }
+
+  .events-container {
+    gap: 3.25rem;
+  }
+
+  .event-item {
+    display: block;
+    padding-left: 48px;
+    min-height: 1px;
+  }
+
+  .event-item:nth-child(odd) .event-card,
+  .event-item:nth-child(even) .event-card {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+  }
+
+  .event-dot {
+    left: 20px;
+    top: 16px;
+  }
+
+  .event-card-body {
+    padding: 1.15rem 1rem 1.25rem;
+  }
+
+  .event-card-name {
+    font-size: 1.35rem;
+  }
+
+  .calendar-timeline-path { stroke-width: 1.15; }
+  .calendar-timeline-shadow { stroke-width: 4.8; }
+}
+
+/* Small-phone refinement */
+@media (max-width: 374px) {
+  .event-item { padding-left: 43px; }
+  .event-dot { left: 17px; }
+  .calendar-timeline::before,
+  .calendar-timeline::after { left: 17px; }
+  .event-card-body { padding-left: .85rem; padding-right: .85rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .event-card,
+  .event-card-photo,
+  .event-dot {
+    transition: none !important;
+    transform: none !important;
+  }
+  .event-card { opacity: 1 !important; }
+}
+
+/* ── COUNTDOWN SECTION ───────────────────────────────────── */
 /* ── COUNTDOWN SECTION ───────────────────────────────────── */
 .section-countdown {
   background: var(--color-bg-deep);
@@ -679,18 +857,6 @@
 }
 
 
-/* Cinematic timeline choreography */
-.timeline-line-fill{height:100%;transform:scaleY(0);transform-origin:top center;transition:none}.event-item{transform:none;opacity:1}.event-card{overflow:hidden}.event-card-photo-wrap{isolation:isolate}.event-card-photo{transform:scale(1.06)}.event-card-dresscode{opacity:1;transform:none}.event-dot{animation:none}
-
-
-/* Cinematic timeline */
- .timeline-line-fill{height:100%;transition:none;transform-origin:top center;}
-.event-item{transform:none;opacity:1;}
-.event-card-photo{transform:scale(1.06);}
-.event-card-dresscode{opacity:1;transform:none;}
-.event-dot{animation:none;}
-
-
 /* ============================================================
    PHOTOREALISTIC CINEMATIC SECTION BREAKS
    ============================================================ */
@@ -916,7 +1082,11 @@
 
 
 /* Compact section rhythm */
-.section-events,
+.section-events {
+  padding-top: clamp(4.5rem, 9vw, 6.5rem);
+  padding-bottom: clamp(4.5rem, 10vw, 7rem);
+}
+
 .section-countdown,
 .section-venue {
   padding-top: clamp(2.3rem, 7vw, 3.5rem);
@@ -930,14 +1100,9 @@
 }
 
 .events-container {
-  gap: clamp(2rem, 6vw, 3.25rem);
+  gap: clamp(3.5rem, 7vw, 5.5rem);
   padding-top: 0;
   padding-bottom: 0;
-}
-
-.timeline-track {
-  padding-top: .5rem;
-  padding-bottom: .5rem;
 }
 
 .section-countdown .section-inner,
@@ -951,7 +1116,11 @@
 }
 
 @media (max-width: 600px) {
-  .section-events,
+  .section-events {
+    padding-top: 4rem;
+    padding-bottom: 4.5rem;
+  }
+
   .section-countdown,
   .section-venue {
     padding-top: 2rem;
@@ -965,7 +1134,7 @@
   }
 
   .events-container {
-    gap: 2.15rem;
+    gap: 3rem;
   }
 }
 
@@ -1076,591 +1245,6 @@
     height: 28px;
     font-size: .68rem;
   }
-}
-
-
-/* Scroll-linked event connector glow: a small luminous point travels
-   down the connecting line as the guest scrolls through the events. */
-.timeline-line-glow {
-  position: absolute;
-  left: 50%;
-  top: 0;
-  width: 7px;
-  height: 7px;
-  margin-left: -3.5px;
-  margin-top: -3.5px;
-  border-radius: 50%;
-  background: var(--color-gold-light);
-  box-shadow:
-    0 0 5px rgba(232,201,122,.95),
-    0 0 12px rgba(201,168,76,.62),
-    0 0 24px rgba(201,168,76,.28);
-  transform: translateY(0);
-  opacity: 0;
-  pointer-events: none;
-  z-index: 3;
-  will-change: transform, opacity;
-}
-
-
-/* Organic event connector — a flowing hand-drawn SVG path instead of a
-   rigid straight line. The path stays behind the cards and aligns with
-   the event dots. */
-.timeline-line {
-  left: 0;
-  right: 0;
-  width: 100%;
-  top: 0;
-  bottom: 0;
-  height: 100%;
-  transform: none;
-  overflow: visible;
-  background: transparent;
-  pointer-events: none;
-}
-.timeline-line-path {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-  fill: none;
-  stroke: rgba(232,201,122,.72);
-  stroke-width: 1.25;
-  stroke-linecap: round;
-  vector-effect: non-scaling-stroke;
-  filter: drop-shadow(0 0 4px rgba(201,168,76,.26));
-}
-.timeline-line-fill { display: none; }
-.timeline-line-glow {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 7px;
-  height: 7px;
-  margin: -3.5px 0 0 -3.5px;
-  border-radius: 50%;
-  background: var(--color-gold-light);
-  box-shadow:
-    0 0 5px rgba(232,201,122,.95),
-    0 0 12px rgba(201,168,76,.58),
-    0 0 24px rgba(201,168,76,.24);
-  transform: translate(0,0);
-  opacity: 0;
-  pointer-events: none;
-  z-index: 3;
-  will-change: transform, opacity;
-}
-@media (max-width: 600px) {
-  .timeline-line-path { stroke-width: 1.05; }
-  .timeline-line-glow { width: 6px; height: 6px; margin: -3px 0 0 -3px; }
-}
-
-
-/* Curated editorial curve: soft double hairlines make the event connector
-   feel hand-drawn and ornamental rather than like a UI progress bar. */
-.timeline-line-svg {
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  overflow:visible;
-  pointer-events:none;
-}
-.timeline-line-svg {
-  z-index: 1;
-}
-.timeline-line-path {
-  stroke:rgba(232,201,122,.88);
-  stroke-width:1.45;
-  stroke-linecap:round;
-  fill:none;
-  vector-effect:non-scaling-stroke;
-  filter:drop-shadow(0 0 6px rgba(201,168,76,.34));
-  opacity:.95;
-}
-/* Remove the old straight center rail — the SVG is now the only connector. */
-.timeline-line::after {
-  display:none;
-}
-.timeline-line-glow {
-  z-index:4;
-}
-@media (max-width:600px){
-  .timeline-line-path{stroke-width:1.25px;}
-}
-
-
-/* ============================================================
-   ALTERNATING EVENT CARDS + CALLIGRAPHIC S-LINE
-   The connector lives in the central gutter; cards alternate on
-   both desktop and mobile so the stroke never crosses event copy.
-   ============================================================ */
-.event-item {
-  position: relative;
-  display: block;
-  min-height: 1px;
-}
-
-.events-container {
-  gap: clamp(2.75rem, 7vw, 4.5rem);
-}
-
-.event-card {
-  width: min(82vw, 360px);
-  margin: 0;
-  position: relative;
-  z-index: 2;
-}
-
-.event-item:nth-child(odd) .event-card {
-  margin-right: auto;
-  margin-left: 0;
-}
-
-.event-item:nth-child(even) .event-card {
-  margin-left: auto;
-  margin-right: 0;
-}
-
-/* Anchor the gold dot to the inner edge of the alternating card. */
-.event-dot {
-  top: 0;
-  left: auto;
-  right: auto;
-  width: 14px;
-  height: 14px;
-  transform: translateY(0);
-  z-index: 4;
-}
-
-.event-item:nth-child(odd) .event-dot {
-  left: min(82vw, 360px);
-  transform: translateX(-50%);
-}
-
-.event-item:nth-child(even) .event-dot {
-  left: calc(100% - min(82vw, 360px));
-  transform: translateX(-50%);
-}
-
-.timeline-line {
-  z-index: 1;
-}
-
-.timeline-line-svg {
-  z-index: 1;
-  overflow: visible;
-}
-
-.timeline-line-path {
-  stroke: rgba(232,201,122,.92);
-  stroke-width: 1.65;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  fill: none;
-  vector-effect: non-scaling-stroke;
-  filter:
-    drop-shadow(0 0 3px rgba(232,201,122,.48))
-    drop-shadow(0 0 9px rgba(201,168,76,.22));
-  opacity: .92;
-}
-
-.timeline-line-glow {
-  width: 8px;
-  height: 8px;
-  margin: -4px 0 0 -4px;
-  box-shadow:
-    0 0 6px rgba(255,245,201,.98),
-    0 0 14px rgba(232,201,122,.72),
-    0 0 28px rgba(201,168,76,.30);
-}
-
-/* Keep the central gutter clean even where cards are tall. */
-.event-item::after {
-  content: '';
-  display: block;
-  height: 0;
-}
-
-@media (max-width: 600px) {
-  .events-container {
-    gap: 3rem;
-    padding-left: 0;
-    padding-right: 0;
-  }
-
-  .event-card {
-    width: min(82vw, 330px);
-  }
-
-  .event-item:nth-child(odd) .event-dot {
-    left: min(82vw, 330px);
-  }
-
-  .event-item:nth-child(even) .event-dot {
-    left: calc(100% - min(82vw, 330px));
-  }
-
-  .event-card-body {
-    padding: 1.1rem;
-  }
-
-  .event-card-name {
-    font-size: clamp(1.05rem, 4.6vw, 1.35rem);
-  }
-}
-
-
-/* ============================================================
-   FINAL EVENT TIMELINE LAYOUT — alternating cards + calligraphic path
-   ============================================================ */
-.section-events .timeline-track {
-  position: relative;
-  padding: .75rem 0;
-}
-
-.section-events .events-container {
-  position: relative;
-  z-index: 2;
-  gap: clamp(3.25rem, 8vw, 5rem);
-  padding-left: 0;
-  padding-right: 0;
-}
-
-.section-events .event-item {
-  position: relative;
-  display: block;
-  width: 100%;
-  min-height: 1px;
-}
-
-.section-events .event-card {
-  position: relative;
-  z-index: 3;
-  width: min(80vw, 340px);
-  margin: 0;
-}
-
-.section-events .event-item:nth-child(odd) .event-card {
-  margin-left: 0;
-  margin-right: auto;
-}
-
-.section-events .event-item:nth-child(even) .event-card {
-  margin-left: auto;
-  margin-right: 0;
-}
-
-/* The dot sits just outside the inner card edge. The SVG follows this
-   anchor, runs alongside the card, then curls across the gap. */
-.section-events .event-dot {
-  top: 0;
-  width: 14px;
-  height: 14px;
-  z-index: 5;
-}
-
-.section-events .event-item:nth-child(odd) .event-dot {
-  left: calc(min(80vw, 340px) + 10px);
-  transform: translateX(-50%);
-}
-
-.section-events .event-item:nth-child(even) .event-dot {
-  left: calc(100% - min(80vw, 340px) - 10px);
-  transform: translateX(-50%);
-}
-
-.section-events .timeline-line {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-  background: transparent;
-  pointer-events: none;
-}
-
-.section-events .timeline-line::after {
-  display: none;
-}
-
-.section-events .timeline-line-svg {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-}
-
-.section-events .timeline-line-path {
-  stroke: rgba(232,201,122,.94);
-  stroke-width: 1.55;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  fill: none;
-  vector-effect: non-scaling-stroke;
-  filter:
-    drop-shadow(0 0 4px rgba(232,201,122,.48))
-    drop-shadow(0 0 10px rgba(201,168,76,.22));
-  opacity: .96;
-}
-
-.section-events .timeline-line-glow {
-  width: 8px;
-  height: 8px;
-  margin: -4px 0 0 -4px;
-  z-index: 6;
-  box-shadow:
-    0 0 6px rgba(255,245,201,1),
-    0 0 15px rgba(232,201,122,.75),
-    0 0 28px rgba(201,168,76,.30);
-}
-
-@media (max-width: 600px) {
-  .section-events .timeline-track {
-    padding-top: .5rem;
-    padding-bottom: .5rem;
-  }
-
-  .section-events .events-container {
-    gap: 3.5rem;
-  }
-
-  .section-events .event-card {
-    width: min(80vw, 330px);
-  }
-
-  .section-events .event-item:nth-child(odd) .event-dot {
-    left: calc(min(80vw, 330px) + 9px);
-  }
-
-  .section-events .event-item:nth-child(even) .event-dot {
-    left: calc(100% - min(80vw, 330px) - 9px);
-  }
-
-  .section-events .timeline-line-path {
-    stroke-width: 1.35;
-  }
-
-  .section-events .timeline-line-glow {
-    width: 7px;
-    height: 7px;
-    margin: -3.5px 0 0 -3.5px;
-  }
-}
-
-
-/* Reliable two-layer event connector: a faint calligraphic guide is
-   always visible; the brighter stroke draws over it on scroll. */
-.section-events .timeline-line-base {
-  fill: none;
-  stroke: rgba(232,201,122,.24);
-  stroke-width: 1.7;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  vector-effect: non-scaling-stroke;
-  filter: drop-shadow(0 0 3px rgba(201,168,76,.16));
-  opacity: .95;
-}
-
-.section-events .timeline-line-path {
-  position: static;
-  stroke: rgba(232,201,122,.98);
-  stroke-width: 1.55;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  vector-effect: non-scaling-stroke;
-  filter:
-    drop-shadow(0 0 4px rgba(232,201,122,.62))
-    drop-shadow(0 0 11px rgba(201,168,76,.28));
-  opacity: 1;
-}
-
-@media (max-width: 600px) {
-  .section-events .timeline-line-base { stroke-width: 1.5; }
-  .section-events .timeline-line-path { stroke-width: 1.4; }
-}
-
-
-/* FINAL CALLIGRAPHIC TIMELINE — clean ornamental stroke */
-.section-events .timeline-line-base {
-  stroke: rgba(232,201,122,.18);
-  stroke-width: 2;
-  opacity: .9;
-  fill: none;
-  vector-effect: non-scaling-stroke;
-}
-.section-events .timeline-line-path {
-  stroke: rgba(232,201,122,.98);
-  stroke-width: 1.35;
-  opacity: 1;
-  fill: none;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  vector-effect: non-scaling-stroke;
-  filter: drop-shadow(0 0 4px rgba(232,201,122,.55));
-}
-.section-events .event-dot {
-  box-shadow: 0 0 12px rgba(201,168,76,.5);
-}
-@media (max-width:600px){
-  .section-events .timeline-line-base { stroke-width: 1.6; }
-  .section-events .timeline-line-path { stroke-width: 1.2; }
-}
-
-
-/* FINAL EVENT CONNECTOR: decorative calligraphy lives in the gutter only.
-   Cards alternate on every viewport size; no rail passes through card content. */
-.section-events .timeline-track { position: relative; }
-.section-events .timeline-line { z-index: 1; pointer-events:none; }
-.section-events .events-container { z-index: 3; }
-.section-events .event-card { z-index: 4; }
-.section-events .event-dot { z-index: 5; }
-.section-events .timeline-line-svg { position:absolute; inset:0; z-index:1; overflow:visible; }
-.section-events .timeline-line-base {
-  fill:none;
-  stroke:rgba(232,201,122,.18);
-  stroke-width:2;
-  stroke-linecap:round;
-  opacity:.82;
-  vector-effect:non-scaling-stroke;
-}
-.section-events .timeline-line-path {
-  fill:none;
-  stroke:rgba(232,201,122,.96);
-  stroke-width:1.35;
-  stroke-linecap:round;
-  stroke-linejoin:round;
-  vector-effect:non-scaling-stroke;
-  filter:drop-shadow(0 0 4px rgba(232,201,122,.52));
-}
-.section-events .timeline-line-glow {
-  width:7px;
-  height:7px;
-  margin:-3.5px 0 0 -3.5px;
-  z-index:6;
-  background:var(--color-gold-light);
-  box-shadow:0 0 6px rgba(255,245,201,.96),0 0 16px rgba(232,201,122,.72),0 0 28px rgba(201,168,76,.28);
-}
-
-
-/* FINAL EVENT TIMELINE: no continuous side rails. The line exists only
-   as a light calligraphic flourish in the gaps between alternating cards. */
-.section-events .timeline-line {
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  background:transparent !important;
-  pointer-events:none;
-  z-index:1;
-}
-.section-events .timeline-line::after { display:none !important; }
-.section-events .timeline-line-svg { position:absolute; inset:0; width:100%; height:100%; overflow:visible; z-index:1; }
-.section-events .timeline-line-path {
-  fill:none;
-  stroke:rgba(232,201,122,.98);
-  stroke-width:1.15;
-  stroke-linecap:round;
-  stroke-linejoin:round;
-  vector-effect:non-scaling-stroke;
-  filter:drop-shadow(0 0 3px rgba(232,201,122,.5)) drop-shadow(0 0 9px rgba(201,168,76,.18));
-}
-.section-events .timeline-line-glow {
-  width:6px;
-  height:6px;
-  margin:-3px 0 0 -3px;
-  background:var(--color-gold-light);
-  box-shadow:0 0 5px rgba(255,245,201,.98),0 0 13px rgba(232,201,122,.72),0 0 22px rgba(201,168,76,.25);
-  z-index:6;
-}
-@media (max-width:600px){
-  .section-events .timeline-line-path { stroke-width:1.05; }
-}
-
-
-/* FINAL: clean center-to-center calligraphic ribbon. The stroke is a single
-   ornamental path, with the cards kept clear of its central corridor. */
-.section-events .event-card {
-  z-index: 3;
-}
-.section-events .event-dot {
-  z-index: 5;
-}
-.section-events .timeline-line {
-  z-index: 4;
-  overflow: visible;
-}
-.section-events .timeline-line-svg {
-  z-index: 4;
-  overflow: visible;
-}
-.section-events .timeline-line-path {
-  stroke: #E8C97A;
-  stroke-width: 1.25;
-  opacity: .98;
-  fill: none;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  vector-effect: non-scaling-stroke;
-  filter:
-    drop-shadow(0 0 3px rgba(232,201,122,.55))
-    drop-shadow(0 0 8px rgba(201,168,76,.22));
-}
-.section-events .timeline-line-glow {
-  width: 7px;
-  height: 7px;
-  margin: -3.5px 0 0 -3.5px;
-  z-index: 6;
-  box-shadow:
-    0 0 5px rgba(255,245,201,.96),
-    0 0 14px rgba(232,201,122,.72),
-    0 0 24px rgba(201,168,76,.22);
-}
-
-
-/* ============================================================
-   FINAL EVENT STROKE — ONE CONTINUOUS CALLIGRAPHY LINE
-   No persistent rails or card-edge verticals.
-   ============================================================ */
-.section-events .timeline-line {
-  position:absolute;
-  inset:0;
-  z-index:4;
-  background:transparent !important;
-  pointer-events:none;
-  overflow:visible;
-}
-.section-events .timeline-line::after { display:none !important; }
-.section-events .timeline-line-svg {
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  z-index:4;
-  overflow:visible;
-  pointer-events:none;
-}
-.section-events .timeline-line-path {
-  fill:none;
-  stroke:rgba(232,201,122,.98);
-  stroke-width:1.35;
-  stroke-linecap:round;
-  stroke-linejoin:round;
-  vector-effect:non-scaling-stroke;
-  opacity:1;
-  filter:drop-shadow(0 0 4px rgba(232,201,122,.55)) drop-shadow(0 0 10px rgba(201,168,76,.2));
-}
-.section-events .timeline-line-glow {
-  width:7px;
-  height:7px;
-  margin:-3.5px 0 0 -3.5px;
-  z-index:6;
-  background:var(--color-gold-light);
-  box-shadow:0 0 6px rgba(255,245,201,.98),0 0 14px rgba(232,201,122,.72),0 0 24px rgba(201,168,76,.24);
 }
 
 

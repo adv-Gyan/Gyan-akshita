@@ -296,240 +296,177 @@ window.ScrollAnimations = (function () {
 
   function initEvents() {
     const section = qs('#section-events');
-    const track = qs('.timeline-track', section);
-    const fill = qs('#timeline-fill', section);
+    const track = qs('#calendar-timeline', section);
+    const svg = qs('.calendar-timeline-svg', track);
+    const shadow = qs('.calendar-timeline-shadow', track);
+    const path = qs('.calendar-timeline-path', track);
+    const glow = qs('.calendar-timeline-glow', track);
     const items = qsa('.event-item', section);
-    if (!section || !track || !fill || !items.length || !canAnimate()) return;
 
-    const line = qs('.timeline-line', track);
-    if (!line) return;
-    gsap.set(fill, { opacity: 0 });
+    if (!section || !track || !svg || !shadow || !path || !glow || !items.length || !canAnimate()) return;
 
-    let svg = line.querySelector('.timeline-line-svg');
-    if (!svg) {
-      svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-      svg.classList.add('timeline-line-svg');
-      svg.setAttribute('aria-hidden', 'true');
-      svg.setAttribute('preserveAspectRatio', 'none');
-      line.appendChild(svg);
-    }
+    let progress = 0;
+    let anchorProgress = [];
+    let geometryKey = '';
 
-    let path = svg.querySelector('.timeline-line-path');
-    if (!path) {
-      path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-      path.classList.add('timeline-line-path');
-      path.setAttribute('fill', 'none');
-      svg.appendChild(path);
-    }
+    const clamp01 = value => Math.max(0, Math.min(1, value));
 
-    let glow = qs('.timeline-line-glow', line);
-    if (!glow) {
-      glow = document.createElement('span');
-      glow.className = 'timeline-line-glow';
-      glow.setAttribute('aria-hidden', 'true');
-      line.appendChild(glow);
-    }
-
-    /* Put the event dots in a deliberately alternating column layout.
-       The connector's anchor points use the dot positions, not the card
-       edges, so the stroke is a single continuous path from event to event. */
-    items.forEach((item, i) => {
-      const card = qs('.event-card', item);
+    const getDotPoint = item => {
       const dot = qs('.event-dot', item);
-      if (!card || !dot) return;
+      const tr = track.getBoundingClientRect();
+      const dr = dot?.getBoundingClientRect();
+      if (!dot || !dr) return { x: tr.width / 2, y: item.offsetTop + 16 };
+      return {
+        x: (dr.left + dr.width / 2) - tr.left,
+        y: (dr.top + dr.height / 2) - tr.top
+      };
+    };
 
-      const photo = qs('.event-card-photo-wrap', card);
-      const body = qs('.event-card-body', card);
-      const name = qs('.event-card-name', card);
-      const dateTime = qs('.event-card-date-time', card);
-      const venue = qs('.event-card-venue', card);
-      const description = qs('.event-card-description', card);
-      const dresscode = qs('.event-card-dresscode', card);
+    const buildPath = () => {
+      const tr = track.getBoundingClientRect();
+      const width = Math.max(1, tr.width);
+      const height = Math.max(1, tr.height);
+      const points = items.map(getDotPoint);
 
-      /* Each event now enters as a chapter:
-         dot → card → image → title → details. The connector is the
-         continuous visual thread between those chapters. */
-      /* Never hide an event card while waiting for ScrollTrigger. On cached
-         mobile/Safari sessions the section can be initialised after its trigger
-         position has already been crossed; opacity:0 here could leave the card
-         permanently invisible. Keep the chapter visible and animate only its
-         entrance transform. */
-      /* Restore the original GSAP card entrance. The card itself is the
-         animated chapter; the native fallback is prevented from applying a
-         competing transform. */
-      /* Keep the card itself paintable at all times. The entrance animation
-       only fades/scales the inner content, so a late ScrollTrigger init or
-       cached mobile session cannot leave an entire event card hidden. */
-      gsap.set(card, { opacity: 1, clearProps: 'opacity' });
-      gsap.set([photo, body, name, dateTime, venue, description, dresscode].filter(Boolean), {
-        opacity: 1,
-        y: 0
-      });
-      if (photo) {
-        /* Simple editorial photo reveal: a very slight scale-in with a soft
-           fade. No bounce, rotation, clipping, or card movement. */
-        gsap.set(photo, {
-          opacity: 0.72,
-          scale: 0.985,
-          transformOrigin: 'center center'
-        });
+      if (points.length === 0) return;
+      if (points.length === 1) {
+        const p = points[0];
+        const d = 'M ' + p.x + ' ' + Math.max(0, p.y - 18) +
+                  ' C ' + p.x + ' ' + (p.y - 8) + ', ' + p.x + ' ' + (p.y - 4) + ', ' + p.x + ' ' + p.y;
+        path.setAttribute('d', d);
+        shadow.setAttribute('d', d);
+        svg.setAttribute('viewBox', '0 0 ' + width + ' ' + height);
+        const len = path.getTotalLength();
+        gsap.set([path, shadow], { strokeDasharray: len, strokeDashoffset: len * (1 - progress) });
+        anchorProgress = [1];
+        return;
       }
 
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: item,
-          start: 'top 78%',
-          once: true,
-          onEnter: () => {
-            item.classList.add('event-reached');
-            dot.classList.add('event-dot-lit');
-          }
-        }
+      let d = 'M ' + points[0].x + ' ' + points[0].y;
+      const sway = Math.min(38, Math.max(9, width * (width < 500 ? 0.025 : 0.042)));
+
+      for (let i = 1; i < points.length; i++) {
+        const a = points[i - 1];
+        const b = points[i];
+        const dy = Math.max(50, b.y - a.y);
+        const sign = (i % 2 === 1 ? 1 : -1);
+        const s = sway * sign;
+
+        d += ' C ' + (a.x + s) + ' ' + (a.y + dy * 0.16) + ', ' +
+             (b.x - s) + ' ' + (b.y - dy * 0.16) + ', ' +
+             b.x + ' ' + b.y;
+      }
+
+      svg.setAttribute('viewBox', '0 0 ' + width + ' ' + height);
+      svg.setAttribute('width', width);
+      svg.setAttribute('height', height);
+      path.setAttribute('d', d);
+      shadow.setAttribute('d', d);
+
+      const len = path.getTotalLength();
+      path.dataset.length = String(len);
+      gsap.set([path, shadow], {
+        strokeDasharray: len,
+        strokeDashoffset: len * (1 - progress)
       });
 
-      tl.fromTo(dot,
-        { opacity: .18, scale: .65 },
-        { opacity: 1, scale: 1.12, duration: .42, ease: 'back.out(1.8)', immediateRender: false }
-      )
-      .to(dot, {
-        scale: 1,
-        duration: .18,
-        ease: 'power2.out'
-      })
-      /* Keep the card box completely stationary. Only its media/details and
-         the timeline dot participate in the entrance choreography. */
-      .to(photo, {
-        opacity: 1,
-        scale: 1,
-        duration: .58,
-        ease: 'power2.out',
-        immediateRender: false
-      }, '-=.16')
-      .to(name, {
-        opacity: 1,
-        y: 0,
-        duration: .38,
-        ease: 'power2.out',
-        immediateRender: false
-      }, '-=.38')
-      .to([dateTime, venue].filter(Boolean), {
-        opacity: 1,
-        y: 0,
-        duration: .3,
-        stagger: .05,
-        ease: 'power2.out',
-        immediateRender: false
-      }, '-=.20')
-      .to([description, dresscode].filter(Boolean), {
-        opacity: 1,
-        y: 0,
-        duration: .32,
-        stagger: .06,
-        ease: 'power2.out',
-        immediateRender: false
-      }, '-=.16');
-    });
+      /* Find the exact draw-progress at each event dot so activation follows
+         the ink stroke rather than a separate viewport trigger. */
+      const samples = Math.min(1800, Math.max(400, Math.round(len * 3)));
+      const pointsOnPath = [];
+      for (let i = 0; i <= samples; i++) {
+        const dist = len * (i / samples);
+        const p = path.getPointAtLength(dist);
+        pointsOnPath.push({ dist, x: p.x, y: p.y });
+      }
 
-    let timelineProgress = 0;
+      anchorProgress = points.map(anchor => {
+        let best = 0;
+        let bestDist = Infinity;
+        for (const sample of pointsOnPath) {
+          const dx = sample.x - anchor.x;
+          const dy = sample.y - anchor.y;
+          const d2 = dx * dx + dy * dy;
+          if (d2 < bestDist) {
+            bestDist = d2;
+            best = sample.dist / len;
+          }
+        }
+        return best;
+      });
+
+      applyVisualState();
+    };
+
+    const applyVisualState = () => {
+      const p = progress;
+      const activeWindow = 0.08;
+
+      items.forEach((item, i) => {
+        const start = (anchorProgress[i] ?? (i / Math.max(items.length - 1, 1))) - activeWindow;
+        const local = clamp01((p - start) / activeWindow);
+        item.classList.toggle('is-visible', local > 0.12);
+        item.classList.toggle('event-reached', p >= (anchorProgress[i] ?? 1) - 0.012);
+
+        const dot = qs('.event-dot', item);
+        if (dot) dot.classList.toggle('event-dot-lit', local > 0.72);
+      });
+
+      if (path.dataset.length) {
+        const len = Number(path.dataset.length);
+        gsap.set([path, shadow], { strokeDashoffset: len * (1 - p) });
+        const point = path.getPointAtLength(len * p);
+        gsap.set(glow, {
+          attr: { cx: point.x, cy: point.y },
+          opacity: p > 0.015 && p < 0.995 ? 1 : 0,
+          duration: 0.08,
+          overwrite: true
+        });
+      }
+    };
 
     const draw = () => {
       const rect = track.getBoundingClientRect();
-      const center = rect.width / 2;
-      const cardWidth = Math.min(rect.width * .80, 340);
-      const side = Math.max(0, (rect.width - cardWidth) / 2);
-      const corridor = Math.min(28, Math.max(18, rect.width * .045));
-
-      /* Dot centres live just outside the inner corners of the cards. */
-      const leftDotX = center - side - corridor;
-      const rightDotX = center + side + corridor;
-
-      const anchors = items.map((item, i) => {
-        const card = qs('.event-card', item);
-        const r = card?.getBoundingClientRect();
-        return {
-          x: i % 2 === 0 ? leftDotX : rightDotX,
-          y: r ? (r.top - rect.top) + 14 : item.offsetTop + 14
-        };
-      });
-      if (anchors.length < 2) return;
-
-      /* A single elegant S stroke: no side rail, no vertical spine.
-         Each segment begins at one event, bows once across the gap, and
-         naturally arrives at the next event. */
-      let d = `M ${anchors[0].x} ${anchors[0].y}`;
-      for (let i = 1; i < anchors.length; i++) {
-        const a = anchors[i - 1];
-        const b = anchors[i];
-        const dy = Math.max(70, b.y - a.y);
-        const bow = Math.min(118, Math.max(52, rect.width * .19));
-        const sign = a.x < center ? 1 : -1;
-
-        const c1x = a.x + bow * sign;
-        const c2x = center + bow * .22 * sign;
-        const c3x = center - bow * .22 * sign;
-        const c4x = b.x - bow * sign;
-
-        d += ` C ${c1x} ${a.y + dy * .16},
-                     ${c2x} ${a.y + dy * .34},
-                     ${center} ${a.y + dy * .50}`;
-        d += ` C ${c3x} ${a.y + dy * .66},
-                     ${c4x} ${a.y + dy * .84},
-                     ${b.x} ${b.y}`;
+      const key = Math.round(rect.width) + 'x' + Math.round(rect.height) + ':' + items.map(item => item.offsetHeight).join(',');
+      if (key !== geometryKey) {
+        geometryKey = key;
+        buildPath();
+      } else {
+        applyVisualState();
       }
-
-      svg.setAttribute('viewBox', `0 0 ${Math.max(1, rect.width)} ${Math.max(1, rect.height)}`);
-      svg.setAttribute('width', rect.width);
-      svg.setAttribute('height', rect.height);
-      path.setAttribute('d', d);
-
-      const len = path.getTotalLength();
-      path.dataset.length = len;
-      gsap.set(path, {
-        strokeDasharray: len,
-        strokeDashoffset: len * (1 - timelineProgress)
-      });
-      gsap.set(glow, { opacity: 0 });
     };
 
     requestAnimationFrame(draw);
 
-    let redrawTimer = 0;
-    const redraw = () => {
-      window.clearTimeout(redrawTimer);
-      redrawTimer = window.setTimeout(() => {
-        draw();
-        ScrollTrigger.refresh();
-      }, 120);
-    };
-    window.addEventListener('resize', redraw, { passive: true });
-    window.addEventListener('load', redraw, { once: true });
-
-    ScrollTrigger.create({
+    const timelineTrigger = ScrollTrigger.create({
       trigger: track,
-      start: 'top 88%',
+      start: 'top 78%',
       end: 'bottom 68%',
-      scrub: .65,
-      onRefresh: draw,
+      scrub: 0.5,
       onUpdate: self => {
-        const p = Math.max(0, Math.min(1, self.progress));
-        timelineProgress = p;
-        const len = Number(path.dataset.length || 0);
-        if (!len) return;
-
-        gsap.set(path, { strokeDashoffset: len * (1 - p) });
-
-        try {
-          const point = path.getPointAtLength(len * p);
-          gsap.set(glow, {
-            x: point.x,
-            y: point.y,
-            opacity: p > .01 && p < .995 ? 1 : 0
-          });
-        } catch (_) {
-          gsap.set(glow, { opacity: 0 });
-        }
+        progress = clamp01(self.progress);
+        applyVisualState();
+      },
+      onRefresh: () => {
+        geometryKey = '';
+        requestAnimationFrame(draw);
       }
     });
+
+    window.addEventListener('resize', () => {
+      geometryKey = '';
+      requestAnimationFrame(draw);
+    }, { passive: true });
+
+    /* Ensure any fonts/image-driven height change is reflected in the curve. */
+    if (document.fonts?.ready) {
+      document.fonts.ready.then(() => {
+        geometryKey = '';
+        requestAnimationFrame(draw);
+      }).catch(() => {});
+    }
+
+    void timelineTrigger;
   }
 
   function initCountdown() {
@@ -816,32 +753,118 @@ window.ScrollAnimations = (function () {
       targets.forEach(el => el.classList.add('native-is-visible'));
     }
 
-    const track = qs('.timeline-track');
-    const fill = qs('#timeline-fill');
+    const track = qs('#calendar-timeline');
+    const path = qs('.calendar-timeline-path', track);
+    const shadow = qs('.calendar-timeline-shadow', track);
+    const glow = qs('.calendar-timeline-glow', track);
     const items = qsa('.event-item');
-    if (track && fill) {
+
+    if (track && path && shadow && glow) {
+      let cachedKey = '';
+      let cachedLength = 0;
+      let cachedAnchors = [];
+
+      const clamp01 = value => Math.max(0, Math.min(1, value));
+
+      const pointForDot = item => {
+        const dot = qs('.event-dot', item);
+        const tr = track.getBoundingClientRect();
+        const dr = dot?.getBoundingClientRect();
+        return {
+          x: dr ? (dr.left + dr.width / 2) - tr.left : tr.width / 2,
+          y: dr ? (dr.top + dr.height / 2) - tr.top : item.offsetTop + 16
+        };
+      };
+
+      const rebuild = () => {
+        const tr = track.getBoundingClientRect();
+        const width = Math.max(1, tr.width);
+        const height = Math.max(1, tr.height);
+        const pts = items.map(pointForDot);
+        if (!pts.length) return;
+
+        let d = 'M ' + pts[0].x + ' ' + pts[0].y;
+        const sway = Math.min(38, Math.max(9, width * (width < 500 ? 0.025 : 0.042)));
+
+        for (let i = 1; i < pts.length; i++) {
+          const a = pts[i - 1];
+          const b = pts[i];
+          const dy = Math.max(50, b.y - a.y);
+          const sign = (i % 2 === 1 ? 1 : -1);
+          const s = sway * sign;
+          d += ' C ' + (a.x + s) + ' ' + (a.y + dy * 0.16) + ', ' +
+               (b.x - s) + ' ' + (b.y - dy * 0.16) + ', ' +
+               b.x + ' ' + b.y;
+        }
+
+        path.setAttribute('d', d);
+        shadow.setAttribute('d', d);
+        path.setAttribute('viewBox', '0 0 ' + width + ' ' + height);
+        shadow.setAttribute('viewBox', '0 0 ' + width + ' ' + height);
+
+        cachedLength = path.getTotalLength();
+        path.style.strokeDasharray = String(cachedLength);
+        shadow.style.strokeDasharray = String(cachedLength);
+
+        const samples = 900;
+        const samplePts = [];
+        for (let i = 0; i <= samples; i++) {
+          const dist = cachedLength * (i / samples);
+          const p = path.getPointAtLength(dist);
+          samplePts.push({dist, x:p.x, y:p.y});
+        }
+        cachedAnchors = pts.map(a => {
+          let best = 0, bestD = Infinity;
+          for (const sp of samplePts) {
+            const dx=sp.x-a.x, dy=sp.y-a.y, d2=dx*dx+dy*dy;
+            if(d2<bestD){bestD=d2;best=sp.dist/cachedLength;}
+          }
+          return best;
+        });
+        cachedKey = Math.round(width) + 'x' + Math.round(height);
+      };
+
       const updateTimeline = () => {
         const rect = track.getBoundingClientRect();
         const viewport = Math.max(window.innerHeight, 1);
-        const start = viewport * 0.78;
-        const end = viewport * 0.72;
-        const total = Math.max(track.offsetHeight, 1);
-        const progress = Math.max(0, Math.min(1, (start - rect.top) / Math.max(total - (start - end), 1)));
-        fill.style.transform = 'scaleY(' + progress + ')';
-        items.forEach(item => {
-          const dot = qs('.event-dot', item);
-          if (dot) dot.classList.toggle('timeline-reached', item.getBoundingClientRect().top < viewport * 0.72);
+        const raw = (viewport * 0.78 - rect.top) /
+                    Math.max(rect.height - viewport * 0.10, 1);
+        const p = clamp01(raw);
+
+        const key = Math.round(rect.width) + 'x' + Math.round(rect.height);
+        if (key !== cachedKey) rebuild();
+        if (!cachedLength) return;
+
+        const offset = cachedLength * (1 - p);
+        path.style.strokeDashoffset = String(offset);
+        shadow.style.strokeDashoffset = String(offset);
+
+        const head = path.getPointAtLength(cachedLength * p);
+        glow.setAttribute('cx', head.x);
+        glow.setAttribute('cy', head.y);
+        glow.style.opacity = (p > .015 && p < .995) ? '1' : '0';
+
+        items.forEach((item,i) => {
+          const reached = p >= (cachedAnchors[i] ?? 1) - .012;
+          item.classList.toggle('is-visible', p >= (cachedAnchors[i] ?? 1) - .06);
+          item.classList.toggle('event-reached', reached);
+          qs('.event-dot', item)?.classList.toggle('event-dot-lit', p >= (cachedAnchors[i] ?? 1) - .025);
         });
       };
+
       let ticking = false;
       const onScroll = () => {
         if (ticking) return;
         ticking = true;
-        requestAnimationFrame(() => { updateTimeline(); ticking = false; });
+        requestAnimationFrame(() => {
+          updateTimeline();
+          ticking = false;
+        });
       };
+
       window.addEventListener('scroll', onScroll, { passive: true });
       window.addEventListener('resize', onScroll, { passive: true });
-      updateTimeline();
+      requestAnimationFrame(updateTimeline);
     }
   }
 
