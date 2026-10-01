@@ -345,53 +345,68 @@ window.ScrollAnimations = (function () {
       if (!points.length) return;
 
       /*
-       * Build one long hand-drawn calligraphic stroke. The line deliberately
-       * extends above the first event and below the last event, with gentle
-       * pen-pressure-like S curves between the markers.
+       * Build one continuous calligraphic stroke.
+       *
+       * The previous version used two opposing cubic curves for every
+       * event interval. That created visible kinks where the two curves
+       * met. Here the stroke uses one smooth cubic per interval, with
+       * tangents calculated from neighbouring event positions. The result
+       * is a restrained hand-drawn arabesque rather than a repeated zig-zag.
        */
       const isMobile = width < 700;
-      const lead = isMobile ? 82 : 118;
-      const tail = isMobile ? 92 : 132;
-      const sway = isMobile ? 27 : Math.min(58, Math.max(34, width * 0.045));
+      const lead = isMobile ? 86 : 126;
+      const tail = isMobile ? 96 : 142;
+      const flourish = isMobile ? 18 : Math.min(34, Math.max(22, width * 0.027));
 
       const first = points[0];
       const last = points[points.length - 1];
-      const startX = first.x + (isMobile ? 3 : -4);
+      const startX = first.x + (isMobile ? 2 : -3);
       const startY = Math.max(8, first.y - lead);
 
       let d = 'M ' + startX + ' ' + startY;
 
-      /* Opening flourish into the first marker. */
+      /* A restrained opening loop, easing naturally into the first marker. */
       d += ' C ' +
-        (startX + sway * .72) + ' ' + (startY + lead * .16) + ', ' +
-        (first.x + sway * .34) + ' ' + (first.y - lead * .58) + ', ' +
+        (startX + flourish) + ' ' + (startY + lead * .20) + ', ' +
+        (first.x + flourish * .72) + ' ' + (first.y - lead * .42) + ', ' +
         first.x + ' ' + first.y;
 
       for (let i = 1; i < points.length; i++) {
         const a = points[i - 1];
         const b = points[i];
+        const prev = points[i - 2] || a;
+        const next = points[i + 1] || b;
+
         const dy = Math.max(70, b.y - a.y);
-        const sign = i % 2 ? 1 : -1;
-        const s = sway * sign;
 
-        /* Unequal control pressure creates a hand-drawn S rather than a sine wave. */
-        d += ' C ' +
-          (a.x + s) + ' ' + (a.y + dy * .16) + ', ' +
-          (a.x + s * .72) + ' ' + (a.y + dy * .56) + ', ' +
-          (a.x + s * .18) + ' ' + (a.y + dy * .70);
+        /*
+         * Estimate the local tangent from the surrounding event positions.
+         * The x component is deliberately softened so the line reads as
+         * one graceful pen stroke even when desktop cards alternate sides.
+         */
+        const incomingX = (b.x - prev.x) * .34;
+        const outgoingX = (next.x - a.x) * .34;
+        const maxTangent = isMobile ? 34 : 72;
+        const t1x = Math.max(-maxTangent, Math.min(maxTangent, incomingX));
+        const t2x = Math.max(-maxTangent, Math.min(maxTangent, outgoingX));
+
+        const c1x = a.x + t1x;
+        const c1y = a.y + dy * .34;
+        const c2x = b.x - t2x;
+        const c2y = b.y - dy * .34;
 
         d += ' C ' +
-          (b.x - s * .18) + ' ' + (b.y - dy * .30) + ', ' +
-          (b.x - s) + ' ' + (b.y - dy * .12) + ', ' +
+          c1x + ' ' + c1y + ', ' +
+          c2x + ' ' + c2y + ', ' +
           b.x + ' ' + b.y;
       }
 
-      /* Closing flourish below the final marker. */
-      const endX = last.x + (isMobile ? -3 : 4);
+      /* A long, delicate finishing flourish below the final marker. */
+      const endX = last.x + (isMobile ? -2 : 3);
       const endY = last.y + tail;
       d += ' C ' +
-        (last.x - sway * .72) + ' ' + (last.y + tail * .20) + ', ' +
-        (endX - sway * .36) + ' ' + (endY - tail * .35) + ', ' +
+        (last.x - flourish * 1.15) + ' ' + (last.y + tail * .20) + ', ' +
+        (endX - flourish * .72) + ' ' + (endY - tail * .28) + ', ' +
         endX + ' ' + endY;
 
       svg.setAttribute('viewBox', '0 0 ' + width + ' ' + height);
