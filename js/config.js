@@ -84,7 +84,7 @@ const weddingData = {
   /* ── RSVP ────────────────────────────────────────────────── */
   rsvp: {
     deadline:    "10 November 2026",
-    webAppUrl:   "", // ← paste your deployed Google Apps Script /exec URL here
+    webAppUrl:   "https://script.google.com/macros/s/AKfycbw9azy959jBr247kte9aDS7x76xEVEeeqCg4pycJgUYvehvBTQRuzuT5jdwqg-F1fGz/exec", // ← paste your deployed Google Apps Script /exec URL here
   },
 
   /* ── Audio ───────────────────────────────────────────────── */
