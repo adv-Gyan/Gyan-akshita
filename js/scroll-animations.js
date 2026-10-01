@@ -409,7 +409,7 @@ window.ScrollAnimations = (function () {
 
       const first = qs('.event-dot', items[0]).getBoundingClientRect();
       const last = qs('.event-dot', items[items.length - 1]).getBoundingClientRect();
-      const scrollY = window.scrollY || window.pageYOffset || 0;
+      const scrollY = Math.max(0, window.scrollY || 0, window.pageYOffset || 0, document.documentElement?.scrollTop || 0, document.body?.scrollTop || 0);
       const viewport = Math.max(1, window.innerHeight);
 
       startY = first.top + scrollY - viewport * 0.72;
@@ -470,7 +470,15 @@ window.ScrollAnimations = (function () {
       if (!raf) raf = requestAnimationFrame(tick);
     };
 
-    window.addEventListener('scroll', request, { passive: true });
+    /*
+     * Do not rely exclusively on the window scroll event. Mobile Safari can
+     * update the visual scroll position during momentum scrolling without
+     * dispatching the event in the way desktop browsers do. A lightweight
+     * RAF sampler guarantees that the marker and stroke follow the actual
+     * page position in Safari, Chrome and embedded web views.
+     */
+    window.addEventListener('scroll', request, { passive: true, capture: true });
+    document.addEventListener('scroll', request, { passive: true, capture: true });
     window.addEventListener('resize', request, { passive: true });
     window.addEventListener('orientationchange', request, { passive: true });
     window.addEventListener('pageshow', request, { passive: true });
@@ -481,10 +489,20 @@ window.ScrollAnimations = (function () {
 
     window.addEventListener('load', request, { once: true });
 
-    /* Measure after the browser has completed the first layout. */
+    /*
+     * Keep the calendar sampler alive. It only performs a few arithmetic
+     * operations and one SVG point lookup per frame, and it makes the core
+     * interaction independent of browser-specific scroll-event behaviour.
+     */
+    const loop = () => {
+      tick();
+      requestAnimationFrame(loop);
+    };
+
     requestAnimationFrame(() => {
       measure();
       render();
+      requestAnimationFrame(loop);
     });
   }
 
