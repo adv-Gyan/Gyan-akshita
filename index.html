@@ -31,7 +31,7 @@
   <link rel="stylesheet" href="css/variables.css?v=20260923countdown2" />
   <link rel="stylesheet" href="css/envelope.css?v=20260923music2" />
   <link rel="stylesheet" href="css/invitation.css?v=20260923countdown2" />
-  <link rel="stylesheet" href="css/sections.css?v=20261001timeline8" />
+  <link rel="stylesheet" href="css/sections.css?v=20261001rsvp2" />
   <link rel="stylesheet" href="css/animations.css?v=20260923countdown2" />
 </head>
 
@@ -407,12 +407,26 @@
 
             <div class="form-group" id="rsvp-date-group">
               <label for="rsvp-date" class="form-label">Which date will you be joining?</label>
-              <select id="rsvp-date" name="date" class="form-input form-select" required>
-                <option value="" selected disabled>Select your date</option>
-                <option value="20 November 2026">20 November 2026 · Ring Ceremony</option>
-                <option value="21 November 2026">21 November 2026 · Wedding Day</option>
-                <option value="20 & 21 November 2026">20 & 21 November 2026 · Both</option>
-              </select>
+              <div class="rsvp-calendar" id="rsvp-calendar">
+                <button type="button" class="rsvp-date-trigger" id="rsvp-date-trigger"
+                        aria-haspopup="dialog" aria-expanded="false" aria-controls="rsvp-calendar-popover">
+                  <span id="rsvp-date-display">Select a date in November</span>
+                  <span class="rsvp-calendar-chevron" aria-hidden="true">⌄</span>
+                </button>
+                <input type="hidden" id="rsvp-date" name="date" required />
+                <div class="rsvp-calendar-popover" id="rsvp-calendar-popover" role="dialog" aria-label="November 2026 calendar" hidden>
+                  <div class="rsvp-calendar-head">
+                    <button type="button" class="rsvp-calendar-nav" aria-label="Previous month" disabled>‹</button>
+                    <div class="rsvp-calendar-month"><span>November</span><small>2026</small></div>
+                    <button type="button" class="rsvp-calendar-nav" aria-label="Next month" disabled>›</button>
+                  </div>
+                  <div class="rsvp-calendar-weekdays" aria-hidden="true">
+                    <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+                  </div>
+                  <div class="rsvp-calendar-days" id="rsvp-calendar-days"></div>
+                  <div class="rsvp-calendar-legend"><span class="rsvp-calendar-legend-mark"></span><span>Wedding celebrations · 19–21 November</span></div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -470,7 +484,7 @@
   <script src="js/particles.js?v=20260923petals1" defer></script>
   <script src="js/scroll-animations.js?v=20261001timeline8" defer></script>
   <script src="js/countdown.js?v=20260923countdown2" defer></script>
-  <script src="js/rsvp.js?v=20261001rsvp1" defer></script>
+  <script src="js/rsvp.js?v=20261001rsvp2" defer></script>
   <script src="js/sound.js?v=20260923music2" defer></script>
 
 </body>
