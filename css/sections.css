@@ -21,6 +21,7 @@
   position: relative;
   width: min(100%, 1040px);
   margin: clamp(2.5rem, 6vw, 4.5rem) auto 0;
+  padding-bottom: clamp(2.5rem, 5vw, 4rem);
   padding: clamp(1rem, 3vw, 2rem) clamp(0.75rem, 2vw, 1.5rem);
 }
 
@@ -58,15 +59,22 @@
 }
 
 .calendar-timeline-shadow {
-  stroke: rgba(201,168,76,.12);
-  stroke-width: 5.5;
-  filter: blur(1.8px);
+  stroke: rgba(201,168,76,.13);
+  stroke-width: 5.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: blur(1.6px);
+  opacity: .85;
 }
 
 .calendar-timeline-path {
-  stroke: rgba(232,201,122,.9);
-  stroke-width: 1.35;
-  filter: drop-shadow(0 0 5px rgba(201,168,76,.24));
+  stroke: rgba(242,211,133,.94);
+  stroke-width: 1.45;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter:
+    drop-shadow(0 0 2px rgba(255,221,145,.42))
+    drop-shadow(0 0 7px rgba(201,168,76,.24));
 }
 
 .calendar-timeline-glow {
