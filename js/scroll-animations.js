@@ -303,216 +303,187 @@ window.ScrollAnimations = (function () {
    * even when a third-party animation CDN is delayed or cached.
    */
   function initEvents() {
+    /*
+     * Standalone calendar interaction.
+     * No GSAP, ScrollTrigger, IntersectionObserver, reduced-motion checks,
+     * or third-party animation libraries are involved in this feature.
+     * It is initialized immediately after the event cards are injected.
+     */
     const section = qs('#section-events');
     const track = qs('#calendar-timeline', section);
     const svg = qs('.calendar-timeline-svg', track);
-    const shadow = qs('.calendar-timeline-shadow', track);
     const path = qs('.calendar-timeline-path', track);
+    const shadow = qs('.calendar-timeline-shadow', track);
     const glow = qs('.calendar-timeline-glow', track);
-    const items = qsa('.event-item', section);
+    const items = qsa('.event-item', track);
 
-    if (!section || !track || !svg || !shadow || !path || !glow || !items.length) return;
-    if (track.dataset.timelineReady === 'true') return;
-    track.dataset.timelineReady = 'true';
+    if (!section || !track || !svg || !path || !shadow || !glow || !items.length) return;
+    if (track.dataset.calendarReady === 'true') return;
+    track.dataset.calendarReady = 'true';
 
-    const clamp01 = value => Math.max(0, Math.min(1, value));
+    let pathLength = 0;
+    let anchors = [];
+    let startY = 0;
+    let endY = 1;
+    let lastGeometry = '';
+    let raf = 0;
 
-    let length = 0;
-    let anchorProgress = [];
-    let startScroll = 0;
-    let endScroll = 1;
-    let geometryKey = '';
-    let rafId = 0;
+    const clamp = value => Math.max(0, Math.min(1, value));
 
-    const getDotPoint = item => {
-      const dot = qs('.event-dot', item);
-      const tr = track.getBoundingClientRect();
-      const dr = dot?.getBoundingClientRect();
-
-      return {
-        x: dr ? (dr.left + dr.width / 2) - tr.left : tr.width / 2,
-        y: dr ? (dr.top + dr.height / 2) - tr.top : item.offsetTop + 16
-      };
-    };
-
-    const buildPath = () => {
-      const tr = track.getBoundingClientRect();
-      const width = Math.max(1, tr.width);
+    const measure = () => {
+      const rect = track.getBoundingClientRect();
+      const width = Math.max(1, rect.width);
       const height = Math.max(1, track.scrollHeight);
-      const points = items.map(getDotPoint);
+
+      const points = items.map(item => {
+        const dot = qs('.event-dot', item);
+        const dr = dot.getBoundingClientRect();
+        return {
+          x: (dr.left + dr.width / 2) - rect.left,
+          y: (dr.top + dr.height / 2) - rect.top
+        };
+      });
 
       if (!points.length) return;
 
+      /*
+       * A single continuous calligraphic stroke passes through every marker.
+       * The event cards remain ordinary DOM elements, so the layout itself
+       * cannot be affected by the SVG animation.
+       */
       let d = 'M ' + points[0].x + ' ' + points[0].y;
-      const sway = Math.min(34, Math.max(8, width * (width < 500 ? 0.022 : 0.038)));
+      const sway = Math.min(32, Math.max(8, width * 0.025));
 
       for (let i = 1; i < points.length; i++) {
         const a = points[i - 1];
         const b = points[i];
-        const dy = Math.max(40, b.y - a.y);
-        const sign = i % 2 === 1 ? 1 : -1;
+        const dy = Math.max(50, b.y - a.y);
+        const sign = i % 2 ? 1 : -1;
         const s = sway * sign;
 
-        d +=
-          ' C ' + (a.x + s) + ' ' + (a.y + dy * 0.18) +
-          ', ' + (b.x - s) + ' ' + (b.y - dy * 0.18) +
-          ', ' + b.x + ' ' + b.y;
+        d += ' C ' +
+          (a.x + s) + ' ' + (a.y + dy * 0.20) + ', ' +
+          (b.x - s) + ' ' + (b.y - dy * 0.20) + ', ' +
+          b.x + ' ' + b.y;
       }
 
-      /* IMPORTANT: viewBox belongs on the SVG, never on the <path>. */
       svg.setAttribute('viewBox', '0 0 ' + width + ' ' + height);
       svg.setAttribute('width', String(width));
       svg.setAttribute('height', String(height));
-
       path.setAttribute('d', d);
       shadow.setAttribute('d', d);
 
-      length = path.getTotalLength();
-      path.style.strokeDasharray = String(length);
-      shadow.style.strokeDasharray = String(length);
+      pathLength = path.getTotalLength();
+      if (!pathLength) return;
+
+      path.style.strokeDasharray = pathLength + ' ' + pathLength;
+      shadow.style.strokeDasharray = pathLength + ' ' + pathLength;
 
       /*
-       * The curve is constructed to terminate exactly at every event dot.
-       * Sampling its length maps each dot to the exact ink-draw position.
+       * Find the exact stroke position corresponding to each event marker.
+       * This is calculated once per layout measurement, not on every scroll.
        */
-      const samples = Math.min(2400, Math.max(800, Math.round(length * 3)));
+      const samples = 1200;
       const sampled = [];
-
       for (let i = 0; i <= samples; i++) {
-        const dist = length * (i / samples);
-        const point = path.getPointAtLength(dist);
-        sampled.push({ dist, x: point.x, y: point.y });
+        const distance = pathLength * i / samples;
+        const p = path.getPointAtLength(distance);
+        sampled.push({ distance, x: p.x, y: p.y });
       }
 
-      anchorProgress = points.map(anchor => {
-        let bestDist = 0;
+      anchors = points.map(point => {
+        let best = 0;
         let bestError = Infinity;
-
-        for (const point of sampled) {
-          const dx = point.x - anchor.x;
-          const dy = point.y - anchor.y;
+        sampled.forEach(sample => {
+          const dx = sample.x - point.x;
+          const dy = sample.y - point.y;
           const error = dx * dx + dy * dy;
-
           if (error < bestError) {
             bestError = error;
-            bestDist = point.dist;
+            best = sample.distance / pathLength;
           }
-        }
-
-        return length ? bestDist / length : 0;
+        });
+        return best;
       });
 
-      /*
-       * Scroll window for the animation:
-       *   first dot enters the lower 78% of the viewport → drawing starts
-       *   last dot reaches the upper 45% of the viewport → drawing completes
-       *
-       * Absolute document coordinates are used so iOS viewport changes do
-       * not depend on ScrollTrigger's refresh lifecycle.
-       */
-      const firstDot = qs('.event-dot', items[0]);
-      const lastDot = qs('.event-dot', items[items.length - 1]);
-      const firstRect = firstDot?.getBoundingClientRect();
-      const lastRect = lastDot?.getBoundingClientRect();
+      const first = qs('.event-dot', items[0]).getBoundingClientRect();
+      const last = qs('.event-dot', items[items.length - 1]).getBoundingClientRect();
       const scrollY = window.scrollY || window.pageYOffset || 0;
-      const viewport = Math.max(window.innerHeight, 1);
+      const viewport = Math.max(1, window.innerHeight);
 
-      const firstAbsoluteTop = (firstRect?.top ?? 0) + scrollY;
-      const lastAbsoluteTop = (lastRect?.top ?? firstAbsoluteTop + 1) + scrollY;
+      startY = first.top + scrollY - viewport * 0.72;
+      endY = last.top + scrollY - viewport * 0.42;
 
-      startScroll = firstAbsoluteTop - viewport * 0.78;
-      endScroll = lastAbsoluteTop - viewport * 0.45;
-
-      /*
-       * Very short timelines should still have a useful draw distance.
-       * For the current three-event invitation this branch is normally not
-       * needed, but it protects against future configuration changes.
-       */
-      if (endScroll <= startScroll + 40) {
-        endScroll = startScroll + Math.max(window.innerHeight * 0.85, track.offsetHeight * 0.45, 320);
+      if (endY <= startY + 120) {
+        endY = startY + Math.max(viewport * 0.9, height * 0.65, 420);
       }
 
-      geometryKey =
+      lastGeometry =
         Math.round(width) + 'x' +
         Math.round(height) + ':' +
-        items.map(item => item.offsetHeight).join(',');
-
-      render();
+        items.map(item => Math.round(item.offsetHeight)).join(',');
     };
 
     const render = () => {
-      if (!length) return;
+      if (!pathLength) return;
 
       const scrollY = window.scrollY || window.pageYOffset || 0;
-      const progress = clamp01((scrollY - startScroll) / Math.max(endScroll - startScroll, 1));
-      const dash = length * (1 - progress);
+      const progress = clamp((scrollY - startY) / Math.max(endY - startY, 1));
+      const drawn = pathLength * progress;
+      const offset = pathLength - drawn;
 
-      path.style.strokeDashoffset = String(dash);
-      shadow.style.strokeDashoffset = String(dash);
+      path.style.strokeDashoffset = offset;
+      shadow.style.strokeDashoffset = offset;
 
-      const head = path.getPointAtLength(length * progress);
+      const head = path.getPointAtLength(drawn);
       glow.setAttribute('cx', String(head.x));
       glow.setAttribute('cy', String(head.y));
-      glow.style.opacity = progress > 0.005 && progress < 0.999 ? '1' : '0';
+      glow.style.opacity = progress > 0.01 && progress < 0.995 ? '1' : '0';
 
       items.forEach((item, index) => {
-        const anchor = anchorProgress[index] ?? 1;
+        const anchor = anchors[index] ?? 1;
+        const visible = progress >= anchor - 0.035;
+        const reached = progress >= anchor - 0.008;
 
-        /*
-         * First event enters gently when the timeline itself begins.
-         * Subsequent events reveal only as the gold ink reaches their dot.
-         */
-        const revealThreshold = index === 0 ? Math.max(0, anchor - 0.02) : anchor;
-        const reached = progress >= revealThreshold;
-
-        item.classList.toggle('is-visible', reached);
-        item.classList.toggle(
-          'event-reached',
-          progress >= anchor - (index === 0 ? 0.005 : 0.008)
-        );
+        item.classList.toggle('is-visible', visible);
+        item.classList.toggle('event-reached', reached);
 
         const dot = qs('.event-dot', item);
-        if (dot) {
-          dot.classList.toggle('event-dot-lit', progress >= anchor - (index === 0 ? 0 : 0.018));
-        }
+        dot?.classList.toggle('event-dot-lit', reached);
       });
     };
 
-    const frame = () => {
-      rafId = 0;
-
-      const tr = track.getBoundingClientRect();
+    const tick = () => {
+      raf = 0;
+      const rect = track.getBoundingClientRect();
       const key =
-        Math.round(tr.width) + 'x' +
+        Math.round(rect.width) + 'x' +
         Math.round(track.scrollHeight) + ':' +
-        items.map(item => item.offsetHeight).join(',');
+        items.map(item => Math.round(item.offsetHeight)).join(',');
 
-      if (key !== geometryKey) buildPath();
-      else render();
+      if (key !== lastGeometry) measure();
+      render();
     };
 
-    const requestFrame = () => {
-      if (rafId) return;
-      rafId = requestAnimationFrame(frame);
+    const request = () => {
+      if (!raf) raf = requestAnimationFrame(tick);
     };
 
-    /*
-     * Start with the exact current scroll state, then update continuously.
-     * passive listeners keep scrolling responsive on iPhone/Safari.
-     */
-    window.addEventListener('scroll', requestFrame, { passive: true });
-    window.addEventListener('resize', requestFrame, { passive: true });
-    window.addEventListener('orientationchange', requestFrame, { passive: true });
+    window.addEventListener('scroll', request, { passive: true });
+    window.addEventListener('resize', request, { passive: true });
+    window.addEventListener('orientationchange', request, { passive: true });
+    window.addEventListener('pageshow', request, { passive: true });
 
     if (document.fonts?.ready) {
-      document.fonts.ready.then(requestFrame).catch(() => {});
+      document.fonts.ready.then(request).catch(() => {});
     }
 
-    window.addEventListener('load', requestFrame, { once: true });
+    window.addEventListener('load', request, { once: true });
 
+    /* Measure after the browser has completed the first layout. */
     requestAnimationFrame(() => {
-      geometryKey = '';
-      buildPath();
+      measure();
+      render();
     });
   }
 
@@ -732,7 +703,6 @@ window.ScrollAnimations = (function () {
     if (nativeInitialized) return;
     nativeInitialized = true;
 
-    /* Native emergency path: reveal hero copy if the GSAP CDN is unavailable. */
     document.getElementById('main-invite')?.classList.add('hero-animation-ready');
 
     const reveal = (el, cls = 'native-reveal') => {
@@ -740,27 +710,12 @@ window.ScrollAnimations = (function () {
       el.classList.add('native-animation-target', cls);
     };
 
-    /*
-     * Native reveals are the reliability layer for the live site. They run
-     * alongside GSAP rather than only when GSAP fails, because a page can
-     * have GSAP loaded while a ScrollTrigger calculation is delayed by a
-     * browser, cached page state, or mobile viewport change.
-     *
-     * The hero remains GSAP-controlled; everything after the hero gets a
-     * browser-native IntersectionObserver reveal so the motion is guaranteed
-     * to be visible while scrolling.
-     */
     reveal(qs('.photo-mughal-frame'), 'native-photo-reveal');
     reveal(qs('.photo-caption'), 'native-slide-up');
     qsa('#section-photo .caption-divider, #section-message .caption-divider, #section-events .section-header img, #section-countdown .section-header img, #section-venue .section-header img, #section-rsvp .section-header img, .site-footer > img')
       .forEach(el => reveal(el, 'native-divider-reveal'));
     reveal(qs('#section-message .message-card'), 'native-message-reveal');
     reveal(qs('#section-events .section-header'), 'native-slide-up');
-    qsa('.event-item').forEach(item => {
-      /* Event cards stay spatially fixed. The native fallback is opacity-only
-         and starts visible so a delayed observer can never hide the chapter. */
-      reveal(item, 'native-event-static');
-    });
     reveal(qs('#section-countdown .section-header'), 'native-slide-up');
     qsa('.countdown-unit').forEach((unit, i) => {
       unit.style.setProperty('--native-delay', (i * 120) + 'ms');
@@ -778,140 +733,13 @@ window.ScrollAnimations = (function () {
       const io = new IntersectionObserver((entries, observer) => {
         entries.forEach(entry => {
           if (!entry.isIntersecting) return;
-          if (entry.target.classList.contains('event-item')) {
-            /* Event cards must never translate as a whole. Use a quiet
-               opacity-only reveal on the item; the card and its layout stay
-               pixel-stable while the inner details can animate separately. */
-            entry.target.style.opacity = '1';
-            entry.target.style.transform = 'none';
-            entry.target.style.animation = 'none';
-            entry.target.animate(
-              [{ opacity: 0 }, { opacity: 1 }],
-              { duration: 680, easing: 'cubic-bezier(.22,.61,.36,1)', fill: 'forwards' }
-            );
-          } else {
-            entry.target.classList.add('native-is-visible');
-          }
+          entry.target.classList.add('native-is-visible');
           observer.unobserve(entry.target);
         });
       }, { rootMargin: '0px 0px -10% 0px', threshold: 0.12 });
       targets.forEach(el => io.observe(el));
     } else {
       targets.forEach(el => el.classList.add('native-is-visible'));
-    }
-
-    const track = qs('#calendar-timeline');
-    const path = qs('.calendar-timeline-path', track);
-    const shadow = qs('.calendar-timeline-shadow', track);
-    const glow = qs('.calendar-timeline-glow', track);
-    const items = qsa('.event-item');
-
-    if (track && path && shadow && glow) {
-      let cachedKey = '';
-      let cachedLength = 0;
-      let cachedAnchors = [];
-
-      const clamp01 = value => Math.max(0, Math.min(1, value));
-
-      const pointForDot = item => {
-        const dot = qs('.event-dot', item);
-        const tr = track.getBoundingClientRect();
-        const dr = dot?.getBoundingClientRect();
-        return {
-          x: dr ? (dr.left + dr.width / 2) - tr.left : tr.width / 2,
-          y: dr ? (dr.top + dr.height / 2) - tr.top : item.offsetTop + 16
-        };
-      };
-
-      const rebuild = () => {
-        const tr = track.getBoundingClientRect();
-        const width = Math.max(1, tr.width);
-        const height = Math.max(1, tr.height);
-        const pts = items.map(pointForDot);
-        if (!pts.length) return;
-
-        let d = 'M ' + pts[0].x + ' ' + pts[0].y;
-        const sway = Math.min(38, Math.max(9, width * (width < 500 ? 0.025 : 0.042)));
-
-        for (let i = 1; i < pts.length; i++) {
-          const a = pts[i - 1];
-          const b = pts[i];
-          const dy = Math.max(50, b.y - a.y);
-          const sign = (i % 2 === 1 ? 1 : -1);
-          const s = sway * sign;
-          d += ' C ' + (a.x + s) + ' ' + (a.y + dy * 0.16) + ', ' +
-               (b.x - s) + ' ' + (b.y - dy * 0.16) + ', ' +
-               b.x + ' ' + b.y;
-        }
-
-        path.setAttribute('d', d);
-        shadow.setAttribute('d', d);
-        path.setAttribute('viewBox', '0 0 ' + width + ' ' + height);
-        shadow.setAttribute('viewBox', '0 0 ' + width + ' ' + height);
-
-        cachedLength = path.getTotalLength();
-        path.style.strokeDasharray = String(cachedLength);
-        shadow.style.strokeDasharray = String(cachedLength);
-
-        const samples = 900;
-        const samplePts = [];
-        for (let i = 0; i <= samples; i++) {
-          const dist = cachedLength * (i / samples);
-          const p = path.getPointAtLength(dist);
-          samplePts.push({dist, x:p.x, y:p.y});
-        }
-        cachedAnchors = pts.map(a => {
-          let best = 0, bestD = Infinity;
-          for (const sp of samplePts) {
-            const dx=sp.x-a.x, dy=sp.y-a.y, d2=dx*dx+dy*dy;
-            if(d2<bestD){bestD=d2;best=sp.dist/cachedLength;}
-          }
-          return best;
-        });
-        cachedKey = Math.round(width) + 'x' + Math.round(height);
-      };
-
-      const updateTimeline = () => {
-        const rect = track.getBoundingClientRect();
-        const viewport = Math.max(window.innerHeight, 1);
-        const raw = (viewport * 0.78 - rect.top) /
-                    Math.max(rect.height - viewport * 0.10, 1);
-        const p = clamp01(raw);
-
-        const key = Math.round(rect.width) + 'x' + Math.round(rect.height);
-        if (key !== cachedKey) rebuild();
-        if (!cachedLength) return;
-
-        const offset = cachedLength * (1 - p);
-        path.style.strokeDashoffset = String(offset);
-        shadow.style.strokeDashoffset = String(offset);
-
-        const head = path.getPointAtLength(cachedLength * p);
-        glow.setAttribute('cx', head.x);
-        glow.setAttribute('cy', head.y);
-        glow.style.opacity = (p > .015 && p < .995) ? '1' : '0';
-
-        items.forEach((item,i) => {
-          const reached = p >= (cachedAnchors[i] ?? 1) - .012;
-          item.classList.toggle('is-visible', p >= (cachedAnchors[i] ?? 1) - .06);
-          item.classList.toggle('event-reached', reached);
-          qs('.event-dot', item)?.classList.toggle('event-dot-lit', p >= (cachedAnchors[i] ?? 1) - .025);
-        });
-      };
-
-      let ticking = false;
-      const onScroll = () => {
-        if (ticking) return;
-        ticking = true;
-        requestAnimationFrame(() => {
-          updateTimeline();
-          ticking = false;
-        });
-      };
-
-      window.addEventListener('scroll', onScroll, { passive: true });
-      window.addEventListener('resize', onScroll, { passive: true });
-      requestAnimationFrame(updateTimeline);
     }
   }
 
@@ -921,6 +749,9 @@ window.ScrollAnimations = (function () {
 
     injectEvents();
     injectVenue();
+
+    /* Calendar timeline is completely independent of GSAP and motion preferences. */
+    initEvents();
 
     /* Initialize native scrolling before the reduced-motion branch so the calendar interaction remains available. */
     initNativeScrollAnimations();
@@ -951,7 +782,6 @@ window.ScrollAnimations = (function () {
       initHero();
       initPhoto();
       initMessage();
-      initEvents();
       initCountdown();
       initVenue();
       initRSVP();
