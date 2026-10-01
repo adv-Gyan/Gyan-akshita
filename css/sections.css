@@ -1732,3 +1732,82 @@
   .rsvp-card-ornament span { width: 38px; }
   .radio-option { min-height: 50px; padding: 10px 12px; }
 }
+
+
+/* RSVP V3 — November 2026 calendar picker */
+.rsvp-calendar { position: relative; width: 100%; }
+
+.rsvp-date-trigger {
+  width: 100%; min-height: 50px; padding: 13px 15px;
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  border: 1px solid rgba(201,168,76,.24); border-radius: 7px;
+  background: rgba(6,2,2,.34); color: rgba(248,242,230,.40);
+  font-family: var(--font-body); font-size: 16px; line-height: 1.35;
+  text-align: left; cursor: pointer; outline: none;
+  transition: border-color .25s ease, background .25s ease, box-shadow .25s ease;
+}
+.rsvp-date-trigger:hover,
+.rsvp-date-trigger:focus-visible,
+.rsvp-date-trigger[aria-expanded="true"] {
+  border-color: rgba(232,201,122,.68); background: rgba(248,242,230,.055);
+  box-shadow: 0 0 0 3px rgba(201,168,76,.07), 0 8px 24px rgba(0,0,0,.18);
+}
+.rsvp-date-trigger:disabled { cursor: not-allowed; opacity: .7; }
+.rsvp-date-trigger span:first-child.has-value { color: var(--color-text-on-dark); }
+.rsvp-calendar-chevron { flex: 0 0 auto; color: var(--color-gold-light); font-size: 1.2rem; line-height: 1; }
+
+.rsvp-calendar-popover {
+  position: absolute; z-index: 20; left: 0; right: 0; top: calc(100% + .55rem);
+  padding: 1rem; border: 1px solid rgba(201,168,76,.38); border-radius: 13px;
+  background: radial-gradient(circle at 50% 0%, rgba(232,201,122,.09), transparent 42%), linear-gradient(180deg, #1a0808 0%, #100404 100%);
+  box-shadow: 0 22px 55px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.035), 0 0 30px rgba(201,168,76,.06);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+}
+.rsvp-calendar-popover[hidden] { display: none; }
+.rsvp-calendar-popover.is-open { animation: rsvpCalendarIn .22s ease both; }
+@keyframes rsvpCalendarIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+.rsvp-calendar-head { display: grid; grid-template-columns: 38px 1fr 38px; align-items: center; gap: .5rem; margin-bottom: .9rem; }
+.rsvp-calendar-month { display: flex; flex-direction: column; align-items: center; line-height: 1.1; }
+.rsvp-calendar-month span { font-family: var(--font-display); font-size: 1.25rem; font-style: italic; color: var(--color-gold-light); letter-spacing: .03em; }
+.rsvp-calendar-month small { margin-top: .25rem; font-family: var(--font-body); font-size: .55rem; color: rgba(248,242,230,.42); letter-spacing: .22em; text-transform: uppercase; }
+.rsvp-calendar-nav { width: 34px; height: 34px; border: 1px solid rgba(201,168,76,.18); border-radius: 50%; background: rgba(248,242,230,.025); color: rgba(232,201,122,.62); font-family: var(--font-display); font-size: 1.25rem; line-height: 1; opacity: .3; }
+.rsvp-calendar-nav:disabled { cursor: default; }
+
+.rsvp-calendar-weekdays,
+.rsvp-calendar-days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: .25rem; }
+.rsvp-calendar-weekdays { margin-bottom: .35rem; }
+.rsvp-calendar-weekdays span { text-align: center; font-family: var(--font-body); font-size: .5rem; letter-spacing: .08em; text-transform: uppercase; color: rgba(248,242,230,.34); }
+.rsvp-calendar-days { row-gap: .28rem; }
+
+.rsvp-calendar-day {
+  position: relative; min-width: 0; width: 100%; aspect-ratio: 1;
+  border: 1px solid transparent; border-radius: 50%; background: transparent;
+  color: rgba(248,242,230,.78); font-family: var(--font-body); font-size: .78rem; line-height: 1;
+  cursor: pointer; transition: background .2s ease, color .2s ease, border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+}
+.rsvp-calendar-day:hover,
+.rsvp-calendar-day:focus-visible { color: #fff5c9; border-color: rgba(232,201,122,.44); background: rgba(232,201,122,.08); outline: none; }
+.rsvp-calendar-day.is-celebration { color: #f5d98b; border-color: rgba(232,201,122,.35); background: radial-gradient(circle, rgba(232,201,122,.15), rgba(232,201,122,.035) 68%, transparent 70%); box-shadow: 0 0 12px rgba(201,168,76,.08); }
+.rsvp-calendar-day.is-celebration::after { content: '✦'; position: absolute; left: 50%; bottom: 7%; transform: translateX(-50%); font-size: .34rem; color: rgba(255,245,201,.9); }
+.rsvp-calendar-day.is-selected { color: #1a0808; background: var(--color-gold-light); border-color: rgba(255,245,201,.9); box-shadow: 0 0 0 3px rgba(232,201,122,.09), 0 0 15px rgba(232,201,122,.25); font-weight: 600; }
+.rsvp-calendar-day.is-selected::after { color: rgba(26,8,8,.7); }
+.rsvp-calendar-day.is-empty { pointer-events: none; }
+
+.rsvp-calendar-legend {
+  display: flex; align-items: center; justify-content: center; gap: .45rem; margin-top: .85rem; padding-top: .75rem;
+  border-top: 1px solid rgba(201,168,76,.12); font-family: var(--font-display); font-style: italic;
+  font-size: .64rem; color: rgba(248,242,230,.38); text-align: center;
+}
+.rsvp-calendar-legend-mark { width: 8px; height: 8px; flex: 0 0 8px; border-radius: 50%; border: 1px solid rgba(232,201,122,.5); background: rgba(232,201,122,.14); }
+
+@media (max-width:479px) {
+  .rsvp-calendar-popover { padding: .8rem .65rem; }
+  .rsvp-calendar-weekdays, .rsvp-calendar-days { gap: .15rem; }
+  .rsvp-calendar-day { font-size: .72rem; }
+  .rsvp-calendar-legend { font-size: .58rem; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .rsvp-calendar-popover.is-open { animation: none; }
+  .rsvp-calendar-day { transition: none; }
+}
