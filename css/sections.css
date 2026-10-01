@@ -1551,3 +1551,184 @@
     opacity: 1 !important;
   }
 }
+
+
+/* ============================================================
+   RSVP V2 — refined invitation card
+   ============================================================ */
+.section-rsvp {
+  overflow: hidden;
+}
+
+.section-rsvp .section-inner {
+  max-width: 720px;
+}
+
+.rsvp-form {
+  width: min(100%, 500px);
+  padding: clamp(1.45rem, 5vw, 2.25rem);
+  gap: 0;
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 50% -10%, rgba(232,201,122,.08), transparent 34%),
+    linear-gradient(180deg, rgba(248,242,230,.052), rgba(248,242,230,.018));
+}
+
+.rsvp-card-ornament {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .8rem;
+  margin-bottom: 1.15rem;
+  color: rgba(232,201,122,.8);
+}
+
+.rsvp-card-ornament span {
+  width: 54px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(232,201,122,.48));
+}
+
+.rsvp-card-ornament span:last-child { transform: rotate(180deg); }
+
+.rsvp-card-ornament b {
+  font-family: var(--font-body);
+  font-size: .56rem;
+  font-weight: 500;
+  letter-spacing: .36em;
+  padding-left: .36em;
+}
+
+.rsvp-card-intro {
+  text-align: center;
+  margin-bottom: 1.65rem;
+}
+
+.rsvp-card-kicker {
+  margin: 0 0 .35rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.15rem, 4.5vw, 1.4rem);
+  font-style: italic;
+  color: var(--color-gold-light);
+  letter-spacing: .035em;
+}
+
+.rsvp-card-note {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: .72rem;
+  color: rgba(248,242,230,.48);
+  letter-spacing: .08em;
+}
+
+.rsvp-form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.05rem;
+}
+
+.rsvp-form-section-title {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: .57rem;
+  font-weight: 500;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: rgba(232,201,122,.58);
+}
+
+.rsvp-form-divider {
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+  margin: 1.45rem 0;
+  color: rgba(232,201,122,.58);
+}
+
+.rsvp-form-divider::before,
+.rsvp-form-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(201,168,76,.20));
+}
+
+.rsvp-form-divider::after {
+  background: linear-gradient(90deg, rgba(201,168,76,.20), transparent);
+}
+
+.rsvp-form-divider span { font-size: .55rem; line-height: 1; }
+
+.form-label-optional {
+  color: rgba(248,242,230,.34);
+  font-weight: 300;
+  letter-spacing: .06em;
+  text-transform: none;
+}
+
+.form-hint {
+  margin-top: -.28rem;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: .72rem;
+  color: rgba(248,242,230,.34);
+}
+
+#rsvp-date-group { transition: opacity .25s ease, transform .25s ease; }
+
+#rsvp-date-group.is-disabled { opacity: .38; transform: none; }
+
+.rsvp-honeypot {
+  position: absolute !important;
+  left: -10000px !important;
+  top: auto !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+.rsvp-privacy-note {
+  margin: 1rem 0 0;
+  text-align: center;
+  font-family: var(--font-body);
+  font-size: .57rem;
+  line-height: 1.5;
+  letter-spacing: .07em;
+  color: rgba(248,242,230,.28);
+}
+
+.rsvp-error {
+  display: none;
+  margin: .9rem 0 0;
+  text-align: center;
+  font-family: var(--font-body);
+  font-size: .72rem;
+  line-height: 1.5;
+  color: #e7a59b;
+}
+
+.rsvp-error.is-visible { display: block; }
+
+.rsvp-invalid .form-input,
+.rsvp-invalid .radio-option {
+  border-color: rgba(192,57,43,.72) !important;
+  animation: rsvpShake .42s ease;
+}
+
+@keyframes rsvpShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+@media (max-width: 479px) {
+  .rsvp-form {
+    padding: 1.25rem 1rem 1.35rem;
+    border-radius: 15px;
+  }
+
+  .rsvp-card-ornament span { width: 38px; }
+  .radio-option { min-height: 50px; padding: 10px 12px; }
+}
