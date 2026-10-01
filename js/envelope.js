@@ -138,7 +138,14 @@
     scene.setAttribute('aria-hidden', 'true');
 
     document.body.classList.add('invite-open');
-    document.body.style.overflow = '';
+    /*
+     * Use the document root as the single scrolling container after the
+     * envelope opens. Keeping html overflow hidden while making body
+     * scrollable creates a nested mobile scroller, which is unreliable for
+     * scroll-linked effects in iOS Safari/Chrome.
+     */
+    document.documentElement.classList.add('invite-scroll-enabled');
+    document.body.style.overflow = 'visible';
 
     /* Trigger hero staggered animations */
     setTimeout(() => {
