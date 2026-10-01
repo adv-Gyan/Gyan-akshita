@@ -83,9 +83,8 @@ const weddingData = {
 
   /* ── RSVP ────────────────────────────────────────────────── */
   rsvp: {
-    email:       "your@email.com",         // ← your email for form submissions
-    whatsapp:    "",                       // ← optional: +91XXXXXXXXXX
     deadline:    "10 November 2026",
+    webAppUrl:   "", // ← paste your deployed Google Apps Script /exec URL here
   },
 
   /* ── Audio ───────────────────────────────────────────────── */
