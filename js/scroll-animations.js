@@ -377,7 +377,8 @@ window.ScrollAnimations = (function () {
       if (!pathLength) return;
 
       path.style.strokeDasharray = pathLength + ' ' + pathLength;
-      shadow.style.strokeDasharray = pathLength + ' ' + pathLength;
+      shadow.style.strokeDasharray = 'none';
+      shadow.style.strokeDashoffset = '0';
 
       /*
        * Find the exact stroke position corresponding to each event marker.
@@ -433,7 +434,7 @@ window.ScrollAnimations = (function () {
       const offset = pathLength - drawn;
 
       path.style.strokeDashoffset = offset;
-      shadow.style.strokeDashoffset = offset;
+      shadow.style.strokeDashoffset = '0';
 
       const head = path.getPointAtLength(drawn);
       glow.setAttribute('cx', String(head.x));
