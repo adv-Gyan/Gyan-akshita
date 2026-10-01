@@ -345,25 +345,54 @@ window.ScrollAnimations = (function () {
       if (!points.length) return;
 
       /*
-       * A single continuous calligraphic stroke passes through every marker.
-       * The event cards remain ordinary DOM elements, so the layout itself
-       * cannot be affected by the SVG animation.
+       * Build one long hand-drawn calligraphic stroke. The line deliberately
+       * extends above the first event and below the last event, with gentle
+       * pen-pressure-like S curves between the markers.
        */
-      let d = 'M ' + points[0].x + ' ' + points[0].y;
-      const sway = Math.min(32, Math.max(8, width * 0.025));
+      const isMobile = width < 700;
+      const lead = isMobile ? 82 : 118;
+      const tail = isMobile ? 92 : 132;
+      const sway = isMobile ? 27 : Math.min(58, Math.max(34, width * 0.045));
+
+      const first = points[0];
+      const last = points[points.length - 1];
+      const startX = first.x + (isMobile ? 3 : -4);
+      const startY = Math.max(8, first.y - lead);
+
+      let d = 'M ' + startX + ' ' + startY;
+
+      /* Opening flourish into the first marker. */
+      d += ' C ' +
+        (startX + sway * .72) + ' ' + (startY + lead * .16) + ', ' +
+        (first.x + sway * .34) + ' ' + (first.y - lead * .58) + ', ' +
+        first.x + ' ' + first.y;
 
       for (let i = 1; i < points.length; i++) {
         const a = points[i - 1];
         const b = points[i];
-        const dy = Math.max(50, b.y - a.y);
+        const dy = Math.max(70, b.y - a.y);
         const sign = i % 2 ? 1 : -1;
         const s = sway * sign;
 
+        /* Unequal control pressure creates a hand-drawn S rather than a sine wave. */
         d += ' C ' +
-          (a.x + s) + ' ' + (a.y + dy * 0.20) + ', ' +
-          (b.x - s) + ' ' + (b.y - dy * 0.20) + ', ' +
+          (a.x + s) + ' ' + (a.y + dy * .16) + ', ' +
+          (a.x + s * .72) + ' ' + (a.y + dy * .56) + ', ' +
+          (a.x + s * .18) + ' ' + (a.y + dy * .70);
+
+        d += ' C ' +
+          (b.x - s * .18) + ' ' + (b.y - dy * .30) + ', ' +
+          (b.x - s) + ' ' + (b.y - dy * .12) + ', ' +
           b.x + ' ' + b.y;
       }
+
+      /* Closing flourish below the final marker. */
+      const endX = last.x + (isMobile ? -3 : 4);
+      const endY = last.y + tail;
+      d += ' C ' +
+        (last.x - sway * .72) + ' ' + (last.y + tail * .20) + ', ' +
+        (endX - sway * .36) + ' ' + (endY - tail * .35) + ', ' +
+        endX + ' ' + endY;
 
       svg.setAttribute('viewBox', '0 0 ' + width + ' ' + height);
       svg.setAttribute('width', String(width));
