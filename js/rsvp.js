@@ -1,104 +1,155 @@
 /**
  * ============================================================
- * RSVP.JS — Form submission handling
+ * RSVP.JS — Google Sheets submission handling
  * ============================================================
  */
 
 (function () {
   'use strict';
 
-  const form       = document.getElementById('rsvp-form');
-  const submitBtn  = document.getElementById('rsvp-submit');
+  const form = document.getElementById('rsvp-form');
+  const submitBtn = document.getElementById('rsvp-submit');
   const successDiv = document.getElementById('rsvp-success');
 
-  if (!form) return;
+  if (!form || !submitBtn || !successDiv) return;
 
-  /* ── Form submission ──────────────────────────────────── */
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
+  const attendingInputs = Array.from(form.querySelectorAll('input[name="attending"]'));
+  const dateGroup = document.getElementById('rsvp-date-group');
+  const dateSelect = document.getElementById('rsvp-date');
+  const endpoint = String(window.weddingData?.rsvp?.webAppUrl || '').trim();
 
-    if (!validateForm()) return;
+  attendingInputs.forEach(input => input.addEventListener('change', syncDateRequirement));
+  syncDateRequirement();
 
-    submitBtn.textContent = 'Sending…';
-    submitBtn.disabled    = true;
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
 
-    const data = {
-      name:      form.elements['name'].value.trim(),
-      attending: form.elements['attending'].value,
-      message:   form.elements['message'].value.trim(),
-      timestamp: new Date().toISOString(),
-    };
+    const data = collectData();
+    if (!validateForm(data)) return;
 
-    /* ── Submission options ───────────────────────────────
-       Option A: mailto (no server needed)
-       Option B: fetch to webhook / formspree / etc.
-       Config-driven — uses rsvp.email from weddingData    */
-
-    const email = window.weddingData?.rsvp?.email || '';
-
-    if (email && email !== 'your@email.com') {
-      /* Build mailto */
-      const subject = encodeURIComponent(`RSVP — ${data.name} — ${data.attending === 'yes' ? 'Attending' : 'Declining'}`);
-      const body = encodeURIComponent(
-        `Name: ${data.name}\n` +
-        `Attending: ${data.attending === 'yes' ? 'Yes 🎉' : 'Regretfully No'}\n` +
-        (data.message ? `\nMessage: ${data.message}` : '')
-      );
-      window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+    if (!endpoint) {
+      showError('RSVP is being connected. Please try again shortly.');
+      return;
     }
 
-    /* Simulate a brief async "send" then show success */
-    await new Promise(r => setTimeout(r, 600));
-    showSuccess(data);
+    if (data.website) return;
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = 'Sending <span aria-hidden="true">· · ·</span>';
+
+    try {
+      const body = new URLSearchParams({
+        name: data.name,
+        phone: data.phone,
+        attending: data.attending,
+        date: data.date,
+        wishes: data.wishes,
+        website: ''
+      });
+
+      await fetch(endpoint, {
+        method: 'POST',
+        mode: 'no-cors',
+        body,
+        cache: 'no-store',
+        credentials: 'omit'
+      });
+
+      showSuccess(data);
+    } catch (error) {
+      console.error('RSVP submission failed:', error);
+      showError('We could not send your RSVP. Please check your connection and try again.');
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = 'Confirm My RSVP <span aria-hidden="true">✦</span>';
+    }
   });
 
-  /* ── Validation ───────────────────────────────────────── */
-  function validateForm() {
-    const name = form.elements['name'].value.trim();
-    if (!name) {
-      shakeField(form.elements['name']);
-      form.elements['name'].focus();
-      return false;
+  function collectData() {
+    const attending = form.elements['attending']?.value || '';
+    return {
+      name: form.elements['name']?.value.trim() || '',
+      phone: form.elements['phone']?.value.trim() || '',
+      attending,
+      date: attending === 'yes' ? (form.elements['date']?.value || '') : 'Not attending',
+      wishes: form.elements['message']?.value.trim() || '',
+      website: form.elements['website']?.value.trim() || ''
+    };
+  }
+
+  function validateForm(data) {
+    if (!data.name) {
+      return invalidate(form.elements['name'], 'Please enter your name.');
     }
+
+    const phoneDigits = data.phone.replace(/\D/g, '');
+    if (phoneDigits.length < 10 || phoneDigits.length > 15) {
+      return invalidate(form.elements['phone'], 'Please enter a valid phone number.');
+    }
+
+    if (!data.attending) {
+      return invalidate(form.querySelector('input[name="attending"]'), 'Please select an attendance option.');
+    }
+
+    if (data.attending === 'yes' && !data.date) {
+      return invalidate(dateSelect, 'Please select the date you will be joining.');
+    }
+
     return true;
   }
 
-  function shakeField(el) {
-    el.style.borderColor = '#C0392B';
-    el.style.animation   = 'shakeInput 0.4s ease';
-    setTimeout(() => {
-      el.style.borderColor = '';
-      el.style.animation   = '';
-    }, 600);
+  function invalidate(element, message) {
+    if (element) {
+      shakeField(element);
+      if (typeof element.focus === 'function') element.focus();
+    }
+    showError(message);
+    return false;
   }
 
-  /* ── Show success ─────────────────────────────────────── */
+  function shakeField(element) {
+    const target = element.closest('.form-group, .form-fieldset') || element;
+    target.classList.remove('rsvp-invalid');
+    void target.offsetWidth;
+    target.classList.add('rsvp-invalid');
+    setTimeout(() => target.classList.remove('rsvp-invalid'), 600);
+  }
+
+  function syncDateRequirement() {
+    const attending = form.querySelector('input[name="attending"]:checked')?.value;
+    const attendingYes = attending === 'yes';
+
+    if (dateGroup) dateGroup.classList.toggle('is-disabled', !attendingYes);
+
+    if (dateSelect) {
+      dateSelect.disabled = !attendingYes;
+      dateSelect.required = attendingYes;
+      if (!attendingYes) dateSelect.value = '';
+    }
+  }
+
+  function showError(message) {
+    let error = document.getElementById('rsvp-error');
+    if (!error) {
+      error = document.createElement('p');
+      error.id = 'rsvp-error';
+      error.className = 'rsvp-error';
+      error.setAttribute('role', 'alert');
+      form.appendChild(error);
+    }
+    error.textContent = message;
+    error.classList.add('is-visible');
+  }
+
   function showSuccess(data) {
-    form.style.display   = 'none';
+    form.style.display = 'none';
     successDiv.classList.remove('hidden');
 
-    /* Personalise the message */
     const heading = successDiv.querySelector('.success-heading');
     if (heading && data.name) {
-      heading.textContent = `Thank You, ${data.name.split(' ')[0]}!`;
+      heading.textContent = \`Thank You, \${data.name.split(' ')[0]}!\`;
     }
 
-    /* Scroll to success */
     successDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }
-
-  /* Shake keyframe (injected if not in CSS) */
-  if (!document.getElementById('shake-style')) {
-    const style = document.createElement('style');
-    style.id = 'shake-style';
-    style.textContent = `
-      @keyframes shakeInput {
-        0%, 100% { transform: translateX(0); }
-        25%       { transform: translateX(-8px); }
-        75%       { transform: translateX(8px); }
-      }
-    `;
-    document.head.appendChild(style);
   }
 
 })();
