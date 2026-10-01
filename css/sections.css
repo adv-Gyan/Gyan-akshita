@@ -1082,7 +1082,11 @@
 
 
 /* Compact section rhythm */
-.section-events,
+.section-events {
+  padding-top: clamp(4.5rem, 9vw, 6.5rem);
+  padding-bottom: clamp(4.5rem, 10vw, 7rem);
+}
+
 .section-countdown,
 .section-venue {
   padding-top: clamp(2.3rem, 7vw, 3.5rem);
@@ -1096,14 +1100,9 @@
 }
 
 .events-container {
-  gap: clamp(2rem, 6vw, 3.25rem);
+  gap: clamp(3.5rem, 7vw, 5.5rem);
   padding-top: 0;
   padding-bottom: 0;
-}
-
-.timeline-track {
-  padding-top: .5rem;
-  padding-bottom: .5rem;
 }
 
 .section-countdown .section-inner,
@@ -1117,7 +1116,11 @@
 }
 
 @media (max-width: 600px) {
-  .section-events,
+  .section-events {
+    padding-top: 4rem;
+    padding-bottom: 4.5rem;
+  }
+
   .section-countdown,
   .section-venue {
     padding-top: 2rem;
@@ -1131,7 +1134,7 @@
   }
 
   .events-container {
-    gap: 2.15rem;
+    gap: 3rem;
   }
 }
 
