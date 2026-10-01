@@ -407,17 +407,7 @@ window.ScrollAnimations = (function () {
         return best;
       });
 
-      const first = qs('.event-dot', items[0]).getBoundingClientRect();
-      const last = qs('.event-dot', items[items.length - 1]).getBoundingClientRect();
-      const scrollY = Math.max(0, window.scrollY || 0, window.pageYOffset || 0, document.documentElement?.scrollTop || 0, document.body?.scrollTop || 0);
-      const viewport = Math.max(1, window.innerHeight);
-
-      startY = first.top + scrollY - viewport * 0.72;
-      endY = last.top + scrollY - viewport * 0.42;
-
-      if (endY <= startY + 120) {
-        endY = startY + Math.max(viewport * 0.9, height * 0.65, 420);
-      }
+      /* Progress is derived from live viewport positions in render(). */
 
       lastGeometry =
         Math.round(width) + 'x' +
@@ -428,8 +418,27 @@ window.ScrollAnimations = (function () {
     const render = () => {
       if (!pathLength) return;
 
-      const scrollY = window.scrollY || window.pageYOffset || 0;
-      const progress = clamp((scrollY - startY) / Math.max(endY - startY, 1));
+      /*
+       * Calculate progress from the event markers' live viewport positions,
+       * not from window.scrollY. This is the important cross-browser fix:
+       * iOS Safari and Chrome can scroll the document through the scrolling
+       * element while window.scrollY/pageYOffset is not a reliable animation
+       * clock during mobile viewport changes or restored sessions.
+       *
+       * Start: first marker reaches 72% of the viewport.
+       * End:   last marker reaches 42% of the viewport.
+       */
+      const viewport = Math.max(1, window.innerHeight);
+      const firstRect = qs('.event-dot', items[0])?.getBoundingClientRect();
+      const lastRect = qs('.event-dot', items[items.length - 1])?.getBoundingClientRect();
+
+      if (!firstRect || !lastRect) return;
+
+      const passed = (viewport * 0.72) - (firstRect.top + firstRect.height / 2);
+      const remaining = (lastRect.top + lastRect.height / 2) - (viewport * 0.42);
+      const total = passed + remaining;
+      const progress = clamp(total > 1 ? passed / total : (passed > 0 ? 1 : 0));
+
       const drawn = pathLength * progress;
       const offset = pathLength - drawn;
 
