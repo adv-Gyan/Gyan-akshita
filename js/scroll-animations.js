@@ -294,6 +294,14 @@ window.ScrollAnimations = (function () {
       .to(card, { '--card-draw': 1, boxShadow: '0 0 34px rgba(201,168,76,.14)', duration: .35 }, '-=.1');
   }
 
+  /*
+   * Mark Your Calendar timeline
+   * ----------------------------
+   * This feature is deliberately independent of GSAP/ScrollTrigger.
+   * The timeline is part of the invitation's core interaction, so it uses
+   * native scroll + requestAnimationFrame and continues to work on iOS Safari
+   * even when a third-party animation CDN is delayed or cached.
+   */
   function initEvents() {
     const section = qs('#section-events');
     const track = qs('#calendar-timeline', section);
@@ -303,170 +311,209 @@ window.ScrollAnimations = (function () {
     const glow = qs('.calendar-timeline-glow', track);
     const items = qsa('.event-item', section);
 
-    if (!section || !track || !svg || !shadow || !path || !glow || !items.length || !canAnimate()) return;
-
-    let progress = 0;
-    let anchorProgress = [];
-    let geometryKey = '';
+    if (!section || !track || !svg || !shadow || !path || !glow || !items.length) return;
+    if (track.dataset.timelineReady === 'true') return;
+    track.dataset.timelineReady = 'true';
 
     const clamp01 = value => Math.max(0, Math.min(1, value));
+
+    let length = 0;
+    let anchorProgress = [];
+    let startScroll = 0;
+    let endScroll = 1;
+    let geometryKey = '';
+    let rafId = 0;
 
     const getDotPoint = item => {
       const dot = qs('.event-dot', item);
       const tr = track.getBoundingClientRect();
       const dr = dot?.getBoundingClientRect();
-      if (!dot || !dr) return { x: tr.width / 2, y: item.offsetTop + 16 };
+
       return {
-        x: (dr.left + dr.width / 2) - tr.left,
-        y: (dr.top + dr.height / 2) - tr.top
+        x: dr ? (dr.left + dr.width / 2) - tr.left : tr.width / 2,
+        y: dr ? (dr.top + dr.height / 2) - tr.top : item.offsetTop + 16
       };
     };
 
     const buildPath = () => {
       const tr = track.getBoundingClientRect();
       const width = Math.max(1, tr.width);
-      const height = Math.max(1, tr.height);
+      const height = Math.max(1, track.scrollHeight);
       const points = items.map(getDotPoint);
 
-      if (points.length === 0) return;
-      if (points.length === 1) {
-        const p = points[0];
-        const d = 'M ' + p.x + ' ' + Math.max(0, p.y - 18) +
-                  ' C ' + p.x + ' ' + (p.y - 8) + ', ' + p.x + ' ' + (p.y - 4) + ', ' + p.x + ' ' + p.y;
-        path.setAttribute('d', d);
-        shadow.setAttribute('d', d);
-        svg.setAttribute('viewBox', '0 0 ' + width + ' ' + height);
-        const len = path.getTotalLength();
-        gsap.set([path, shadow], { strokeDasharray: len, strokeDashoffset: len * (1 - progress) });
-        anchorProgress = [1];
-        return;
-      }
+      if (!points.length) return;
 
       let d = 'M ' + points[0].x + ' ' + points[0].y;
-      const sway = Math.min(38, Math.max(9, width * (width < 500 ? 0.025 : 0.042)));
+      const sway = Math.min(34, Math.max(8, width * (width < 500 ? 0.022 : 0.038)));
 
       for (let i = 1; i < points.length; i++) {
         const a = points[i - 1];
         const b = points[i];
-        const dy = Math.max(50, b.y - a.y);
-        const sign = (i % 2 === 1 ? 1 : -1);
+        const dy = Math.max(40, b.y - a.y);
+        const sign = i % 2 === 1 ? 1 : -1;
         const s = sway * sign;
 
-        d += ' C ' + (a.x + s) + ' ' + (a.y + dy * 0.16) + ', ' +
-             (b.x - s) + ' ' + (b.y - dy * 0.16) + ', ' +
-             b.x + ' ' + b.y;
+        d +=
+          ' C ' + (a.x + s) + ' ' + (a.y + dy * 0.18) +
+          ', ' + (b.x - s) + ' ' + (b.y - dy * 0.18) +
+          ', ' + b.x + ' ' + b.y;
       }
 
+      /* IMPORTANT: viewBox belongs on the SVG, never on the <path>. */
       svg.setAttribute('viewBox', '0 0 ' + width + ' ' + height);
-      svg.setAttribute('width', width);
-      svg.setAttribute('height', height);
+      svg.setAttribute('width', String(width));
+      svg.setAttribute('height', String(height));
+
       path.setAttribute('d', d);
       shadow.setAttribute('d', d);
 
-      const len = path.getTotalLength();
-      path.dataset.length = String(len);
-      gsap.set([path, shadow], {
-        strokeDasharray: len,
-        strokeDashoffset: len * (1 - progress)
-      });
+      length = path.getTotalLength();
+      path.style.strokeDasharray = String(length);
+      shadow.style.strokeDasharray = String(length);
 
-      /* Find the exact draw-progress at each event dot so activation follows
-         the ink stroke rather than a separate viewport trigger. */
-      const samples = Math.min(1800, Math.max(400, Math.round(len * 3)));
-      const pointsOnPath = [];
+      /*
+       * The curve is constructed to terminate exactly at every event dot.
+       * Sampling its length maps each dot to the exact ink-draw position.
+       */
+      const samples = Math.min(2400, Math.max(800, Math.round(length * 3)));
+      const sampled = [];
+
       for (let i = 0; i <= samples; i++) {
-        const dist = len * (i / samples);
-        const p = path.getPointAtLength(dist);
-        pointsOnPath.push({ dist, x: p.x, y: p.y });
+        const dist = length * (i / samples);
+        const point = path.getPointAtLength(dist);
+        sampled.push({ dist, x: point.x, y: point.y });
       }
 
       anchorProgress = points.map(anchor => {
-        let best = 0;
-        let bestDist = Infinity;
-        for (const sample of pointsOnPath) {
-          const dx = sample.x - anchor.x;
-          const dy = sample.y - anchor.y;
-          const d2 = dx * dx + dy * dy;
-          if (d2 < bestDist) {
-            bestDist = d2;
-            best = sample.dist / len;
+        let bestDist = 0;
+        let bestError = Infinity;
+
+        for (const point of sampled) {
+          const dx = point.x - anchor.x;
+          const dy = point.y - anchor.y;
+          const error = dx * dx + dy * dy;
+
+          if (error < bestError) {
+            bestError = error;
+            bestDist = point.dist;
           }
         }
-        return best;
+
+        return length ? bestDist / length : 0;
       });
 
-      applyVisualState();
+      /*
+       * Scroll window for the animation:
+       *   first dot enters the lower 78% of the viewport → drawing starts
+       *   last dot reaches the upper 45% of the viewport → drawing completes
+       *
+       * Absolute document coordinates are used so iOS viewport changes do
+       * not depend on ScrollTrigger's refresh lifecycle.
+       */
+      const firstDot = qs('.event-dot', items[0]);
+      const lastDot = qs('.event-dot', items[items.length - 1]);
+      const firstRect = firstDot?.getBoundingClientRect();
+      const lastRect = lastDot?.getBoundingClientRect();
+      const scrollY = window.scrollY || window.pageYOffset || 0;
+      const viewport = Math.max(window.innerHeight, 1);
+
+      const firstAbsoluteTop = (firstRect?.top ?? 0) + scrollY;
+      const lastAbsoluteTop = (lastRect?.top ?? firstAbsoluteTop + 1) + scrollY;
+
+      startScroll = firstAbsoluteTop - viewport * 0.78;
+      endScroll = lastAbsoluteTop - viewport * 0.45;
+
+      /*
+       * Very short timelines should still have a useful draw distance.
+       * For the current three-event invitation this branch is normally not
+       * needed, but it protects against future configuration changes.
+       */
+      if (endScroll <= startScroll + 40) {
+        endScroll = startScroll + Math.max(window.innerHeight * 0.85, track.offsetHeight * 0.45, 320);
+      }
+
+      geometryKey =
+        Math.round(width) + 'x' +
+        Math.round(height) + ':' +
+        items.map(item => item.offsetHeight).join(',');
+
+      render();
     };
 
-    const applyVisualState = () => {
-      const p = progress;
-      const activeWindow = 0.08;
+    const render = () => {
+      if (!length) return;
 
-      items.forEach((item, i) => {
-        const start = (anchorProgress[i] ?? (i / Math.max(items.length - 1, 1))) - activeWindow;
-        const local = clamp01((p - start) / activeWindow);
-        item.classList.toggle('is-visible', local > 0.12);
-        item.classList.toggle('event-reached', p >= (anchorProgress[i] ?? 1) - 0.012);
+      const scrollY = window.scrollY || window.pageYOffset || 0;
+      const progress = clamp01((scrollY - startScroll) / Math.max(endScroll - startScroll, 1));
+      const dash = length * (1 - progress);
+
+      path.style.strokeDashoffset = String(dash);
+      shadow.style.strokeDashoffset = String(dash);
+
+      const head = path.getPointAtLength(length * progress);
+      glow.setAttribute('cx', String(head.x));
+      glow.setAttribute('cy', String(head.y));
+      glow.style.opacity = progress > 0.005 && progress < 0.999 ? '1' : '0';
+
+      items.forEach((item, index) => {
+        const anchor = anchorProgress[index] ?? 1;
+
+        /*
+         * First event enters gently when the timeline itself begins.
+         * Subsequent events reveal only as the gold ink reaches their dot.
+         */
+        const revealThreshold = index === 0 ? Math.max(0, anchor - 0.02) : anchor;
+        const reached = progress >= revealThreshold;
+
+        item.classList.toggle('is-visible', reached);
+        item.classList.toggle(
+          'event-reached',
+          progress >= anchor - (index === 0 ? 0.005 : 0.008)
+        );
 
         const dot = qs('.event-dot', item);
-        if (dot) dot.classList.toggle('event-dot-lit', local > 0.72);
+        if (dot) {
+          dot.classList.toggle('event-dot-lit', progress >= anchor - (index === 0 ? 0 : 0.018));
+        }
       });
-
-      if (path.dataset.length) {
-        const len = Number(path.dataset.length);
-        gsap.set([path, shadow], { strokeDashoffset: len * (1 - p) });
-        const point = path.getPointAtLength(len * p);
-        gsap.set(glow, {
-          attr: { cx: point.x, cy: point.y },
-          opacity: p > 0.015 && p < 0.995 ? 1 : 0,
-          duration: 0.08,
-          overwrite: true
-        });
-      }
     };
 
-    const draw = () => {
-      const rect = track.getBoundingClientRect();
-      const key = Math.round(rect.width) + 'x' + Math.round(rect.height) + ':' + items.map(item => item.offsetHeight).join(',');
-      if (key !== geometryKey) {
-        geometryKey = key;
-        buildPath();
-      } else {
-        applyVisualState();
-      }
+    const frame = () => {
+      rafId = 0;
+
+      const tr = track.getBoundingClientRect();
+      const key =
+        Math.round(tr.width) + 'x' +
+        Math.round(track.scrollHeight) + ':' +
+        items.map(item => item.offsetHeight).join(',');
+
+      if (key !== geometryKey) buildPath();
+      else render();
     };
 
-    requestAnimationFrame(draw);
+    const requestFrame = () => {
+      if (rafId) return;
+      rafId = requestAnimationFrame(frame);
+    };
 
-    const timelineTrigger = ScrollTrigger.create({
-      trigger: track,
-      start: 'top 78%',
-      end: 'bottom 68%',
-      scrub: 0.5,
-      onUpdate: self => {
-        progress = clamp01(self.progress);
-        applyVisualState();
-      },
-      onRefresh: () => {
-        geometryKey = '';
-        requestAnimationFrame(draw);
-      }
-    });
+    /*
+     * Start with the exact current scroll state, then update continuously.
+     * passive listeners keep scrolling responsive on iPhone/Safari.
+     */
+    window.addEventListener('scroll', requestFrame, { passive: true });
+    window.addEventListener('resize', requestFrame, { passive: true });
+    window.addEventListener('orientationchange', requestFrame, { passive: true });
 
-    window.addEventListener('resize', () => {
-      geometryKey = '';
-      requestAnimationFrame(draw);
-    }, { passive: true });
-
-    /* Ensure any fonts/image-driven height change is reflected in the curve. */
     if (document.fonts?.ready) {
-      document.fonts.ready.then(() => {
-        geometryKey = '';
-        requestAnimationFrame(draw);
-      }).catch(() => {});
+      document.fonts.ready.then(requestFrame).catch(() => {});
     }
 
-    void timelineTrigger;
+    window.addEventListener('load', requestFrame, { once: true });
+
+    requestAnimationFrame(() => {
+      geometryKey = '';
+      buildPath();
+    });
   }
 
   function initCountdown() {
