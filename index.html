@@ -357,40 +357,86 @@
         </div>
 
         <form id="rsvp-form" class="rsvp-form reveal-on-scroll" novalidate aria-label="RSVP form">
-          <div class="form-group">
-            <label for="rsvp-name" class="form-label">Your Name</label>
-            <input type="text" id="rsvp-name" name="name"
-                   class="form-input" placeholder="Full name" required
-                   autocomplete="name" />
+          <div class="rsvp-card-ornament" aria-hidden="true">
+            <span></span><b>R S V P</b><span></span>
           </div>
 
-          <fieldset class="form-group form-fieldset">
-            <legend class="form-label">Will you be attending?</legend>
-            <div class="radio-group">
-              <label class="radio-option">
-                <input type="radio" name="attending" value="yes" checked />
-                <span class="radio-custom"></span>
-                <span class="radio-text">Joyfully accept 🎉</span>
-              </label>
-              <label class="radio-option">
-                <input type="radio" name="attending" value="no" />
-                <span class="radio-custom"></span>
-                <span class="radio-text">Regretfully decline</span>
-              </label>
+          <div class="rsvp-card-intro">
+            <p class="rsvp-card-kicker">A place at our table awaits</p>
+            <p class="rsvp-card-note">Please share your plans with us.</p>
+          </div>
+
+          <div class="rsvp-form-section">
+            <p class="rsvp-form-section-title">Your Details</p>
+
+            <div class="form-group">
+              <label for="rsvp-name" class="form-label">Your Name</label>
+              <input type="text" id="rsvp-name" name="name"
+                     class="form-input" placeholder="Full name" required
+                     autocomplete="name" maxlength="80" />
             </div>
-          </fieldset>
+
+            <div class="form-group">
+              <label for="rsvp-phone" class="form-label">Phone Number</label>
+              <input type="tel" id="rsvp-phone" name="phone"
+                     class="form-input" placeholder="+91 98765 43210" required
+                     autocomplete="tel" inputmode="tel" maxlength="18" />
+            </div>
+          </div>
+
+          <div class="rsvp-form-divider" aria-hidden="true"><span>✦</span></div>
+
+          <div class="rsvp-form-section">
+            <p class="rsvp-form-section-title">Your Plans</p>
+
+            <fieldset class="form-group form-fieldset">
+              <legend class="form-label">Will you be attending?</legend>
+              <div class="radio-group">
+                <label class="radio-option">
+                  <input type="radio" name="attending" value="yes" checked />
+                  <span class="radio-custom"></span>
+                  <span class="radio-text">Yes, with joy</span>
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="attending" value="no" />
+                  <span class="radio-custom"></span>
+                  <span class="radio-text">I’m unable to attend</span>
+                </label>
+              </div>
+            </fieldset>
+
+            <div class="form-group" id="rsvp-date-group">
+              <label for="rsvp-date" class="form-label">Which date will you be joining?</label>
+              <select id="rsvp-date" name="date" class="form-input form-select" required>
+                <option value="" selected disabled>Select your date</option>
+                <option value="20 November 2026">20 November 2026 · Ring Ceremony</option>
+                <option value="21 November 2026">21 November 2026 · Wedding Day</option>
+                <option value="20 & 21 November 2026">20 & 21 November 2026 · Both</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="rsvp-form-divider" aria-hidden="true"><span>✦</span></div>
 
           <div class="form-group">
-            <label for="rsvp-message" class="form-label">Your Wishes (optional)</label>
+            <label for="rsvp-message" class="form-label">Your Wishes <span class="form-label-optional">Optional</span></label>
             <textarea id="rsvp-message" name="message"
                       class="form-input form-textarea"
-                      rows="3"
-                      placeholder="Share your blessings for the couple…"></textarea>
+                      rows="3" maxlength="500"
+                      placeholder="Leave a blessing for Akshita &amp; Gyanendra…"></textarea>
+            <span class="form-hint">A few words from the heart.</span>
+          </div>
+
+          <div class="rsvp-honeypot" aria-hidden="true">
+            <label for="rsvp-website">Website</label>
+            <input type="text" id="rsvp-website" name="website" tabindex="-1" autocomplete="off" />
           </div>
 
           <button type="submit" class="btn btn-gold btn-full" id="rsvp-submit">
-            Send RSVP ✦
+            Confirm My RSVP <span aria-hidden="true">✦</span>
           </button>
+
+          <p class="rsvp-privacy-note">Your details are used only to help us plan the celebration.</p>
         </form>
 
         <!-- Success message -->
@@ -419,12 +465,12 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
   <!-- Wedding scripts -->
-  <script src="js/config.js?v=20260923music3"></script>
+  <script src="js/config.js?v=20261001rsvp1"></script>
   <script src="js/envelope.js?v=20261001scroll7" defer></script>
   <script src="js/particles.js?v=20260923petals1" defer></script>
   <script src="js/scroll-animations.js?v=20261001timeline8" defer></script>
   <script src="js/countdown.js?v=20260923countdown2" defer></script>
-  <script src="js/rsvp.js?v=20260923countdown2" defer></script>
+  <script src="js/rsvp.js?v=20261001rsvp1" defer></script>
   <script src="js/sound.js?v=20260923music2" defer></script>
 
 </body>
