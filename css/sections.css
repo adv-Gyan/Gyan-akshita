@@ -1801,6 +1801,33 @@
 }
 .rsvp-calendar-legend-mark { width: 8px; height: 8px; flex: 0 0 8px; border-radius: 50%; border: 1px solid rgba(232,201,122,.5); background: rgba(232,201,122,.14); }
 
+/* On phones the calendar belongs to the form's document flow.
+   It must push the wishes field and submit button down instead of covering them. */
+@media (max-width:700px) {
+  .rsvp-calendar-popover {
+    position: relative;
+    top: auto;
+    left: auto;
+    right: auto;
+    width: 100%;
+    margin-top: .55rem;
+    z-index: 1;
+    box-sizing: border-box;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(232,201,122,.09), transparent 42%),
+      linear-gradient(180deg, #1a0808 0%, #100404 100%);
+  }
+
+  .rsvp-calendar-popover.is-open {
+    animation: rsvpCalendarInMobile .22s ease both;
+  }
+
+  @keyframes rsvpCalendarInMobile {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+}
+
 @media (max-width:479px) {
   .rsvp-calendar-popover { padding: .8rem .65rem; }
   .rsvp-calendar-weekdays, .rsvp-calendar-days { gap: .15rem; }
