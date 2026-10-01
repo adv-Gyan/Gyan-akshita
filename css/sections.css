@@ -847,11 +847,61 @@
 .rsvp-success {
   width: min(100%, 440px);
   margin: 0 auto;
-  padding: 2.5rem 1.5rem;
-  border: 1px solid rgba(201,168,76,.28);
-  border-radius: 14px;
-  background: rgba(248,242,230,.035);
-  box-shadow: 0 24px 70px rgba(0,0,0,.30);
+  padding: clamp(2rem, 7vw, 2.75rem) clamp(1.35rem, 6vw, 2rem);
+  border: 1px solid rgba(201,168,76,.34);
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(232,201,122,.08), transparent 46%),
+    linear-gradient(180deg, rgba(248,242,230,.055), rgba(248,242,230,.018));
+  box-shadow:
+    0 24px 70px rgba(0,0,0,.30),
+    inset 0 1px 0 rgba(255,255,255,.025);
+  text-align: center;
+  color: var(--color-text-on-dark);
+}
+
+.rsvp-success .success-icon {
+  width: 44px;
+  height: 44px;
+  margin: 0 auto 1.15rem;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(232,201,122,.45);
+  border-radius: 50%;
+  color: var(--color-gold-light);
+  font-family: var(--font-display);
+  font-size: .8rem;
+  box-shadow: 0 0 20px rgba(201,168,76,.10);
+}
+
+.rsvp-success .success-heading {
+  margin: 0 0 .7rem;
+  color: var(--color-gold-light);
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 7vw, 2.25rem);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: .015em;
+}
+
+.rsvp-success .success-text {
+  max-width: 330px;
+  margin: 0 auto;
+  color: rgba(248,242,230,.72);
+  font-family: var(--font-body);
+  font-size: .72rem;
+  font-weight: 300;
+  line-height: 1.8;
+  letter-spacing: .045em;
+}
+
+.rsvp-success .success-sig {
+  margin: 1.15rem 0 0;
+  color: rgba(232,201,122,.78);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-style: italic;
+  line-height: 1.3;
 }
 
 @media (min-width: 480px) {
