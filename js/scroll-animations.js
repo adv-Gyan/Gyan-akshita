@@ -922,17 +922,13 @@ window.ScrollAnimations = (function () {
     injectEvents();
     injectVenue();
 
+    /* Initialize native scrolling before the reduced-motion branch so the calendar interaction remains available. */
+    initNativeScrollAnimations();
+
     if (reduced()) {
       reducedMotionFallback();
       return;
     }
-
-    /*
-     * Start the native scroll-reveal layer immediately. Do not wait for the
-     * GSAP CDN or ScrollTrigger. This is what makes the invite page animate
-     * reliably in Chrome, Safari and cached mobile sessions.
-     */
-    initNativeScrollAnimations();
 
     const startedAt = Date.now();
     let fallbackStarted = false;
